@@ -1,32 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..400&family=Lora:ital,wght@0,400..600;1,400..500&display=swap');
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
-@layer base {
-  pre {
-    @apply overflow-x-auto rounded-lg bg-gray-900 p-4 text-sm;
-  }
-  code {
-    @apply rounded bg-gray-100 px-1 py-0.5 text-sm font-mono;
-  }
-  pre code {
-    @apply bg-transparent p-0;
-  }
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Lora', ui-serif, Georgia, serif;
+  --color-bg: #F9F7F4;
+  --color-surface: #FFFFFF;
+  --color-border: #E8E4DF;
+  --color-text: #1A1917;
+  --color-muted: #78716C;
+  --color-accent: #C2410C;
 }
 
-/* KaTeX */
-.katex-display {
-  @apply my-4 overflow-x-auto;
+@layer base {
+  html {
+    background-color: var(--color-bg);
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "kern" 1, "liga" 1, "cv11" 1;
+  }
+
+  pre {
+    @apply overflow-x-auto rounded-xl p-5 text-sm leading-relaxed;
+    background: #1C1917;
+  }
+  code {
+    font-size: 0.875em;
+    background: #EDE9E4;
+    color: #C2410C;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  pre code {
+    background: transparent;
+    color: #E7E5E4;
+    padding: 0;
+    font-size: 1em;
+  }
 }
 
 /* Mermaid */
 .mermaid-wrapper {
-  @apply my-4 flex justify-center overflow-x-auto;
+  @apply my-8 flex justify-center overflow-x-auto rounded-2xl p-6;
+  background: #EFEBE6;
 }
 
-/* Tiptap editor */
+/* KaTeX */
+.katex-display {
+  @apply my-8 overflow-x-auto;
+}
+
+/* Tiptap */
 .ProseMirror {
   @apply min-h-[400px] outline-none;
 }
 .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  @apply pointer-events-none float-left h-0 text-gray-400;
+  @apply pointer-events-none float-left h-0;
+  color: var(--color-muted);
 }
+
+/* Prose — post body */
+.prose {
+  --tw-prose-body:        #292524;
+  --tw-prose-headings:    #1A1917;
+  --tw-prose-lead:        #57534E;
+  --tw-prose-links:       #1A1917;
+  --tw-prose-bold:        #1A1917;
+  --tw-prose-counters:    #A8A29E;
+  --tw-prose-bullets:     #D6D3D1;
+  --tw-prose-hr:          #E8E4DF;
+  --tw-prose-quotes:      #1A1917;
+  --tw-prose-quote-borders: #C2410C;
+  --tw-prose-captions:    #78716C;
+  --tw-prose-code:        #C2410C;
+  --tw-prose-pre-bg:      #1C1917;
+  --tw-prose-th-borders:  #E8E4DF;
+  --tw-prose-td-borders:  #F5F5F4;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: #292524;
+}
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.prose h2 {
+  margin-top: 2.5em;
+  font-size: 1.4em;
+}
+.prose h3 {
+  margin-top: 2em;
+  font-size: 1.2em;
+}
+.prose a {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+.prose a:hover {
+  color: #C2410C;
+}
+.prose blockquote {
+  font-style: italic;
+  border-left-width: 3px;
+  border-left-color: #C2410C;
+  background: #FEF9F5;
+  padding: 1em 1.5em;
+  border-radius: 0 8px 8px 0;
+}
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: none;
+}
+.prose img {
+  @apply rounded-2xl;
+}
+.prose hr {
+  border-color: #E8E4DF;
+}
+

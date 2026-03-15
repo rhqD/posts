@@ -2,23 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: {
-    default: "My Blog",
-    template: "%s | My Blog",
-  },
+  title: { default: "My Blog", template: "%s | My Blog" },
   description: "A personal blog about technology and ideas",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-white text-gray-900 antialiased">
-        {children}
-      </body>
+    <html lang="en" className="scroll-smooth">
+      <body>{children}</body>
     </html>
   );
 }
+

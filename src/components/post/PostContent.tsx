@@ -39,7 +39,7 @@ export default function PostContent({ post }: PostContentProps) {
   return (
     <div
       ref={contentRef}
-      className="prose prose-gray max-w-none"
+      className="prose prose-lg prose-gray max-w-none"
       dangerouslySetInnerHTML={{ __html: post.content ?? "" }}
     />
   );

@@ -5,27 +5,22 @@ export default async function Header() {
   const session = await auth();
 
   return (
-    <header className="border-b border-gray-200">
-      <div className="mx-auto max-w-3xl px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-semibold tracking-tight">
-          My Blog
+    <header className="sticky top-0 z-20 border-b" style={{ background: "rgba(249,247,244,0.85)", backdropFilter: "blur(12px)", borderColor: "var(--color-border)" }}>
+      <div className="mx-auto max-w-3xl px-6 h-14 flex items-center justify-between">
+        <Link href="/" className="font-semibold tracking-tight text-sm" style={{ color: "var(--color-text)" }}>
+          ✦ My Blog
         </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link href="/" className="text-gray-600 hover:text-gray-900">
+        <nav className="flex items-center gap-1 text-sm">
+          <Link href="/" className="px-3 py-1.5 rounded-lg transition-colors hover:bg-stone-100" style={{ color: "var(--color-muted)" }}>
             Home
           </Link>
           {session ? (
             <>
-              <Link href="/dashboard" className="text-gray-600 hover:text-gray-900">
-                Dashboard
+              <Link href="/admin" className="px-3 py-1.5 rounded-lg transition-colors hover:bg-stone-100" style={{ color: "var(--color-muted)" }}>
+                Admin
               </Link>
-              <form
-                action={async () => {
-                  "use server";
-                  await signOut({ redirectTo: "/" });
-                }}
-              >
-                <button type="submit" className="text-gray-600 hover:text-gray-900">
+              <form action={async () => { "use server"; await signOut({ redirectTo: "/" }); }}>
+                <button type="submit" className="px-3 py-1.5 rounded-lg transition-colors hover:bg-stone-100 text-sm" style={{ color: "var(--color-muted)" }}>
                   Sign out
                 </button>
               </form>

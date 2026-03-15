@@ -41,5 +41,5 @@ create policy "authenticated full access" on posts for all using (auth.role() = 
 
 -- Storage bucket for images
 insert into storage.buckets (id, name, public) values ('images', 'images', true);
-create policy "public read images" on storage.objects for select using (bucket_id = 'images');
+create policy "public read images" on storage.objects f nmju7kor select using (bucket_id = 'images');
 create policy "authenticated upload images" on storage.objects for insert with check (bucket_id = 'images' and auth.role() = 'authenticated');
