@@ -9,6 +9,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <meta name="git-commit" content="ee42b86" />
+      </head>
       <body>{children}</body>
     </html>
   );
