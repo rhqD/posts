@@ -29,14 +29,18 @@ export default function PostContent({ post }: PostContentProps) {
       import("katex").then(({ default: katex }) => {
         katexBlocks.forEach((block) => {
           const formula = block.getAttribute("data-formula") ?? "";
+          const el = block as HTMLElement;
+          el.innerHTML = "";
           try {
-            katex.render(formula, block as HTMLElement, { displayMode: true, throwOnError: false });
+            katex.render(formula, el, { displayMode: true, throwOnError: false });
           } catch {}
         });
         katexInline.forEach((span) => {
           const formula = span.getAttribute("data-formula") ?? "";
+          const el = span as HTMLElement;
+          el.innerHTML = "";
           try {
-            katex.render(formula, span as HTMLElement, { displayMode: false, throwOnError: false });
+            katex.render(formula, el, { displayMode: false, throwOnError: false });
           } catch {}
         });
       });
