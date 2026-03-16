@@ -41,11 +41,11 @@ export const KatexExtension = Node.create({
     return [{ tag: "div[data-formula]" }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, {
+  renderHTML({ node }) {
+    return ["div", {
       class: "katex-block",
-      "data-formula": HTMLAttributes.formula
-    })];
+      "data-formula": node.attrs.formula
+    }];
   },
 
   addNodeView() {

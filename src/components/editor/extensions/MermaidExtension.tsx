@@ -36,11 +36,11 @@ export const MermaidExtension = Node.create({
     return [{ tag: "div[data-mermaid]" }];
   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ["div", mergeAttributes(HTMLAttributes, {
+  renderHTML({ node }) {
+    return ["div", {
       class: "mermaid-wrapper",
-      "data-mermaid": HTMLAttributes.code
-    }), HTMLAttributes.code];
+      "data-mermaid": node.attrs.code
+    }, node.attrs.code];
   },
 
   addNodeView() {
