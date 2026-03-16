@@ -3,25 +3,15 @@ import { ReactNodeViewRenderer, NodeViewWrapper, type NodeViewProps } from "@tip
 import { useEffect, useRef } from "react";
 
 function KatexNodeView({ node }: NodeViewProps) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    import("katex").then(({ default: katex }) => {
-      katex.render(node.attrs.formula, ref.current!, {
-        displayMode: true,
-        throwOnError: false,
-      });
-    });
-  }, [node.attrs.formula]);
-
   return (
-    <NodeViewWrapper>
+    <NodeViewWrapper className="katex-node-wrapper">
       <div
-        ref={ref}
-        className="katex-block my-4 overflow-x-auto"
+        className="katex-block my-4 p-4 bg-gray-50 rounded border border-gray-200 font-mono text-sm"
         data-formula={node.attrs.formula}
-      />
+        contentEditable={false}
+      >
+        {node.attrs.formula}
+      </div>
     </NodeViewWrapper>
   );
 }
