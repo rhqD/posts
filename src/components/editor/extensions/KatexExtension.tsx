@@ -45,7 +45,7 @@ export const KatexExtension = Node.create({
     return ["div", {
       class: "katex-block",
       "data-formula": node.attrs.formula
-    }];
+    }, 0];
   },
 
   addNodeView() {
