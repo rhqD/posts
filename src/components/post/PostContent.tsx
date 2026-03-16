@@ -24,12 +24,19 @@ export default function PostContent({ post }: PostContentProps) {
 
     // Re-render KaTeX
     const katexBlocks = contentRef.current.querySelectorAll(".katex-block");
-    if (katexBlocks.length > 0) {
+    const katexInline = contentRef.current.querySelectorAll(".katex-inline");
+    if (katexBlocks.length > 0 || katexInline.length > 0) {
       import("katex").then(({ default: katex }) => {
         katexBlocks.forEach((block) => {
           const formula = block.getAttribute("data-formula") ?? "";
           try {
             katex.render(formula, block as HTMLElement, { displayMode: true, throwOnError: false });
+          } catch {}
+        });
+        katexInline.forEach((span) => {
+          const formula = span.getAttribute("data-formula") ?? "";
+          try {
+            katex.render(formula, span as HTMLElement, { displayMode: false, throwOnError: false });
           } catch {}
         });
       });
