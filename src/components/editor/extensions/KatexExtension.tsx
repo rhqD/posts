@@ -30,6 +30,7 @@ export const KatexExtension = Node.create({
   name: "katex",
   group: "block",
   atom: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -38,14 +39,14 @@ export const KatexExtension = Node.create({
   },
 
   parseHTML() {
-    return [{ tag: "div[data-formula]" }];
+    return [{ tag: "div.katex-block[data-formula]" }];
   },
 
   renderHTML({ node }) {
     return ["div", {
       class: "katex-block",
       "data-formula": node.attrs.formula
-    }, 0];
+    }];
   },
 
   addNodeView() {
