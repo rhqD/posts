@@ -64,18 +64,20 @@ function InlineKatexView({ node, updateAttributes, deleteNode, selected, editor,
               e.preventDefault();
               updateAttributes({ formula });
               setIsEditing(false);
-              // 将光标移到公式左边
               const pos = getPos();
-              editor.commands.focus();
-              editor.commands.setTextSelection(pos);
+              if (pos !== undefined) {
+                editor.commands.focus();
+                editor.commands.setTextSelection(pos);
+              }
             } else if (e.key === "ArrowRight" && isAtEnd) {
               e.preventDefault();
               updateAttributes({ formula });
               setIsEditing(false);
-              // 将光标移到公式右边
               const pos = getPos();
-              editor.commands.focus();
-              editor.commands.setTextSelection(pos + node.nodeSize);
+              if (pos !== undefined) {
+                editor.commands.focus();
+                editor.commands.setTextSelection(pos + node.nodeSize);
+              }
             } else if (e.key === "Enter") {
               e.preventDefault();
               handleSave();
