@@ -61,7 +61,7 @@ export const CommandList = forwardRef((props: any, ref) => {
           return (
             <button
               key={index}
-              ref={(el) => (itemRefs.current[index] = el)}
+              ref={(el) => { itemRefs.current[index] = el; }}
               onClick={() => selectItem(index)}
               className={`w-full text-left px-3 py-2 flex items-center gap-3 transition-colors ${
                 index === selectedIndex ? 'bg-blue-50 text-blue-600' : 'hover:bg-gray-50'
