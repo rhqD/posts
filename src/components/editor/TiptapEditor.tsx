@@ -4,10 +4,12 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import Placeholder from "@tiptap/extension-placeholder";
 import { common, createLowlight } from "lowlight";
 import { useRef } from "react";
-import EditorToolbar from "./EditorToolbar";
-import { KatexExtension, MermaidExtension } from "./extensions";
+import { KatexExtension, InlineKatexExtension, MermaidExtension } from "./extensions";
+import { SlashCommand, suggestion } from "./SlashCommand";
+import { BubbleMenuComponent } from "./BubbleMenuComponent";
 
 const lowlight = createLowlight(common);
 
@@ -20,12 +22,18 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       Image,
       CodeBlockLowlight.configure({ lowlight }),
+      Placeholder.configure({
+        placeholder: "输入 / 唤起菜单，或开始写作...",
+      }),
       KatexExtension,
+      InlineKatexExtension,
       MermaidExtension,
+      SlashCommand.configure({ suggestion }),
     ],
     content,
     onUpdate({ editor }) {
@@ -33,60 +41,18 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: "prose prose-gray max-w-none p-4 focus:outline-none min-h-[400px]",
+        class: "prose prose-gray max-w-none focus:outline-none min-h-[500px] px-16 py-12",
       },
     },
   });
 
   if (!editor) return null;
 
-  async function handleImageUpload() {
-    fileInputRef.current?.click();
-  }
-
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file || !editor) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
-    const { url } = await res.json();
-    if (url) editor.chain().focus().setImage({ src: url }).run();
-    e.target.value = "";
-  }
-
-  function handleInsertKatex() {
-    const formula = prompt("Enter LaTeX formula:");
-    if (formula && editor) {
-      editor.chain().focus().insertContent({ type: "katex", attrs: { formula } }).run();
-    }
-  }
-
-  function handleInsertMermaid() {
-    const code = prompt("Enter Mermaid diagram code:");
-    if (code && editor) {
-      editor.chain().focus().insertContent({ type: "mermaid", attrs: { code } }).run();
-    }
-  }
-
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
-      <EditorToolbar
-        editor={editor}
-        onImageUpload={handleImageUpload}
-        onInsertKatex={handleInsertKatex}
-        onInsertMermaid={handleInsertMermaid}
-      />
+    <div className="relative bg-white">
+      <BubbleMenuComponent editor={editor} />
       <EditorContent editor={editor} />
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={handleFileChange}
-      />
+      <input ref={fileInputRef} type="file" accept="image/*" className="hidden" />
     </div>
   );
 }

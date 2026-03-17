@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Post } from "@/lib/supabase/types";
+import "katex/dist/katex.min.css";
 
 interface PostContentProps {
   post: Post;
@@ -24,9 +25,10 @@ export default function PostContent({ post }: PostContentProps) {
 
     // Re-render KaTeX
     const katexBlocks = contentRef.current.querySelectorAll(".katex-block");
-    const katexInline = contentRef.current.querySelectorAll(".katex-inline");
+    const katexInline = contentRef.current.querySelectorAll(".inline-katex");
     if (katexBlocks.length > 0 || katexInline.length > 0) {
-      import("katex").then(({ default: katex }) => {
+      (async () => {
+        const katex = (await import("katex")).default;
         katexBlocks.forEach((block) => {
           const formula = block.getAttribute("data-formula") ?? "";
           const el = block as HTMLElement;
@@ -43,7 +45,7 @@ export default function PostContent({ post }: PostContentProps) {
             katex.render(formula, el, { displayMode: false, throwOnError: false });
           } catch {}
         });
-      });
+      })();
     }
   }, [post.content]);
 
