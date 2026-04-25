@@ -121,3 +121,16 @@ export const KatexExtension = Node.create({
     return ReactNodeViewRenderer(KatexNodeView);
   },
 });
+
+import { registerExtension } from './registry';
+
+registerExtension({
+  extension: KatexExtension,
+  slashCommands: [{
+    title: 'Formula',
+    description: '块级公式',
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).insertContent({ type: 'katex', attrs: { formula: '' } }).run();
+    }
+  }]
+});

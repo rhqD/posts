@@ -136,3 +136,16 @@ export const InlineKatexExtension = Node.create({
     return ReactNodeViewRenderer(InlineKatexView);
   },
 });
+
+import { registerExtension } from './registry';
+
+registerExtension({
+  extension: InlineKatexExtension,
+  slashCommands: [{
+    title: 'Inline Math',
+    description: '行内公式',
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).insertContent({ type: 'inlineKatex', attrs: { formula: '' } }).run();
+    }
+  }]
+});

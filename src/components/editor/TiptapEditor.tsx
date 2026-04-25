@@ -3,22 +3,20 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
-import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Placeholder from "@tiptap/extension-placeholder";
-import { common, createLowlight } from "lowlight";
 import { useRef } from "react";
-import { KatexExtension, InlineKatexExtension, MermaidExtension } from "./extensions";
+import { getExtensions } from "./extensions";
 import { SlashCommand, suggestion } from "./SlashCommand";
 import { BubbleMenuComponent } from "./BubbleMenuComponent";
-
-const lowlight = createLowlight(common);
+import { getEditorClass, type EditorLayout } from "./layout";
 
 interface TiptapEditorProps {
   content: string;
   onChange: (html: string) => void;
+  layout?: EditorLayout;
 }
 
-export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
+export default function TiptapEditor({ content, onChange, layout }: TiptapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
@@ -26,13 +24,10 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     extensions: [
       StarterKit.configure({ codeBlock: false }),
       Image,
-      CodeBlockLowlight.configure({ lowlight }),
       Placeholder.configure({
         placeholder: "输入 / 唤起菜单，或开始写作...",
       }),
-      KatexExtension,
-      InlineKatexExtension,
-      MermaidExtension,
+      ...getExtensions(),
       SlashCommand.configure({ suggestion }),
     ],
     content,
@@ -41,7 +36,7 @@ export default function TiptapEditor({ content, onChange }: TiptapEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: "prose prose-gray max-w-none focus:outline-none min-h-[500px] px-16 py-12",
+        class: getEditorClass(layout),
       },
     },
   });

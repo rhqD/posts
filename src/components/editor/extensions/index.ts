@@ -1,3 +1,6 @@
-export { KatexExtension } from "./KatexExtension";
-export { InlineKatexExtension } from "./InlineKatexExtension";
-export { MermaidExtension } from "./MermaidExtension";
+import "./KatexExtension";
+import "./InlineKatexExtension";
+import "./MermaidExtension";
+import "./CodeBlockExtension";
+
+export { getExtensions, getSlashCommands } from "./registry";

@@ -47,3 +47,20 @@ export const MermaidExtension = Node.create({
     return ReactNodeViewRenderer(MermaidNodeView);
   },
 });
+
+import { registerExtension } from './registry';
+
+registerExtension({
+  extension: MermaidExtension,
+  slashCommands: [{
+    title: 'Mermaid Diagram',
+    description: '流程图/图表',
+    command: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run();
+      const code = prompt('输入 Mermaid 代码:');
+      if (code) {
+        editor.chain().focus().insertContent({ type: 'mermaid', attrs: { code } }).run();
+      }
+    }
+  }]
+});
