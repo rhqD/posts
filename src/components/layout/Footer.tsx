@@ -1,9 +1,12 @@
 export default function Footer() {
   return (
-    <footer className="mt-24" style={{ borderTop: "1px solid var(--color-border)" }}>
-      <div className="mx-auto max-w-3xl px-6 py-8 flex items-center justify-between text-xs" style={{ color: "var(--color-muted)" }}>
-        <span>© {new Date().getFullYear()} My Blog</span>
-        <span>Built with Next.js & Supabase</span>
+    <footer style={{ borderTop: "1px solid rgba(255,255,255,0.06)", background: "#0a0a0f" }}>
+      <div className="mx-auto max-w-5xl px-6 py-8 flex items-center justify-between text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+        <span>© {new Date().getFullYear()} Ren Hanquan</span>
+        <div className="flex items-center gap-4">
+          <a href="https://github.com/renhanquan" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">GitHub</a>
+          <span>Built with Next.js & Supabase</span>
+        </div>
       </div>
     </footer>
   );

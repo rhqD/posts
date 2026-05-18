@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import type { Category, Tag } from "@/lib/supabase/types";
 
-const TiptapEditor = dynamic(() => import("@/components/editor/TiptapEditor"), { ssr: false });
+const LexicalEditor = dynamic(() => import("@/components/editor/LexicalEditor"), { ssr: false });
 
 interface PostFormProps {
   postId?: string;
@@ -70,7 +70,7 @@ export default function PostForm({ postId, initialData, categories, tags }: Post
           rows={2}
           className="w-full text-sm border border-gray-200 rounded-lg p-3 focus:outline-none focus:border-gray-400 resize-none"
         />
-        <TiptapEditor content={content} onChange={setContent} />
+        <LexicalEditor content={content} onChange={setContent} />
       </div>
       <div className="space-y-6">
         <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">

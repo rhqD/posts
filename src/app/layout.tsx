@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Providers from "@/components/layout/Providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "My Blog", template: "%s | My Blog" },
-  description: "A personal blog about technology and ideas",
+  title: { default: "Ren Hanquan", template: "%s | Ren Hanquan" },
+  description: "Senior Frontend Engineer — Frontend Performance, Low-Code Platforms, and Gardening",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="git-commit" content={commitSha} />
       </head>
-      <body>{children}</body>
+      <body className="bg-[#0a0a0f]">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

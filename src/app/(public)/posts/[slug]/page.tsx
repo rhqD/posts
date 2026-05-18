@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 
+import PageWrapper from "@/components/layout/PageWrapper";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const supabase = createServiceClient();
@@ -38,7 +40,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const mins = post.content ? readingTime(post.content) : null;
 
   return (
-    <article>
+    <PageWrapper>
       {/* Back */}
       <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-medium mb-12 transition-opacity hover:opacity-60" style={{ color: "var(--color-muted)" }}>
         ← All posts
@@ -100,6 +102,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           ← Back to all posts
         </Link>
       </div>
-    </article>
+    </PageWrapper>
   );
 }

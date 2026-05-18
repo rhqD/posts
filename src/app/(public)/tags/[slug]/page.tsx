@@ -4,6 +4,8 @@ import PostCard from "@/components/post/PostCard";
 import type { Post } from "@/lib/supabase/types";
 import type { Metadata } from "next";
 
+import PageWrapper from "@/components/layout/PageWrapper";
+
 export async function generateMetadata({
   params,
 }: {
@@ -43,13 +45,13 @@ export default async function TagPage({
   }));
 
   return (
-    <div>
+    <PageWrapper>
       <h1 className="text-2xl font-bold mb-8">Tag: {tag.name}</h1>
       {posts.length === 0 ? (
         <p className="text-gray-500">No posts with this tag.</p>
       ) : (
         posts.map((post) => <PostCard key={post.id} post={post} />)
       )}
-    </div>
+    </PageWrapper>
   );
 }

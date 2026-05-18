@@ -4,6 +4,8 @@ import PostCard from "@/components/post/PostCard";
 import type { Post } from "@/lib/supabase/types";
 import type { Metadata } from "next";
 
+import PageWrapper from "@/components/layout/PageWrapper";
+
 export async function generateMetadata({
   params,
 }: {
@@ -46,13 +48,13 @@ export default async function CategoryPage({
   }));
 
   return (
-    <div>
+    <PageWrapper>
       <h1 className="text-2xl font-bold mb-8">Category: {category.name}</h1>
       {posts.length === 0 ? (
         <p className="text-gray-500">No posts in this category.</p>
       ) : (
         posts.map((post) => <PostCard key={post.id} post={post} />)
       )}
-    </div>
+    </PageWrapper>
   );
 }
