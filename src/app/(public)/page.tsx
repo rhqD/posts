@@ -1,10 +1,7 @@
-import { getHomepageData } from "@/lib/supabase/bio";
 import HomeSectionRenderer from "@/components/home/HomeSectionRenderer";
 
-export const revalidate = 3600;
+export const dynamic = "force-static";
 
-export default async function HomePage() {
-  const data = await getHomepageData();
-
-  return <HomeSectionRenderer data={data} />;
+export default function HomePage() {
+  return <HomeSectionRenderer data={null} />;
 }
