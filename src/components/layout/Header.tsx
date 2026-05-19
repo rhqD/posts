@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import ThemeToggle from "./ThemeToggle";
+import BGMPlayer from "./BGMPlayer";
 
 const navLinks = [
   { href: "/#about", label: "About" },
@@ -88,6 +89,7 @@ export default function Header() {
               </Link>
             </>
           )}
+          <BGMPlayer />
           <ThemeToggle />
         </nav>
       </div>
