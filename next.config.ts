@@ -8,6 +8,22 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "*.aliyuncs.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.notion.so",
+      },
+      {
+        protocol: "https",
+        hostname: "*.amazonaws.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.notion-static.com",
+      },
     ],
   },
 };

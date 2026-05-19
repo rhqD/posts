@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getPostBySlug, getPostContent, getPublishedPosts } from "@/lib/notion";
 import PostContent from "@/components/post/PostContent";
 import { formatDate, readingTime } from "@/lib/utils";
+import { marked } from "marked";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -31,10 +32,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   if (!post) notFound();
 
-  // Fetch full content
-  const content = await getPostContent(post.id);
-  const postWithContent = { ...post, content };
-  const mins = content ? readingTime(content) : null;
+  // Fetch full content as markdown, convert to HTML
+  const mdContent = await getPostContent(post.id);
+  const htmlContent = await marked.parse(mdContent);
+  const postWithContent = { ...post, content: htmlContent };
+  const mins = mdContent ? readingTime(mdContent) : null;
 
   return (
     <PageWrapper>
