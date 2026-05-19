@@ -76,7 +76,13 @@ export async function getPublishedPosts(): Promise<Post[]> {
 export async function getPostContent(pageId: string): Promise<string> {
   const n2m = getN2M();
   const mdBlocks = await n2m.pageToMarkdown(pageId);
-  return n2m.toMarkdownString(mdBlocks).parent;
+  let md = n2m.toMarkdownString(mdBlocks).parent;
+  // Rewrite Notion image URLs through our proxy
+  md = md.replace(
+    /!\[([^\]]*)\]\((https:\/\/[^)]+)\)/g,
+    (_m, alt, url) => `![${alt}](/api/notion-image?url=${encodeURIComponent(url)})`
+  );
+  return md;
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
