@@ -5,10 +5,10 @@ import { MapPin, Building2, GraduationCap, Sprout, Leaf } from "lucide-react";
 import type { Profile } from "@/lib/supabase/types";
 
 const highlights = [
-  { icon: MapPin, label: "From Xi'an, Shaanxi to Beijing", color: "#f472b6" },
+  { icon: MapPin, label: "Xi'an → Beijing → Hangzhou", color: "#f472b6" },
   { icon: GraduationCap, label: "B.Eng. Software Engineering", color: "#818cf8" },
-  { icon: Building2, label: "5 companies, 3 cities, 10+ years", color: "#60a5fa" },
-  { icon: Sprout, label: "Avid gardener — has a private yard", color: "#34d399" },
+  { icon: Building2, label: "Frontend Architecture & Complexity Management", color: "#60a5fa" },
+  { icon: Sprout, label: "ML fundamentals — built neural nets from scratch", color: "#34d399" },
 ];
 
 // Decorative leaf SVG
@@ -27,7 +27,7 @@ function LeafDecor({ className, delay }: { className?: string; delay?: number })
 
 export default function AboutSection({ profile }: { profile: Profile | null }) {
   const name = profile?.full_name || "Ren Hanquan";
-  const bio = profile?.bio || "Senior frontend engineer based in Beijing. Passionate about performance, developer experience, and building tools. Avid gardener with a private yard.";
+  const bio = profile?.bio || "Senior frontend engineer specializing in large-scale application architecture and full-lifecycle performance optimization. From Xi'an, Shaanxi. Career spans DingTalk collaborative tools, Web3, and low-code platforms. Avid gardener.";
   const location = profile?.location;
   const email = profile?.email;
   const initials = name.split(" ").map(n => n[0]).join("");

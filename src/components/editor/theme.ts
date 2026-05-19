@@ -1,0 +1,63 @@
+import type { EditorThemeClasses } from "lexical";
+
+const theme: EditorThemeClasses = {
+  paragraph: "editor-paragraph",
+  heading: {
+    h1: "editor-h1",
+    h2: "editor-h2",
+    h3: "editor-h3",
+  },
+  list: {
+    ul: "editor-ul",
+    ol: "editor-ol",
+    listitem: "editor-li",
+    nested: {
+      listitem: "editor-nested-li",
+    },
+  },
+  quote: "editor-blockquote",
+  text: {
+    bold: "font-bold",
+    italic: "italic",
+    strikethrough: "line-through",
+    underline: "underline",
+    code: "editor-text-code",
+  },
+  code: "editor-code-block",
+  codeHighlight: {
+    atrule: "text-[#c678dd]",
+    attr: "text-[#d19a66]",
+    boolean: "text-[#d19a66]",
+    builtin: "text-[#e6c07b]",
+    cdata: "text-[#5c6370]",
+    char: "text-[#98c379]",
+    class: "text-[#e6c07b]",
+    "class-name": "text-[#e6c07b]",
+    comment: "text-[#5c6370]",
+    constant: "text-[#d19a66]",
+    deleted: "text-[#e06c75]",
+    doctype: "text-[#5c6370]",
+    entity: "text-[#e06c75]",
+    function: "text-[#61afef]",
+    important: "text-[#c678dd]",
+    inserted: "text-[#98c379]",
+    keyword: "text-[#c678dd]",
+    namespace: "text-[#e06c75]",
+    number: "text-[#d19a66]",
+    operator: "text-[#56b6c2]",
+    prolog: "text-[#5c6370]",
+    property: "text-[#e06c75]",
+    punctuation: "text-[#abb2bf]",
+    regex: "text-[#98c379]",
+    selector: "text-[#98c379]",
+    string: "text-[#98c379]",
+    symbol: "text-[#d19a66]",
+    tag: "text-[#e06c75]",
+    url: "text-[#61afef]",
+    variable: "text-[#e06c75]",
+  },
+  link: "editor-link",
+  image: "editor-image",
+};
+
+export default theme;
