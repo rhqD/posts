@@ -25,7 +25,7 @@ export default function ContactSection({ profile }: { profile: Profile | null })
   };
 
   return (
-    <section id="contact" className="px-6 py-16 relative overflow-hidden"
+    <section id="contact" className="px-6 py-12 sm:py-16 relative overflow-hidden"
       style={{ background: "linear-gradient(180deg, #0a0d10 0%, #0d1117 50%, #0a0a0f 100%)" }}>
       {/* Floating flower/plant silhouettes */}
       <motion.div className="absolute top-1/4 right-[5%] pointer-events-none opacity-[0.04]"
@@ -45,13 +45,13 @@ export default function ContactSection({ profile }: { profile: Profile | null })
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] mb-4 block" style={{ color: "rgba(168,255,200,0.4)" }}>
             <MessageCircle size={12} className="inline mr-2" />
             Contact
           </span>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-4" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
             Let&apos;s<br />
             <span style={{ background: "linear-gradient(90deg, #4ade80, #22d3ee, #a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               grow together
@@ -64,7 +64,7 @@ export default function ContactSection({ profile }: { profile: Profile | null })
 
         {/* Social icons */}
         <motion.div
-          className="flex flex-wrap justify-center gap-4 mb-12"
+          className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-12"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"

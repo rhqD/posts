@@ -52,20 +52,20 @@ export default function Header() {
         borderBottom: headerBorder,
       }}
     >
-      <div className="mx-auto max-w-5xl px-6 h-14 flex items-center justify-between">
+      <div className="mx-auto max-w-5xl px-6 h-12 sm:h-14 flex items-center justify-between">
         <Link
           href="/"
-          className="font-semibold tracking-tight text-sm transition-opacity hover:opacity-70"
+          className="font-semibold tracking-tight text-xs sm:text-sm transition-opacity hover:opacity-70"
           style={{ color: isDark ? "#fff" : "#1a2e1a" }}
         >
           Ren Hanquan
         </Link>
-        <nav className="flex items-center gap-0.5 text-sm">
+        <nav className="flex items-center gap-0.5 text-sm overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5"
+              className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
               style={{ color: textMuted }}
             >
               {link.label}
@@ -75,14 +75,14 @@ export default function Header() {
             <>
               <Link
                 href="/admin"
-                className="px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 ml-1"
+                className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 ml-1 whitespace-nowrap"
                 style={{ color: textDim, fontSize: "0.8rem" }}
               >
                 Admin
               </Link>
               <Link
                 href="/api/auth/signout"
-                className="px-3 py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5"
+                className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
                 style={{ color: textDim, fontSize: "0.8rem" }}
               >
                 Sign out

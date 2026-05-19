@@ -33,7 +33,7 @@ export default function AboutSection({ profile }: { profile: Profile | null }) {
   const initials = name.split(" ").map(n => n[0]).join("");
 
   return (
-    <section id="about" className="px-6 py-16 relative overflow-hidden z-10"
+    <section id="about" className="px-6 py-12 sm:py-16 relative overflow-hidden z-10"
       style={{ background: "#1a1d24", borderTop: "2px solid rgba(74,222,128,0.3)" }}>
       {/* Decorative leaves */}
       <LeafDecor className="top-20 left-[10%]" delay={0.5} />
@@ -52,7 +52,7 @@ export default function AboutSection({ profile }: { profile: Profile | null }) {
           className="mb-16"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] mb-4 block" style={{ color: "rgba(74,222,128,0.4)" }}>About</span>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
             A developer who<br />
             <span style={{ background: "linear-gradient(90deg, #4ade80, #22d3ee, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               grows things.
@@ -76,7 +76,7 @@ export default function AboutSection({ profile }: { profile: Profile | null }) {
               {/* Decorative ring */}
               <div className="absolute -inset-3 rounded-[2rem] opacity-30"
                 style={{ background: "conic-gradient(from 0deg, #4ade80, #22d3ee, #818cf8, #4ade80)" }} />
-              <div className="relative w-56 h-56 sm:w-64 sm:h-64 rounded-3xl overflow-hidden ring-1 ring-white/10">
+              <div className="relative w-48 h-48 sm:w-64 sm:h-64 rounded-3xl overflow-hidden ring-1 ring-white/10">
                 <div className="w-full h-full bg-gradient-to-br from-emerald-800 via-teal-700 to-indigo-900 flex items-center justify-center">
                   <span className="text-7xl font-bold text-white/70 font-serif">
                     {initials}
@@ -95,7 +95,7 @@ export default function AboutSection({ profile }: { profile: Profile | null }) {
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
           >
-            <p className="text-base sm:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
+            <p className="text-sm sm:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>
               {bio}
             </p>
 

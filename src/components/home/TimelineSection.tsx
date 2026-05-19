@@ -60,7 +60,7 @@ function TimelineCard({ exp, index }: { exp: Experience; index: number }) {
           </span>
         </div>
 
-        <h3 className="text-xl sm:text-2xl font-bold mb-1 tracking-tight" style={{ color: "#fff" }}>
+        <h3 className="text-lg sm:text-xl font-bold mb-1 tracking-tight" style={{ color: "#fff" }}>
           {exp.role}
         </h3>
 
@@ -91,7 +91,7 @@ export default function TimelineSection({ experiences }: { experiences: Experien
   if (experiences.length === 0) return null;
 
   return (
-    <section id="timeline" className="px-6 py-16 relative overflow-hidden"
+    <section id="timeline" className="px-6 py-12 sm:py-16 relative overflow-hidden"
       style={{ background: "linear-gradient(180deg, #0d1117 0%, #0a0d10 50%, #0d1117 100%)" }}>
       {/* Ambient */}
       <div className="absolute inset-0 pointer-events-none"
@@ -103,13 +103,13 @@ export default function TimelineSection({ experiences }: { experiences: Experien
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-16"
+          className="mb-10 sm:mb-16"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] mb-4 block" style={{ color: "rgba(168,255,200,0.4)" }}>
             <Sprout size={12} className="inline mr-2" />
             Journey
           </span>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
             From seed<br />
             <span style={{ background: "linear-gradient(90deg, #10b981, #22d3ee, #f97316, #e11d48, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               to forest

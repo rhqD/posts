@@ -204,7 +204,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
       {/* Garden illustration — day (light mode) */}
       <div className="absolute inset-0 z-0 block dark:hidden">
         <Image
-          src="/garden-day.jpg"
+          src="/garden-day-v7.jpg"
           alt="Garden office"
           fill
           className="object-cover"
@@ -214,7 +214,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
       {/* Garden illustration — night (dark mode) */}
       <div className="absolute inset-0 z-0 hidden dark:block">
         <Image
-          src="/garden-night.jpg"
+          src="/garden-night-v7.jpg"
           alt="Garden office at night"
           fill
           className="object-cover"
@@ -241,7 +241,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
       >
         {/* Location pill */}
         <motion.div
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-10 border backdrop-blur-sm"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-6 border backdrop-blur-sm"
           style={{ borderColor: "rgba(0,0,0,0.1)", background: "rgba(255,255,255,0.4)" }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -254,7 +254,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
 
         {/* Name */}
         <motion.h1
-          className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold mb-8 tracking-tighter"
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-bold mb-4 sm:mb-8 tracking-tighter"
           style={{ fontFamily: "var(--font-serif)" }}
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -270,7 +270,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
 
         {/* Headline or typewriter */}
         <motion.div
-          className="text-xl sm:text-2xl md:text-3xl font-light h-10 flex items-center justify-center gap-1 mb-10"
+          className="text-base sm:text-xl md:text-2xl font-light h-10 flex items-center justify-center gap-1 mb-10"
           style={{ color: "rgba(0,0,0,0.6)", textShadow: "0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(255,255,255,0.5)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -292,7 +292,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
 
         {/* Tags */}
         <motion.div
-          className="flex flex-wrap justify-center gap-3"
+          className="flex flex-wrap justify-center gap-3 mb-6 sm:mb-10"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.5 }}
@@ -300,7 +300,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
           {["Frontend Perf", "Low-Code", "Core Web Vitals", "Gardening"].map((tag, i) => (
             <motion.span
               key={tag}
-              className="px-4 py-2 rounded-full text-xs border backdrop-blur-sm cursor-default"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs border backdrop-blur-sm cursor-default"
               style={{
                 borderColor: "rgba(0,0,0,0.12)",
                 color: "rgba(0,0,0,0.5)",

@@ -73,7 +73,7 @@ export default function SkillsSection({ skills }: { skills: Skill[] }) {
   if (skills.length === 0) return null;
 
   return (
-    <section id="skills" className="px-6 py-16 relative overflow-hidden"
+    <section id="skills" className="px-6 py-12 sm:py-16 relative overflow-hidden"
       style={{ background: "linear-gradient(180deg, #0d1117 0%, #0a0c10 60%, #0d1117 100%)" }}>
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none rounded-full blur-[200px]"
@@ -85,10 +85,10 @@ export default function SkillsSection({ skills }: { skills: Skill[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-16"
+          className="mb-10 sm:mb-16"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] mb-4 block" style={{ color: "rgba(74,222,128,0.4)" }}>Skills</span>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
             What I<br />
             <span style={{ background: "linear-gradient(90deg, #34d399, #22d3ee, #818cf8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               cultivate
@@ -97,7 +97,7 @@ export default function SkillsSection({ skills }: { skills: Skill[] }) {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
           variants={staggerContainer}
           initial="hidden"
           whileInView="visible"

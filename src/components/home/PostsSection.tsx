@@ -9,7 +9,7 @@ import type { Post } from "@/lib/supabase/types";
 
 export default function PostsSection({ posts }: { posts: Post[] }) {
   return (
-    <section id="posts" className="px-6 py-16 relative overflow-hidden"
+    <section id="posts" className="px-6 py-12 sm:py-16 relative overflow-hidden"
       style={{ background: "linear-gradient(180deg, #0d1117 0%, #0c0f14 50%, #0d1117 100%)" }}>
       <div className="max-w-3xl mx-auto relative z-10">
         <motion.div
@@ -17,13 +17,13 @@ export default function PostsSection({ posts }: { posts: Post[] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
           <span className="text-xs font-semibold uppercase tracking-[0.3em] mb-4 block" style={{ color: "rgba(251,191,36,0.4)" }}>
             <PenLine size={12} className="inline mr-2" />
             Writing
           </span>
-          <h2 className="text-4xl sm:text-5xl font-bold tracking-tight mb-3 leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
+          <h2 className="text-3xl sm:text-5xl font-bold tracking-tight mb-3 leading-tight" style={{ color: "#fff", fontFamily: "var(--font-serif)" }}>
             Recent<br />
             <span style={{ background: "linear-gradient(90deg, #fbbf24, #f59e0b, #d97706)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
               harvest
