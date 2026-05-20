@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     const headers = new Headers();
     headers.set("Content-Type", res.headers.get("Content-Type") || "image/png");
-    headers.set("Cache-Control", "public, max-age=31536000, immutable");
+    headers.set("Cache-Control", "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400");
 
     return new NextResponse(res.body, { headers });
   } catch {
