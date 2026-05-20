@@ -77,21 +77,21 @@ export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
     idToSlug[p.id.replace(/-/g, "")] = p.slug;
   }
 
-  // Rewrite notion.so links to /posts/ links
+  // Rewrite Notion internal links to /posts/ links
   function rewriteLinks(block: NotionBlock) {
     const richTexts = block[block.type]?.rich_text;
     if (richTexts) {
       for (const t of richTexts) {
         const url = t.text?.link?.url || t.href;
-        if (url && url.includes("notion.so")) {
-          // Extract page ID from Notion URL: .../xxx-{32charhex}
-          const match = url.match(/([0-9a-f]{32})/i);
-          if (match) {
-            const targetSlug = idToSlug[match[1]];
-            if (targetSlug) {
-              if (t.text?.link) t.text.link.url = `/posts/${targetSlug}`;
-              else t.href = `/posts/${targetSlug}`;
-            }
+        if (!url) continue;
+        // Match Notion page references: /{32hex}, notion.so/{slug}-{32hex}, or bare UUID
+        const match = url.match(/([0-9a-f]{32})/i);
+        if (match) {
+          const pageId = match[1];
+          const targetSlug = idToSlug[pageId];
+          if (targetSlug) {
+            if (t.text?.link) t.text.link.url = `/posts/${targetSlug}`;
+            else t.href = `/posts/${targetSlug}`;
           }
         }
       }
