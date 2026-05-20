@@ -7,10 +7,13 @@ import "prismjs/themes/prism-tomorrow.css";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotionBlock = any;
 
-function resolveImageUrl(url: string): string {
+function resolveImageUrl(url: string, blockId?: string): string {
   if (!url) return "";
   if (url.includes("amazonaws.com") || url.includes("notion-static") || url.includes("secure.notion")) {
-    return `/api/notion-image?url=${encodeURIComponent(url)}`;
+    const params = new URLSearchParams();
+    params.set("url", url);
+    if (blockId) params.set("block_id", blockId);
+    return `/api/notion-image?${params.toString()}`;
   }
   return url;
 }
@@ -131,7 +134,7 @@ function BlockRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
       const file = value.file || value.external || {};
       const src = file.url || "";
       if (!src) return null;
-      const resolved = resolveImageUrl(src);
+      const resolved = resolveImageUrl(src, block.id);
       return (
         <figure className="my-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
