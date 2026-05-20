@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import "katex/dist/katex.min.css";
+import "prismjs/themes/prism-tomorrow.css";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotionBlock = any;
@@ -202,28 +203,66 @@ function BlockRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
   }
 }
 
+const languageMap: Record<string, string> = {
+  "plain text": "plain",
+  javascript: "javascript",
+  typescript: "typescript",
+  python: "python",
+  rust: "rust",
+  bash: "bash",
+  shell: "bash",
+  css: "css",
+  html: "markup",
+  json: "json",
+  jsx: "jsx",
+  tsx: "tsx",
+  sql: "sql",
+  yaml: "yaml",
+  markdown: "markdown",
+  go: "go",
+  java: "java",
+  c: "c",
+  "c++": "cpp",
+  cpp: "cpp",
+};
+
 function CodeBlock({ code, language }: { code: string; language: string }) {
   const ref = useRef<HTMLDivElement>(null);
+  const prismLang = languageMap[language] || language || "plain";
 
   useEffect(() => {
-    if (language === "mermaid" && ref.current) {
+    if (!ref.current) return;
+    if (language === "mermaid") {
       import("mermaid").then(({ default: mermaid }) => {
         mermaid.initialize({ startOnLoad: false, theme: "default" });
         const id = `mermaid-${Math.random().toString(36).slice(2)}`;
         ref.current!.innerHTML = `<div class="mermaid" id="${id}">${code}</div>`;
         mermaid.run({ nodes: [document.getElementById(id)!] as unknown as HTMLElement[] });
       });
+      return;
     }
-  }, [code, language]);
+    // Syntax highlight with Prism
+    import("prismjs").then(async ({ default: Prism }) => {
+      try {
+        await import(`prismjs/components/prism-${prismLang}.js`);
+      } catch {}
+      const html = Prism.highlight(code, Prism.languages[prismLang] || Prism.languages.plain, prismLang);
+      ref.current!.innerHTML = `<pre class="language-${prismLang}"><code class="language-${prismLang}">${html}</code></pre>`;
+    });
+  }, [code, language, prismLang]);
 
   if (language === "mermaid") {
     return <div ref={ref} className="my-6 overflow-x-auto rounded-xl p-4 bg-white border" />;
   }
 
   return (
-    <pre className="overflow-x-auto rounded-xl p-5 text-sm leading-relaxed bg-stone-900 text-stone-100 my-6">
-      <code className={`language-${language}`}>{code}</code>
-    </pre>
+    <div
+      ref={ref}
+      className="my-6 overflow-x-auto rounded-xl text-sm leading-relaxed"
+    >
+      {/* Fallback while Prism loads */}
+      <pre className="p-5 bg-stone-900 text-stone-100"><code>{code}</code></pre>
+    </div>
   );
 }
 
