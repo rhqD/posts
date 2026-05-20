@@ -15,19 +15,16 @@ async function getFreshImageUrl(blockId: string): Promise<string | null> {
 export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
   const blockId = req.nextUrl.searchParams.get("block_id");
-
-  let imageUrl: string | null = null;
-
-  // If we have a block_id, get a fresh URL from Notion
-  if (blockId) {
-    imageUrl = await getFreshImageUrl(blockId);
-  }
-  // Fall back to the raw URL
-  if (!imageUrl) imageUrl = url;
-  if (!imageUrl) return NextResponse.json({ error: "Missing url or block_id" }, { status: 400 });
+  if (!url) return NextResponse.json({ error: "Missing url" }, { status: 400 });
 
   try {
-    const res = await fetch(imageUrl);
+    // Try the original S3 URL first (fast path)
+    let res = await fetch(url);
+    // If expired, get a fresh URL from Notion and retry
+    if ((res.status === 403 || res.status === 400) && blockId) {
+      const freshUrl = await getFreshImageUrl(blockId);
+      if (freshUrl) res = await fetch(freshUrl);
+    }
     if (!res.ok) throw new Error(`Upstream ${res.status}`);
 
     const headers = new Headers();
