@@ -41,7 +41,7 @@ export default function PostCard({ post, featured = false }: { post: Post; featu
         {post.tags && post.tags.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {post.tags.map((tag) => (
-              <Link key={tag.id} href={`/tags/${tag.slug}`} className="text-xs px-2.5 py-1 rounded-full font-medium transition-colors hover:opacity-70" style={{ background: "#EDE9E4", color: "var(--color-muted)" }}>
+              <Link key={tag.id} href={`/tags/${tag.slug}`} className="text-xs px-2.5 py-1 rounded-full font-medium transition-colors hover:opacity-70" style={{ background: "var(--color-surface)", color: "var(--color-muted)" }}>
                 {tag.name}
               </Link>
             ))}

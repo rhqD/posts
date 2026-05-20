@@ -28,13 +28,13 @@ export default function HomeSectionRenderer({ data }: { data: HomepageData | nul
   }, [data]);
 
   return (
-    <div className="dark">
+    <>
       <HeroSection profile={liveData.profile} />
       <AboutSection profile={liveData.profile} />
       <SkillsSection skills={liveData.skills} />
       <TimelineSection experiences={liveData.experiences} />
       <PostsSection posts={liveData.featuredPosts} />
       <ContactSection profile={liveData.profile} />
-    </div>
+    </>
   );
 }

@@ -11,7 +11,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const commitSha = process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'dev';
 
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth dark">
       <head>
         <meta name="git-commit" content={commitSha} />
       </head>
