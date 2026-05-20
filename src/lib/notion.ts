@@ -24,12 +24,12 @@ async function notionApi(path: string, body?: Record<string, unknown>) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapToPost(page: any): Post {
   const props = page.properties;
-  const title = props.title?.title?.[0]?.plain_text || "Untitled";
+  const title = props.title?.title?.map?.((t: { plain_text: string }) => t.plain_text).join("") || "Untitled";
   const slug =
     props.slug?.rich_text?.[0]?.plain_text ||
     (() => {
       const auto = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-      return auto || page.id.replace(/-/g, "").slice(0, 8);
+      return auto || page.id.replace(/-/g, "");
     })();
   const excerpt = props.summary?.rich_text?.[0]?.plain_text || "";
   const publishedDate = props.date?.date?.start || page.created_time;
