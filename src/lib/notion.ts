@@ -1,17 +1,10 @@
-import { Client } from "@notionhq/client";
-import { NotionToMarkdown } from "notion-to-md";
 import type { Post, Category, Tag } from "@/lib/supabase/types";
 
 const NOTION_DATABASE_ID = "21fc53874c4e8071b064ff3db3afdf6c";
 const NOTION_API_KEY = process.env.NOTION_API_KEY!;
 
-function getClient() {
-  return new Client({ auth: NOTION_API_KEY });
-}
-
-function getN2M() {
-  return new NotionToMarkdown({ notionClient: getClient() });
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type NotionBlock = any;
 
 // Use REST API directly since SDK v5 dropped databases.query
 async function notionApi(path: string, body?: Record<string, unknown>) {
@@ -73,16 +66,31 @@ export async function getPublishedPosts(): Promise<Post[]> {
   return (data.results || []).map(mapToPost);
 }
 
-export async function getPostContent(pageId: string): Promise<string> {
-  const n2m = getN2M();
-  const mdBlocks = await n2m.pageToMarkdown(pageId);
-  let md = n2m.toMarkdownString(mdBlocks).parent;
-  // Rewrite Notion image URLs through our proxy
-  md = md.replace(
-    /!\[([^\]]*)\]\((https:\/\/[^)]+)\)/g,
-    (_m, alt, url) => `![${alt}](/api/notion-image?url=${encodeURIComponent(url)})`
-  );
-  return md;
+export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
+  const allBlocks: NotionBlock[] = [];
+
+  async function fetchChildren(blockId: string): Promise<NotionBlock[]> {
+    const blocks: NotionBlock[] = [];
+    let cursor: string | undefined;
+    do {
+      const params = new URLSearchParams({ page_size: "100" });
+      if (cursor) params.set("start_cursor", cursor);
+      const data = await notionApi(`blocks/${blockId}/children?${params.toString()}`);
+      blocks.push(...(data.results || []));
+      cursor = data.has_more ? data.next_cursor : undefined;
+    } while (cursor);
+
+    // Recursively fetch children for blocks that have them
+    for (const block of blocks) {
+      block.children = [];
+      if (block.has_children) {
+        block.children = await fetchChildren(block.id);
+      }
+    }
+    return blocks;
+  }
+
+  return fetchChildren(pageId);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {

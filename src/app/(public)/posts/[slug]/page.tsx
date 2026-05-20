@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
-import { getPostBySlug, getPostContent, getPublishedPosts } from "@/lib/notion";
-import PostContent from "@/components/post/PostContent";
+import { getPostBySlug, getPostBlocks, getPublishedPosts } from "@/lib/notion";
+import NotionRenderer from "@/components/post/NotionRenderer";
 import { formatDate, readingTime } from "@/lib/utils";
-import { marked } from "marked";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,11 +31,13 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   if (!post) notFound();
 
-  // Fetch full content as markdown, convert to HTML
-  const mdContent = await getPostContent(post.id);
-  const htmlContent = await marked.parse(mdContent);
-  const postWithContent = { ...post, content: htmlContent };
-  const mins = mdContent ? readingTime(mdContent) : null;
+  // Fetch full content blocks
+  const blocks = await getPostBlocks(post.id);
+  const plainText = blocks.map(b => {
+    const rt = b[b.type]?.rich_text;
+    return rt?.map((t: { plain_text?: string }) => t.plain_text || '').join(' ') || '';
+  }).join(' ');
+  const mins = plainText ? readingTime(plainText) : null;
 
   return (
     <PageWrapper>
@@ -85,7 +86,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       <div className="mb-12" style={{ borderTop: "1px solid var(--color-border)" }} />
 
-      <PostContent post={postWithContent} />
+      <NotionRenderer blocks={blocks} />
 
       <div className="mt-20 pt-10" style={{ borderTop: "1px solid var(--color-border)" }}>
         <Link href="/posts" className="inline-flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-60" style={{ color: "var(--color-muted)" }}>
