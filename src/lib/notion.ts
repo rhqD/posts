@@ -27,7 +27,10 @@ function mapToPost(page: any): Post {
   const title = props.title?.title?.[0]?.plain_text || "Untitled";
   const slug =
     props.slug?.rich_text?.[0]?.plain_text ||
-    title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    (() => {
+      const auto = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      return auto || page.id.replace(/-/g, "").slice(0, 8);
+    })();
   const excerpt = props.summary?.rich_text?.[0]?.plain_text || "";
   const publishedDate = props.date?.date?.start || page.created_time;
   const status = props.status?.select?.name === "Published" ? "published" : "draft";
