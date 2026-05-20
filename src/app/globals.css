@@ -14,6 +14,15 @@
   --color-accent: #C2410C;
 }
 
+.dark {
+  --color-bg: #0a0a0f;
+  --color-surface: #111318;
+  --color-border: rgba(255,255,255,0.08);
+  --color-text: #ffffff;
+  --color-muted: rgba(255,255,255,0.45);
+  --color-accent: #4ade80;
+}
+
 @layer base {
   html {
     background-color: var(--color-bg);
