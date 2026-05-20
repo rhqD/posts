@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import "katex/dist/katex.min.css";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotionBlock = any;
@@ -13,11 +14,42 @@ function resolveImageUrl(url: string): string {
   return url;
 }
 
+// Inline KaTeX renderer
+function InlineKatex({ formula }: { formula: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    import("katex").then(({ default: katex }) => {
+      try {
+        katex.render(formula, ref.current!, { displayMode: false, throwOnError: false });
+      } catch {}
+    });
+  }, [formula]);
+  return <span ref={ref} className="select-text" />;
+}
+
+function BlockKatex({ formula }: { formula: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!ref.current) return;
+    import("katex").then(({ default: katex }) => {
+      try {
+        katex.render(formula, ref.current!, { displayMode: true, throwOnError: false });
+      } catch {}
+    });
+  }, [formula]);
+  return <div ref={ref} className="my-6 overflow-x-auto" />;
+}
+
 function RichText({ text }: { text: NotionBlock[] }) {
   if (!text?.length) return null;
   return (
     <>
       {text.map((t, i) => {
+        // Inline equation
+        if (t.type === "equation") {
+          return <InlineKatex key={i} formula={t.equation?.expression || ""} />;
+        }
         const annotations = t.annotations || {};
         let cls = "";
         if (annotations.bold) cls += " font-bold";
@@ -66,6 +98,9 @@ function BlockRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
           {children && <ol className="ml-4">{children.map((c, i) => <BlockRenderer key={i} block={c} pageId={pageId} />)}</ol>}
         </li>
       );
+
+    case "equation":
+      return <BlockKatex formula={value.expression || ""} />;
 
     case "code":
       return (
@@ -144,7 +179,7 @@ function BlockRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
       return <TableRenderer block={block} pageId={pageId} />;
 
     case "table_row":
-      return null; // handled by parent
+      return null;
 
     case "column_list":
       return (
@@ -157,7 +192,6 @@ function BlockRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
       return <div>{children && children.map((c, i) => <BlockRenderer key={i} block={c} pageId={pageId} />)}</div>;
 
     default:
-      // Fallback: render rich text if available
       if (value.rich_text?.length > 0) {
         return <p className="my-2"><RichText text={value.rich_text} /></p>;
       }
