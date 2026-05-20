@@ -248,7 +248,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
           transition={{ delay: 0.6, duration: 0.6 }}
         >
           <span className="text-[11px] tracking-wide font-medium" style={{ color: "rgba(0,0,0,0.55)" }}>
-            Xi&apos;an, Shaanxi → Beijing
+            Xi&apos;an → Beijing → Hangzhou
           </span>
         </motion.div>
 
