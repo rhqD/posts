@@ -70,7 +70,39 @@ export async function getPublishedPosts(): Promise<Post[]> {
 }
 
 export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
-  const allBlocks: NotionBlock[] = [];
+  // Build slug lookup from page ID -> slug for internal link rewriting
+  const posts = await getPublishedPosts();
+  const idToSlug: Record<string, string> = {};
+  for (const p of posts) {
+    idToSlug[p.id.replace(/-/g, "")] = p.slug;
+  }
+
+  // Rewrite notion.so links to /posts/ links
+  function rewriteLinks(block: NotionBlock) {
+    const richTexts = block[block.type]?.rich_text;
+    if (richTexts) {
+      for (const t of richTexts) {
+        const url = t.text?.link?.url || t.href;
+        if (url && url.includes("notion.so")) {
+          // Extract page ID from Notion URL: .../xxx-{32charhex}
+          const match = url.match(/([0-9a-f]{32})/i);
+          if (match) {
+            const targetSlug = idToSlug[match[1]];
+            if (targetSlug) {
+              if (t.text?.link) t.text.link.url = `/posts/${targetSlug}`;
+              else t.href = `/posts/${targetSlug}`;
+            }
+          }
+        }
+      }
+    }
+    // Recurse into children
+    if (block.children) {
+      for (const child of block.children) {
+        rewriteLinks(child);
+      }
+    }
+  }
 
   async function fetchChildren(blockId: string): Promise<NotionBlock[]> {
     const blocks: NotionBlock[] = [];
@@ -83,12 +115,12 @@ export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
       cursor = data.has_more ? data.next_cursor : undefined;
     } while (cursor);
 
-    // Recursively fetch children for blocks that have them
     for (const block of blocks) {
       block.children = [];
       if (block.has_children) {
         block.children = await fetchChildren(block.id);
       }
+      rewriteLinks(block);
     }
     return blocks;
   }
