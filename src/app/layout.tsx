@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="git-commit" content={commitSha} />
       </head>
-      <body className="bg-[#0a0a0f]">
+      <body className="bg-[#faf8f5]">
         <Providers>{children}</Providers>
       </body>
     </html>
