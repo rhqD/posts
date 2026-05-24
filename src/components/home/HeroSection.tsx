@@ -13,25 +13,37 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
       className="min-h-screen flex items-end pb-20 relative overflow-hidden"
       style={{ background: "#faf8f5" }}
     >
-      {/* Decorative geometric shapes */}
-      <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none opacity-[0.03]"
-        style={{
-          background: "repeating-linear-gradient(45deg, #000, #000 1px, transparent 1px, transparent 20px)",
-        }}
-      />
-      <div className="absolute top-1/4 left-[5%] w-3 h-3 rounded-full bg-stone-300/50" />
-      <div className="absolute top-1/3 right-[10%] w-2 h-2 rounded-full bg-stone-400/30" />
+      {/* Background garden image — right side editorial */}
+      <div className="absolute top-0 right-0 w-full lg:w-[45%] h-full hidden lg:block">
+        <div className="relative w-full h-full">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/garden-day-v5.jpg"
+            alt=""
+            className="w-full h-full object-cover opacity-90"
+          />
+        </div>
+      </div>
+      {/* Mobile: subtle image strip at top */}
+      <div className="absolute top-0 left-0 w-full h-48 lg:hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/garden-day-v5.jpg"
+          alt=""
+          className="w-full h-full object-cover opacity-40"
+        />
+      </div>
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full">
+      <div className="max-w-7xl mx-auto px-6 sm:px-12 lg:px-20 w-full relative">
         <motion.div
           className="grid lg:grid-cols-12 gap-8 lg:gap-16 items-end"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          {/* Large name — spans most of grid */}
+          {/* Large name — left side, overlapping image zone */}
           <motion.div
-            className="lg:col-span-8 xl:col-span-9"
+            className="lg:col-span-7 xl:col-span-8"
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.8 }}
@@ -54,7 +66,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
 
           {/* Side meta — editorial pullout */}
           <motion.div
-            className="lg:col-span-4 xl:col-span-3 border-t border-stone-200 pt-4"
+            className="lg:col-span-5 xl:col-span-4 border-t border-stone-200 pt-4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
