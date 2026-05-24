@@ -169,12 +169,12 @@ function ScrollRibbon() {
         </span>
         <motion.div
           className="w-6 h-10 rounded-full border flex items-start justify-center p-1.5"
-          style={{ borderColor: "rgba(0,0,0,0.15)" }}
-          animate={{ boxShadow: ["0 0 0px rgba(34,139,34,0)", "0 0 12px rgba(34,139,34,0.15)", "0 0 0px rgba(34,139,34,0)"] }}
+          style={{ borderColor: "rgba(255,255,255,0.25)" }}
+          animate={{ boxShadow: ["0 0 0px rgba(255,255,255,0)", "0 0 12px rgba(255,255,255,0.2)", "0 0 0px rgba(255,255,255,0)"] }}
           transition={{ duration: 3, repeat: Infinity }}
         >
           <motion.div
-            className="w-1 h-2.5 rounded-full bg-green-700/50"
+            className="w-1 h-2.5 rounded-full bg-white/60"
             animate={{ y: [0, 14, 0], opacity: [0.3, 0.8, 0.3] }}
             transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
           />
@@ -242,12 +242,12 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
         {/* Location pill */}
         <motion.div
           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full mb-6 border backdrop-blur-sm"
-          style={{ borderColor: "rgba(0,0,0,0.1)", background: "rgba(255,255,255,0.4)" }}
+          style={{ borderColor: "rgba(255,255,255,0.15)", background: "rgba(0,0,0,0.2)", backdropFilter: "blur(8px)" }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          <span className="text-[11px] tracking-wide font-medium" style={{ color: "rgba(0,0,0,0.55)" }}>
+          <span className="text-[11px] tracking-wide font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
             Xi&apos;an → Beijing → Hangzhou
           </span>
         </motion.div>
@@ -261,8 +261,8 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
           transition={{ delay: 0.7, duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         >
           <span style={{
-            color: "#1a2e1a",
-            textShadow: "0 0 20px rgba(255,255,255,0.9), 0 0 40px rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.15)",
+            color: "#fff",
+            textShadow: "0 0 30px rgba(0,0,0,0.8), 0 0 60px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.5)",
           }}>
             {name}
           </span>
@@ -271,7 +271,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
         {/* Headline or typewriter */}
         <motion.div
           className="text-base sm:text-xl md:text-2xl font-light h-10 flex items-center justify-center gap-1 mb-10"
-          style={{ color: "rgba(0,0,0,0.6)", textShadow: "0 0 12px rgba(255,255,255,0.8), 0 0 24px rgba(255,255,255,0.5)" }}
+          style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 0 16px rgba(0,0,0,0.7), 0 0 32px rgba(0,0,0,0.5)" }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.1, duration: 0.6 }}
@@ -280,9 +280,9 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
             <span>{headline}</span>
           ) : (
             <>
-              <span className="text-emerald-700/80">{typewriterText}</span>
+              <span className="text-white/90">{typewriterText}</span>
               <motion.span
-                className="inline-block w-[2px] h-6 bg-emerald-700/70 ml-0.5"
+                className="inline-block w-[2px] h-6 bg-white/70 ml-0.5"
                 animate={{ opacity: [1, 0] }}
                 transition={{ duration: 0.8, repeat: Infinity, repeatType: "reverse" }}
               />
@@ -302,18 +302,18 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
               key={tag}
               className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs border backdrop-blur-sm cursor-default"
               style={{
-                borderColor: "rgba(0,0,0,0.12)",
-                color: "rgba(0,0,0,0.5)",
-                background: "rgba(255,255,255,0.4)",
+                borderColor: "rgba(255,255,255,0.2)",
+                color: "rgba(255,255,255,0.8)",
+                background: "rgba(0,0,0,0.25)",
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.6 + i * 0.1, duration: 0.3 }}
               whileHover={{
                 scale: 1.05,
-                borderColor: "rgba(34,139,34,0.5)",
-                color: "#228b22",
-                background: "rgba(255,255,255,0.7)",
+                borderColor: "rgba(168,255,200,0.5)",
+                color: "#a8ffc8",
+                background: "rgba(0,0,0,0.4)",
               }}
             >
               {tag}
