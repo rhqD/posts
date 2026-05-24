@@ -9,7 +9,7 @@ import type { Post } from "@/lib/supabase/types";
 
 export default function PostsSection({ posts }: { posts: Post[] }) {
   return (
-    <section id="posts" className="px-6 py-12 sm:py-16 relative overflow-hidden"
+    <section id="posts" className="px-6 py-12 sm:py-16 relative overflow-hidden dark"
       style={{ background: "linear-gradient(180deg, #0d1117 0%, #0c0f14 50%, #0d1117 100%)" }}>
       <div className="max-w-3xl mx-auto relative z-10">
         <motion.div
