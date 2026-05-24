@@ -42,7 +42,8 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
               style={{
                 color: "#fff",
                 fontFamily: "var(--font-serif)",
-                textShadow: "0 2px 20px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.5)",
+                mixBlendMode: "difference",
+                filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.5))",
               }}
             >
               {name.split(" ").map((part, i) => (
@@ -60,7 +61,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            <p className="text-sm sm:text-base text-white/70 max-w-md" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+            <p className="text-sm sm:text-base text-white/90 max-w-md" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", mixBlendMode: "difference", filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.5))" }}>
               {headline}
             </p>
             <span className="text-stone-300 hidden sm:inline">·</span>
@@ -74,7 +75,7 @@ export default function HeroSection({ profile }: { profile: Profile | null }) {
             transition={{ delay: 1.2, duration: 0.6 }}
           >
             {["Frontend Perf", "Low-Code", "Architecture", "Gardening"].map((tag) => (
-              <span key={tag} className="text-[11px] uppercase tracking-wider px-3 py-1.5 border border-white/20 text-white/60 rounded">
+              <span key={tag} className="text-[11px] uppercase tracking-wider px-3 py-1.5 border border-white/30 text-white/80 rounded backdrop-blur-sm" style={{ background: "rgba(0,0,0,0.15)" }}>
                 {tag}
               </span>
             ))}
