@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import ThemeToggle from "./ThemeToggle";
 import BGMPlayer from "./BGMPlayer";
 
@@ -11,13 +10,12 @@ const navLinks = [
   { href: "/#skills", label: "Skills" },
   { href: "/#timeline", label: "Experience" },
   { href: "/posts", label: "Blog" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/garden", label: "Gardening" },
 ];
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
-  const { data: session } = useSession();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -41,7 +39,6 @@ export default function Header() {
     ? isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)"
     : "1px solid transparent";
   const textMuted = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
-  const textDim = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.4)";
 
   return (
     <header
@@ -71,24 +68,6 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          {session?.user && (
-            <>
-              <Link
-                href="/admin"
-                className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 ml-1 whitespace-nowrap"
-                style={{ color: textDim, fontSize: "0.8rem" }}
-              >
-                Admin
-              </Link>
-              <Link
-                href="/api/auth/signout"
-                className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
-                style={{ color: textDim, fontSize: "0.8rem" }}
-              >
-                Sign out
-              </Link>
-            </>
-          )}
           <BGMPlayer />
           <ThemeToggle />
         </nav>
