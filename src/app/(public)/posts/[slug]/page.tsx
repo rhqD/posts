@@ -80,7 +80,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       {post.cover_url && (
         <div className="mb-12 -mx-6 sm:mx-0 sm:rounded-2xl overflow-hidden">
-          <Image src={post.cover_url} alt={post.title} width={900} height={500} className="w-full object-cover" />
+          <Image src={post.cover_url} alt={post.title} width={900} height={500} className="w-full object-cover" unoptimized />
         </div>
       )}
 
