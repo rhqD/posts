@@ -272,7 +272,10 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
 function TableRenderer({ block, pageId }: { block: NotionBlock; pageId: string }) {
   const children = block.children as NotionBlock[] | undefined;
   const rows = children?.filter((c) => c.type === "table_row") || [];
-  if (rows.length === 0) return null;
+  if (rows.length === 0) {
+    console.warn(`[NotionRenderer] table block ${block.id} has no table_row children`);
+    return null;
+  }
 
   return (
     <div className="overflow-x-auto my-6">
@@ -280,9 +283,9 @@ function TableRenderer({ block, pageId }: { block: NotionBlock; pageId: string }
         <tbody>
           {rows.map((row, ri) => (
             <tr key={ri} className={ri === 0 ? "bg-stone-50 dark:bg-stone-800" : ""}>
-              {row.table_row?.cells?.map((cell: NotionBlock[][], ci: number) => (
+              {row.table_row?.cells?.map((cell: NotionBlock[], ci: number) => (
                 <td key={ci} className="border border-stone-200 dark:border-stone-700 px-4 py-2">
-                  {cell.map((t, ti) => <RichText key={ti} text={t} />)}
+                  <RichText text={cell} />
                 </td>
               ))}
             </tr>
