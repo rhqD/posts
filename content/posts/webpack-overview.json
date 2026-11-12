@@ -1,0 +1,1999 @@
+{
+  "post": {
+    "id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+    "title": "webpack系列 — 总览",
+    "slug": "webpack-overview",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://rhq-blog-resources.oss-cn-beijing.aliyuncs.com/20250712172241.png",
+    "category_id": "webpack",
+    "status": "published",
+    "published_at": "2025-07-12",
+    "created_at": "2025-07-12T09:20:00.000Z",
+    "updated_at": "2025-07-12T12:02:00.000Z",
+    "category": {
+      "id": "webpack",
+      "name": "webpack",
+      "slug": "webpack",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "webpack",
+        "name": "webpack",
+        "slug": "webpack",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:25:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "解决什么问题",
+            "text": {
+              "content": "解决什么问题",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80a4-8058-cbc98135c1e5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:25:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8022-96d0-d24d7e88a83a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:39:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "在传统的前端开发模式中，稍微大一些的项目一定会遇到的一些问题",
+            "text": {
+              "content": "在传统的前端开发模式中，稍微大一些的项目一定会遇到的一些问题",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:39:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(一) 依赖管理",
+            "text": {
+              "content": "(一) 依赖管理",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-800d-807a-f5acde9ff797",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:39:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:44:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80fb-ab62-c812895ba27b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "大项目模块依赖关系会很复杂，需要小心的管理模块插入顺序，避免重复加载模块，模块依赖发生变化时也需要手动维护。容易出错且效率很低",
+            "text": {
+              "content": "大项目模块依赖关系会很复杂，需要小心的管理模块插入顺序，避免重复加载模块，模块依赖发生变化时也需要手动维护。容易出错且效率很低",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "html",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "<!-- 必须确保被依赖的文件先加载 -->\n<script src=\"utils.js\"></script>\n<script src=\"button.js\"></script>\n<script src=\"header.js\"></script>\n<script src=\"sidebar.js\"></script>\n<script src=\"app.js\"></script>",
+            "text": {
+              "content": "<!-- 必须确保被依赖的文件先加载 -->\n<script src=\"utils.js\"></script>\n<script src=\"button.js\"></script>\n<script src=\"header.js\"></script>\n<script src=\"sidebar.js\"></script>\n<script src=\"app.js\"></script>",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:39:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80b7-81c5-f342132c857d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:39:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:45:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8098-9ca0-ceee286f6e33",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:40:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(二) 代码拆分",
+            "text": {
+              "content": "(二) 代码拆分",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80c1-ba4c-d7d55f112a05",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:46:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-800a-b2f6-d9b817834925",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:51:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "真实项目中为了提高性能往往会对代码进行拆分，比如用户当前在首页，那么某个子页面的代码可以等用户真的访问时才加载，以提高首屏的性能。这就要求将子页面的代码以及子页面依赖的其他代码拆分出来，只在有需要时才加载。真实项目中子页面依赖的模块又有可能被首页或其他子页面依赖，如何拆分代码保证页面能正常工作的同时还尽可能少的重复加载模块就会很复杂，手动维护费时费力。",
+            "text": {
+              "content": "真实项目中为了提高性能往往会对代码进行拆分，比如用户当前在首页，那么某个子页面的代码可以等用户真的访问时才加载，以提高首屏的性能。这就要求将子页面的代码以及子页面依赖的其他代码拆分出来，只在有需要时才加载。真实项目中子页面依赖的模块又有可能被首页或其他子页面依赖，如何拆分代码保证页面能正常工作的同时还尽可能少的重复加载模块就会很复杂，手动维护费时费力。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:51:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8045-8bc2-e145f2a55e07",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:51:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:51:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8040-8f95-e82ca9ada8a8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:10:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以就有人想到了可以",
+            "text": {
+              "content": "所以就有人想到了可以",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "给模块间的依赖关系进行建模",
+            "text": {
+              "content": "给模块间的依赖关系进行建模",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，然后用算法自动进行模块的管理和代码拆分。这种给代码建模并进行管理的工具就是构建工具。",
+            "text": {
+              "content": "，然后用算法自动进行模块的管理和代码拆分。这种给代码建模并进行管理的工具就是构建工具。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:56:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8083-b82f-d1a2d0d33141",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T09:56:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:56:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "建模",
+            "text": {
+              "content": "建模",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-802a-86da-fe9f6f9b8f3b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T09:56:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8080-9753-e044a54ec857",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:04:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "很自然能想到模块和模块的依赖关系可以用一个有向无环图来进行建模(DAG)。",
+            "text": {
+              "content": "很自然能想到模块和模块的依赖关系可以用一个有向无环图来进行建模(DAG)。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:09:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8065-8dbe-d5c3de99e972",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/122bdd25ead78d10.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:15:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:04:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80e7-9be0-db6718e8917a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:08:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "建模之后就有很大的发挥空间了。通过对DAG的分析，我们可以自动计算出模块加载的正确顺序，也可以在指定要做代码拆分的部分后自动计算如何进行拆分。webpack本质上就是在生成然后操作这么一个DAG的依赖图。他在生成和操作的过程中也允许外部通过注册插件进行功能的扩充。",
+            "text": {
+              "content": "建模之后就有很大的发挥空间了。通过对DAG的分析，我们可以自动计算出模块加载的正确顺序，也可以在指定要做代码拆分的部分后自动计算如何进行拆分。webpack本质上就是在生成然后操作这么一个DAG的依赖图。他在生成和操作的过程中也允许外部通过注册插件进行功能的扩充。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:27:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-802d-a6db-f93410d3f539",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:27:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:27:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "加载器 loader",
+            "text": {
+              "content": "加载器 loader",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-8047-81ca-f1a5aa273f3d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:27:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:11:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8010-bf39-ebb6e55c7d76",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:28:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "js文件可以被纳入到建模的范围里，那么其他类型的文件呢？比如css，比如图片等。这些文件本质上也是DAG中的一部分，确实有人依赖他们，但是你没办法把他们像js代码一样进行拼接。但是如果不把他们纳入建模的范围，那么就又得手动处理他们。所以构建工具就引入了(加载器)loader这个概念。本质上就是在把文件纳入建模系统前先做一次预处理。比如对于某个css文件",
+            "text": {
+              "content": "js文件可以被纳入到建模的范围里，那么其他类型的文件呢？比如css，比如图片等。这些文件本质上也是DAG中的一部分，确实有人依赖他们，但是你没办法把他们像js代码一样进行拼接。但是如果不把他们纳入建模的范围，那么就又得手动处理他们。所以构建工具就引入了(加载器)loader这个概念。本质上就是在把文件纳入建模系统前先做一次预处理。比如对于某个css文件",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "css",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "body {\n  background: red;\n}",
+            "text": {
+              "content": "body {\n  background: red;\n}",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-800b-ae3d-c66bf08f6470",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:18:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:08:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8048-ace7-d7c28adf93e7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:18:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "可以预处理成",
+            "text": {
+              "content": "可以预处理成",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "javascript",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "const css = \"body { background: red; }\";\nconst style = document.createElement('style');\nstyle.textContent = css;\ndocument.head.appendChild(style);",
+            "text": {
+              "content": "const css = \"body { background: red; }\";\nconst style = document.createElement('style');\nstyle.textContent = css;\ndocument.head.appendChild(style);",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80a0-808e-ee74630226dc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:28:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:06:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-803a-a93f-ed76cda86ba5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这样css就也变成了js代码，可以正常进行建模。",
+            "text": {
+              "content": "这样css就也变成了js代码，可以正常进行建模。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:19:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80d7-a20b-f376321313a4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:28:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "但是loader这个概念其实想象空间很大，你可以用它干的事非常多。比如你可以用loader将typeScript的代码预处理成JavaScript的代码，可以将svg图片预处理成react的组件等。",
+            "text": {
+              "content": "但是loader这个概念其实想象空间很大，你可以用它干的事非常多。比如你可以用loader将typeScript的代码预处理成JavaScript的代码，可以将svg图片预处理成react的组件等。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:29:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-807c-93cb-ef86d8234719",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "更详细的loader说明可以看：",
+            "text": {
+              "content": "更详细的loader说明可以看：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:49:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8098-b26e-dfe9924fe8f3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:49:00.000Z",
+      "link_to_page": {
+        "page_id": "22ec5387-4c4e-80e7-9351-eb68a29fc02b",
+        "type": "page_id"
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "link_to_page"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:25:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "依赖分析",
+            "text": {
+              "content": "依赖分析",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80f0-995d-d302adfbdc51",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:29:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:29:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80b8-848f-d0619625828e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:34:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "依赖分析本质上就是通过分析js代码来获取模块和模块的依赖关系。webpack使用acorn拿到代码的抽象语法树。然后查找其中的import或require语句，就可以分析出当前模块依赖了哪些模块。",
+            "text": {
+              "content": "依赖分析本质上就是通过分析js代码来获取模块和模块的依赖关系。webpack使用acorn拿到代码的抽象语法树。然后查找其中的import或require语句，就可以分析出当前模块依赖了哪些模块。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:35:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80d9-9ab8-c742a9e04b0e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:35:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:35:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "代码拆分",
+            "text": {
+              "content": "代码拆分",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80be-bb41-c7d4f2922419",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:36:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:36:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80f2-be94-ea3dfd535a5e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "既然我们已经建模了，那么做代码拆分时，具体代码怎么拆，公共的依赖怎么处理，我们不用太费心。我们只需要告诉构建工具我们要从DAG中的哪个节点开始拆。webpack约定的“沟通方式”就是 import 函数。",
+            "text": {
+              "content": "既然我们已经建模了，那么做代码拆分时，具体代码怎么拆，公共的依赖怎么处理，我们不用太费心。我们只需要告诉构建工具我们要从DAG中的哪个节点开始拆。webpack约定的“沟通方式”就是 import 函数。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "javascript",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "// App.jsx\nimport home from './home';\n\nhome({\n\tpageA: () => import('./pageA'); //这里告诉webpack ./pageA 要做代码拆分。\n});",
+            "text": {
+              "content": "// App.jsx\nimport home from './home';\n\nhome({\n\tpageA: () => import('./pageA'); //这里告诉webpack ./pageA 要做代码拆分。\n});",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:39:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-804a-869a-c51294871ad6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:34:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8081-9010-f42c530c9c74",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "如果某个模块是用import函数导入的，那么webpack就知道这个模块是需要做按需加载的。实际运行时当代码执行到import函数时才会真的去加载相关的代码，并返回一个promise。import函数现在已经纳入到ESM，成了标准规范的一部分。",
+            "text": {
+              "content": "如果某个模块是用import函数导入的，那么webpack就知道这个模块是需要做按需加载的。实际运行时当代码执行到import函数时才会真的去加载相关的代码，并返回一个promise。import函数现在已经纳入到ESM，成了标准规范的一部分。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:49:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80e7-abbc-e5a66429b39e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T10:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T10:49:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "插件系统",
+            "text": {
+              "content": "插件系统",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-8000-b169-ff693a743443",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:02:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:02:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8068-b0bb-f63faa74eda9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:13:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为了提高可玩性，webpack提供了强大的插件机制。webpack定义出了构建的各个阶段，我们的插件可以通过订阅不同的阶段来介入构建流程。webpack暴露的生命周期主要通过两个对象来组织，compiler和compilation。",
+            "text": {
+              "content": "为了提高可玩性，webpack提供了强大的插件机制。webpack定义出了构建的各个阶段，我们的插件可以通过订阅不同的阶段来介入构建流程。webpack暴露的生命周期主要通过两个对象来组织，compiler和compilation。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:13:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler",
+            "text": {
+              "content": "Compiler",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-8058-a7f3-fc1f3e24e9a4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:16:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:13:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80b6-be15-f26a29d892dc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:14:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "代表完整的webpack环境，暴露的生命周期都是",
+            "text": {
+              "content": "代表完整的webpack环境，暴露的生命周期都是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "全局构建过程",
+            "text": {
+              "content": "全局构建过程",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:16:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compilation",
+            "text": {
+              "content": "Compilation",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80b6-9040-f63974a9cb13",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:16:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:16:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80f4-92ce-c1fdc1fea501",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "代表单次构建的上下文，",
+            "text": {
+              "content": "代表单次构建的上下文，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "管理模块和资源的生成",
+            "text": {
+              "content": "管理模块和资源的生成",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:46:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80b7-92ca-ccdc5de048cc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:46:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80e4-88ba-e6ebabecf171",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "插件可以极大的增强webpack的功能。在大型复杂应用中掌握插件的开发也是必备技能。",
+            "text": {
+              "content": "插件可以极大的增强webpack的功能。在大型复杂应用中掌握插件的开发也是必备技能。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:45:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-800e-865e-cc55fddba117",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "具体的插件系统分析和例子可以看:",
+            "text": {
+              "content": "具体的插件系统分析和例子可以看:",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:49:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80ff-b06a-fac8c92d3422",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:49:00.000Z",
+      "link_to_page": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "link_to_page"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:57:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80c7-8e3f-f4cdecd50f91",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:57:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:56:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80a4-942a-dffb71861efe",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:59:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "以上非常笼统的介绍了webpack的整体原理，没有设计太多的技术细节。旨在说明webpack解决的问题和宏观的设计。后面会详细分析webpack的各个环节和技术细节。",
+            "text": {
+              "content": "以上非常笼统的介绍了webpack的整体原理，没有设计太多的技术细节。旨在说明webpack解决的问题和宏观的设计。后面会详细分析webpack的各个环节和技术细节。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:51:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8020-85b7-c96155903dc8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:51:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

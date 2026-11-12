@@ -1,0 +1,1009 @@
+{
+  "post": {
+    "id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+    "title": "机器学习 - 符号化求导",
+    "slug": "symbolic-differentiation",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-12-21",
+    "created_at": "2025-12-21T12:07:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:10:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-806e-9f50-dd5d182b1ef2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:39:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所谓符号化求导其实就是对数学表达式“建模”，然后利用导数的“链式法则”实现求导。我19年的时候就自己实现过一套符号化求导的",
+            "text": {
+              "content": "所谓符号化求导其实就是对数学表达式“建模”，然后利用导数的“链式法则”实现求导。我19年的时候就自己实现过一套符号化求导的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "https://github.com/rhqD/rhqD-MathLab",
+            "plain_text": "js库",
+            "text": {
+              "content": "js库",
+              "link": {
+                "url": "https://github.com/rhqD/rhqD-MathLab"
+              }
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。",
+            "text": {
+              "content": "。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:40:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-802d-8b58-df4f945ffaaa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:43:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "举个简单例子对于 ",
+            "text": {
+              "content": "举个简单例子对于 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x*y+z*(x+y)"
+            },
+            "href": null,
+            "plain_text": "x*y+z*(x+y)",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 这个表达式可以表达如下",
+            "text": {
+              "content": " 这个表达式可以表达如下",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "javascript",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "const x = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\nconst y = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\nconst z = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\n\nconst f = {\n\top: 'sum',\n\tvariables: [\n\t\t{\n\t\t\top: 'multiple',\n\t\t\tvariables: [x, y]\n\t\t},\n\t\t{\n\t\t\top: 'multiple',\n\t\t\tvariables: [z, {\n\t\t\t\top: 'sum',\n\t\t\t\tvariables: [x, y]\n\t\t\t}]\n\t\t}\n\t]\n};",
+            "text": {
+              "content": "const x = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\nconst y = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\nconst z = {\n\ttype: 'valirable',\n\tname: 'x',\n};\n\n\nconst f = {\n\top: 'sum',\n\tvariables: [\n\t\t{\n\t\t\top: 'multiple',\n\t\t\tvariables: [x, y]\n\t\t},\n\t\t{\n\t\t\top: 'multiple',\n\t\t\tvariables: [z, {\n\t\t\t\top: 'sum',\n\t\t\t\tvariables: [x, y]\n\t\t\t}]\n\t\t}\n\t]\n};",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:43:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-800e-b779-e52e32ca4890",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:46:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8068-9797-fa7f9e0f02ea",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:34:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8015-8fae-cc2a6887ce9d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一个函数对一个表达式求导：",
+            "text": {
+              "content": "一个函数对一个表达式求导：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "javascript",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "const df_dx = f.deriv(x);",
+            "text": {
+              "content": "const df_dx = f.deriv(x);",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:47:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8002-b13b-f17606757292",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:48:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8071-8ec4-f95f36dba46b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:50:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "求导的结果则是另一个表达式树。",
+            "text": {
+              "content": "求导的结果则是另一个表达式树。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-22T13:29:00.000Z",
+      "has_children": false,
+      "id": "2d1c5387-4c4e-809d-8249-c82c1d8bbed4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-22T13:30:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "符号化求导其实就是把已知的原子的数学函数和他的导数都枚举出来",
+            "text": {
+              "content": "符号化求导其实就是把已知的原子的数学函数和他的导数都枚举出来",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-22T13:30:00.000Z",
+      "has_children": false,
+      "id": "2d1c5387-4c4e-80f0-b28a-fc012aab6f13",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-22T13:31:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x^n"
+            },
+            "href": null,
+            "plain_text": "x^n",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " ⇒ ",
+            "text": {
+              "content": " ⇒ ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "n*x^{n-1}"
+            },
+            "href": null,
+            "plain_text": "n*x^{n-1}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-22T13:31:00.000Z",
+      "has_children": false,
+      "id": "2d1c5387-4c4e-8092-8f26-d4604a4b043f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-22T13:31:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "sin(x)"
+            },
+            "href": null,
+            "plain_text": "sin(x)",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " ⇒ ",
+            "text": {
+              "content": " ⇒ ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "cos(x)"
+            },
+            "href": null,
+            "plain_text": "cos(x)",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-22T13:31:00.000Z",
+      "has_children": false,
+      "id": "2d1c5387-4c4e-8096-b826-c8b7bb7d977a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-22T13:32:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "ln(x)"
+            },
+            "href": null,
+            "plain_text": "ln(x)",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " ⇒ ",
+            "text": {
+              "content": " ⇒ ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x^{-1}"
+            },
+            "href": null,
+            "plain_text": "x^{-1}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-22T13:32:00.000Z",
+      "has_children": false,
+      "id": "2d1c5387-4c4e-80c5-a456-e03bd57d698d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-22T13:35:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "我们知道所有“原子函数”的导数后，就可以利用链式求导法则来计算由一堆原子函数组合出来的复杂的表达式的导数。",
+            "text": {
+              "content": "我们知道所有“原子函数”的导数后，就可以利用链式求导法则来计算由一堆原子函数组合出来的复杂的表达式的导数。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:50:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-80c0-8da2-f865c92f57f9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:59:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "符号化求导尽管很直接，很好理解，但是也有一些缺陷，最明显的就是“表达式爆炸”。用他求出来的导数往往是一棵极其复杂的表达式树，这是由于链式求导法则的特性导致的。人力求导时得到的表达式往往很简洁，那是因为人往往会对表达式做化简，所以符号化求导往往也需要应用各种优化算法来简化表达式，比如当一个很复杂的表达式乘以0之后，其实可以化简为0（这种场景在符号化求导中很多）。而且还需要避免对同样的表达式生成多个表达式节点。比如表达式中有一个 ",
+            "text": {
+              "content": "符号化求导尽管很直接，很好理解，但是也有一些缺陷，最明显的就是“表达式爆炸”。用他求出来的导数往往是一棵极其复杂的表达式树，这是由于链式求导法则的特性导致的。人力求导时得到的表达式往往很简洁，那是因为人往往会对表达式做化简，所以符号化求导往往也需要应用各种优化算法来简化表达式，比如当一个很复杂的表达式乘以0之后，其实可以化简为0（这种场景在符号化求导中很多）。而且还需要避免对同样的表达式生成多个表达式节点。比如表达式中有一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2x"
+            },
+            "href": null,
+            "plain_text": "2x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 节点，同时另一个节点 ",
+            "text": {
+              "content": " 节点，同时另一个节点 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x^{2}"
+            },
+            "href": null,
+            "plain_text": "x^{2}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 对 ",
+            "text": {
+              "content": " 对 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 求导并化简后也得到 ",
+            "text": {
+              "content": " 求导并化简后也得到 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2x"
+            },
+            "href": null,
+            "plain_text": "2x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " ，但是这两个 ",
+            "text": {
+              "content": " ，但是这两个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2x"
+            },
+            "href": null,
+            "plain_text": "2x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 实际上并不是同一个节点，所以会计算两次导致非必要的重复计算。",
+            "text": {
+              "content": " 实际上并不是同一个节点，所以会计算两次导致非必要的重复计算。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:59:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8012-9a8d-d7ed0e528b91",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T14:01:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "因此符号化求导一般并不在机器学习中直接使用（还是有些场景会用的，比如生成自动求导的辅助公式）",
+            "text": {
+              "content": "因此符号化求导一般并不在机器学习中直接使用（还是有些场景会用的，比如生成自动求导的辅助公式）",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:53:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8015-8bb3-d11775162685",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

@@ -1,0 +1,1917 @@
+{
+  "post": {
+    "id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+    "title": "机器学习 - 反向传播算法（后向模式自动微分）",
+    "slug": "backpropagation",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:16:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T10:40:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-8013-93ff-e20c831ff9bd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T13:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "前面介绍了",
+            "text": {
+              "content": "前面介绍了",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/posts/symbolic-differentiation",
+            "plain_text": "符号化求导",
+            "text": {
+              "content": "符号化求导",
+              "link": {
+                "url": "/posts/symbolic-differentiation"
+              }
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，符号化求导不适合大规模表达式的求导（表达式爆炸问题，以及其他限制）。深度学习这种大规模“表达式”的求导中使用的其实是",
+            "text": {
+              "content": "，符号化求导不适合大规模表达式的求导（表达式爆炸问题，以及其他限制）。深度学习这种大规模“表达式”的求导中使用的其实是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "反向传播",
+            "text": {
+              "content": "反向传播",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "算法。",
+            "text": {
+              "content": "算法。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T10:55:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "反向传播",
+            "text": {
+              "content": "反向传播",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "算法的原理",
+            "text": {
+              "content": "算法的原理",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2ddc5387-4c4e-80a6-bac2-e52045b506cd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T13:45:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T10:55:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-80c7-a731-fba4c44a1e57",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-03T11:05:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "以函数 ",
+            "text": {
+              "content": "以函数 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f=x*y + z*(x + y)"
+            },
+            "href": null,
+            "plain_text": "f=x*y + z*(x + y)",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 为例，对应的表达式结构是",
+            "text": {
+              "content": " 为例，对应的表达式结构是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T11:05:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-80f1-a1d6-d65d91ae3805",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/50122f537ffc4e83.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-03T11:06:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T10:56:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-80fa-8e10-ced58fc4b61d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:15:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "首先是前向传播，给 ",
+            "text": {
+              "content": "首先是前向传播，给 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x,y,z"
+            },
+            "href": null,
+            "plain_text": "x,y,z",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 分别赋值并计算各个节点的值（以",
+            "text": {
+              "content": " 分别赋值并计算各个节点的值（以",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x,y,z"
+            },
+            "href": null,
+            "plain_text": "x,y,z",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "分别为",
+            "text": {
+              "content": "分别为",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "1,2,3"
+            },
+            "href": null,
+            "plain_text": "1,2,3",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为例）",
+            "text": {
+              "content": "为例）",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-04T03:39:00.000Z",
+      "has_children": false,
+      "id": "2dec5387-4c4e-80f4-8b1a-ca754bce9f15",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/082d87bd09baf898.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-04T03:39:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T11:07:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-80e6-ac78-ea5a4f65da1a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:15:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "前向传播完成后各个节点的值就有了。然后开始后向传播。从终点",
+            "text": {
+              "content": "前向传播完成后各个节点的值就有了。然后开始后向传播。从终点",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "开始计算每个节点对",
+            "text": {
+              "content": "开始计算每个节点对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的梯度",
+            "text": {
+              "content": "的梯度",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-04T03:41:00.000Z",
+      "has_children": false,
+      "id": "2dec5387-4c4e-80d6-86fc-fc57e3d9871f",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/d9390b9363e2c1e2.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-04T03:41:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-03T10:43:00.000Z",
+      "has_children": false,
+      "id": "2ddc5387-4c4e-8078-9e2e-d0a9d43e9023",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:16:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对",
+            "text": {
+              "content": "对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "本身的梯度总是1",
+            "text": {
+              "content": "本身的梯度总是1",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-04T03:41:00.000Z",
+      "has_children": false,
+      "id": "2dec5387-4c4e-80b4-9cf8-c919e6882b2a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:16:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "是这两个直接子节点的直接相加，所以对两个子节点的偏导数都是常数1",
+            "text": {
+              "content": "是这两个直接子节点的直接相加，所以对两个子节点的偏导数都是常数1",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-01-05T14:10:00.000Z",
+          "has_children": false,
+          "id": "2dfc5387-4c4e-804e-bcfa-dcb91ff45f68",
+          "image": {
+            "caption": [],
+            "type": "external",
+            "external": {
+              "url": "/images/02f8e49793bf1bb8.webp"
+            }
+          },
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-01-05T14:14:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "2dfc5387-4c4e-80f8-9094-e003e8aa45f7",
+            "type": "block_id"
+          },
+          "type": "image"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:10:00.000Z",
+      "has_children": true,
+      "id": "2dfc5387-4c4e-80f8-9094-e003e8aa45f7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:18:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "再从",
+            "text": {
+              "content": "再从",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x*y"
+            },
+            "href": null,
+            "plain_text": "x*y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点向他的两个子节点传播，",
+            "text": {
+              "content": "节点向他的两个子节点传播，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x*y"
+            },
+            "href": null,
+            "plain_text": "x*y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点对两个子节点",
+            "text": {
+              "content": "节点对两个子节点",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的梯度分别是2和1，分别乘以",
+            "text": {
+              "content": "的梯度分别是2和1，分别乘以",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对",
+            "text": {
+              "content": "对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x*y"
+            },
+            "href": null,
+            "plain_text": "x*y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点的偏导数，就是",
+            "text": {
+              "content": "节点的偏导数，就是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对",
+            "text": {
+              "content": "对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的梯度了(链式求导法则)。",
+            "text": {
+              "content": "的梯度了(链式求导法则)。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-01-05T14:16:00.000Z",
+          "has_children": false,
+          "id": "2dfc5387-4c4e-803a-ab28-e0a95bb13cd4",
+          "image": {
+            "caption": [],
+            "type": "external",
+            "external": {
+              "url": "/images/108d3671195aff64.webp"
+            }
+          },
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-01-05T14:16:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "2dfc5387-4c4e-80bd-9f6a-e8e6cadcc7c6",
+            "type": "block_id"
+          },
+          "type": "image"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:13:00.000Z",
+      "has_children": true,
+      "id": "2dfc5387-4c4e-80bd-9f6a-e8e6cadcc7c6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:19:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "再从",
+            "text": {
+              "content": "再从",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "z*(x+y)"
+            },
+            "href": null,
+            "plain_text": "z*(x+y)",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点向他的两个子节点传播,也是同样的计算逻辑，对直接子节点的偏导乘以",
+            "text": {
+              "content": "节点向他的两个子节点传播,也是同样的计算逻辑，对直接子节点的偏导乘以",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对当当前节点的偏导，就得到了f对两个直接子节点的偏导",
+            "text": {
+              "content": "对当当前节点的偏导，就得到了f对两个直接子节点的偏导",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-01-05T14:23:00.000Z",
+          "has_children": false,
+          "id": "2dfc5387-4c4e-808e-9d5c-cd8d75559980",
+          "image": {
+            "caption": [],
+            "type": "external",
+            "external": {
+              "url": "/images/25f75fa8e2eb452a.webp"
+            }
+          },
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-01-05T14:25:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "2dfc5387-4c4e-8045-9370-f7adf092903b",
+            "type": "block_id"
+          },
+          "type": "image"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:15:00.000Z",
+      "has_children": true,
+      "id": "2dfc5387-4c4e-8045-9370-f7adf092903b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:21:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "此时貌似所有节点都有梯度值了，但其实",
+            "text": {
+              "content": "此时貌似所有节点都有梯度值了，但其实",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x+y"
+            },
+            "href": null,
+            "plain_text": "x+y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点计算了梯度值以后还没有向后传播，按照同样的逻辑继续向后传播，此时发现",
+            "text": {
+              "content": "节点计算了梯度值以后还没有向后传播，按照同样的逻辑继续向后传播，此时发现",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点上已经有梯度了。加上从",
+            "text": {
+              "content": "节点上已经有梯度了。加上从",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x+y"
+            },
+            "href": null,
+            "plain_text": "x+y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点传播过来的梯度，",
+            "text": {
+              "content": "节点传播过来的梯度，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "就各有两个梯度了。",
+            "text": {
+              "content": "就各有两个梯度了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-01-05T14:27:00.000Z",
+          "has_children": false,
+          "id": "2dfc5387-4c4e-8039-834f-f9cb4ed7ef1f",
+          "image": {
+            "caption": [],
+            "type": "external",
+            "external": {
+              "url": "/images/d47e21351a614f54.webp"
+            }
+          },
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-01-05T14:27:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "2dfc5387-4c4e-8033-9eed-d6e6efd4503a",
+            "type": "block_id"
+          },
+          "type": "image"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:23:00.000Z",
+      "has_children": true,
+      "id": "2dfc5387-4c4e-8033-9eed-d6e6efd4503a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T14:21:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最终只需要将",
+            "text": {
+              "content": "最终只需要将",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "节点上的梯度累加即可，这是链式求导法则决定的，换个角度理解，",
+            "text": {
+              "content": "节点上的梯度累加即可，这是链式求导法则决定的，换个角度理解，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "各自有两条“通路”可以影响f，两条通路的影响累加就是最终对",
+            "text": {
+              "content": "各自有两条“通路”可以影响f，两条通路的影响累加就是最终对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "f"
+            },
+            "href": null,
+            "plain_text": "f",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的影响",
+            "text": {
+              "content": "的影响",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:49:00.000Z",
+      "has_children": false,
+      "id": "2dfc5387-4c4e-80a9-b616-cb15719b2725",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-05T14:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:49:00.000Z",
+      "has_children": false,
+      "id": "2dfc5387-4c4e-804e-8af8-d900c9ab159a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-10T13:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "表达式图本质上是个有向无环图(DAG),实际计算梯度时会按照拓扑排序进行逐个求梯度的操作。可以确保每个节点的所有通路都被计算到",
+            "text": {
+              "content": "表达式图本质上是个有向无环图(DAG),实际计算梯度时会按照拓扑排序进行逐个求梯度的操作。可以确保每个节点的所有通路都被计算到",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-05T14:52:00.000Z",
+      "has_children": false,
+      "id": "2dfc5387-4c4e-8010-ba21-e931729cb6c9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-05T14:52:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

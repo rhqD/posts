@@ -1,0 +1,444 @@
+{
+  "post": {
+    "id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+    "title": "机器学习 - 逻辑回归",
+    "slug": "logistic-regression",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:16:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:15:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8068-a9aa-fd39db70ab3b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:09:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "逻辑回归可以简单理解为在线性回归的模型基础之上，把输出映射为0或者1的布尔值。具体怎么映射呢，逻辑回归中一般使用的是sigmoid函数。sigmoid函数可以把 ",
+            "text": {
+              "content": "逻辑回归可以简单理解为在线性回归的模型基础之上，把输出映射为0或者1的布尔值。具体怎么映射呢，逻辑回归中一般使用的是sigmoid函数。sigmoid函数可以把 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "-\\infty"
+            },
+            "href": null,
+            "plain_text": "-\\infty",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 到 ",
+            "text": {
+              "content": " 到 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "+\\infty"
+            },
+            "href": null,
+            "plain_text": "+\\infty",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的输入映射到0 - 1之间。然后就可以通过判断输出是否大于0.5决定最终输出1还是0。那么逻辑回归中为什么要把输出映射到0 - 1呢？有几个原因，其中很重要的一个原因就是这样可以直接把输出和概率关联起来，比如用逻辑回归模型来预测某个邮件是否是垃圾邮件。那么输出映射到0-1之后可以直接代表邮件是垃圾邮件的概率。",
+            "text": {
+              "content": " 的输入映射到0 - 1之间。然后就可以通过判断输出是否大于0.5决定最终输出1还是0。那么逻辑回归中为什么要把输出映射到0 - 1呢？有几个原因，其中很重要的一个原因就是这样可以直接把输出和概率关联起来，比如用逻辑回归模型来预测某个邮件是否是垃圾邮件。那么输出映射到0-1之后可以直接代表邮件是垃圾邮件的概率。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:30:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-801b-b181-f18566eb505c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:09:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:16:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-808c-bec1-ed0a3b5dfb09",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/bce7ec712dfa1333.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T12:16:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:59:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8047-b1f8-c6f63d330ec5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T12:59:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:59:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-8086-bd35-efd2a93468f0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那么逻辑回归如何计算最优的参数呢？ 线性回归中我们可以直接通过数学推导，计算出最优解的表达式。但是逻辑回归因为引入了sigmoid导致无法直接计算出一个最优解的表达式。所以就需要借助一些数值分析的方法了，比如梯度下降法，牛顿法。实际上神经网络的训练使用的就是梯度下降法及其变种。",
+            "text": {
+              "content": "那么逻辑回归如何计算最优的参数呢？ 线性回归中我们可以直接通过数学推导，计算出最优解的表达式。但是逻辑回归因为引入了sigmoid导致无法直接计算出一个最优解的表达式。所以就需要借助一些数值分析的方法了，比如梯度下降法，牛顿法。实际上神经网络的训练使用的就是梯度下降法及其变种。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:13:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-80ff-b384-c82aac97289d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:29:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "实际上神经网络的训练使用的也是梯度下降法，无论是神经网络还是逻辑回归模型，我们都可以看作是一个数学表达式，只不过逻辑回归的数学表达式远远没有神经网络的简单。但是他们“寻找”最优解的方法都是一样的，底层用到都是梯度下降法。所以这里就产生一个很基础的需求：数学表达式的求导。实现了数学函数求导的程序化表达，在计算机上训练神经网络还是训练逻辑回归模型，其实都是一回事。",
+            "text": {
+              "content": "实际上神经网络的训练使用的也是梯度下降法，无论是神经网络还是逻辑回归模型，我们都可以看作是一个数学表达式，只不过逻辑回归的数学表达式远远没有神经网络的简单。但是他们“寻找”最优解的方法都是一样的，底层用到都是梯度下降法。所以这里就产生一个很基础的需求：数学表达式的求导。实现了数学函数求导的程序化表达，在计算机上训练神经网络还是训练逻辑回归模型，其实都是一回事。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:29:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-80a5-895f-c22b0f4cf84d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:32:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那么如何实现数学表达式的求导呢，方法有很多种，比如 ",
+            "text": {
+              "content": "那么如何实现数学表达式的求导呢，方法有很多种，比如 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/posts/symbolic-differentiation",
+            "plain_text": "符号化求导 ",
+            "text": {
+              "content": "符号化求导 ",
+              "link": {
+                "url": "/posts/symbolic-differentiation"
+              }
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和 ",
+            "text": {
+              "content": "和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/2d0c53874c4e802e9662c6e6d0e42693",
+            "plain_text": "自动求导",
+            "text": {
+              "content": "自动求导",
+              "link": {
+                "url": "/2d0c53874c4e802e9662c6e6d0e42693"
+              }
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T13:10:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-80ac-b67d-d71c1fb6debe",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T13:13:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

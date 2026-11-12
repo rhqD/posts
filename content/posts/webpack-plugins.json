@@ -1,0 +1,4196 @@
+{
+  "post": {
+    "id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+    "title": "webpack系列 — 插件系统",
+    "slug": "webpack-plugins",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://rhq-blog-resources.oss-cn-beijing.aliyuncs.com/20250712194313.png",
+    "category_id": "webpack",
+    "status": "published",
+    "published_at": "2025-07-12",
+    "created_at": "2025-07-12T11:37:00.000Z",
+    "updated_at": "2025-07-12T12:06:00.000Z",
+    "category": {
+      "id": "webpack",
+      "name": "webpack",
+      "slug": "webpack",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "webpack",
+        "name": "webpack",
+        "slug": "webpack",
+        "created_at": ""
+      },
+      {
+        "id": "webpack plugin",
+        "name": "webpack plugin",
+        "slug": "webpack-plugin",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T12:05:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-808c-b8bb-eccdc28d4d3c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T12:05:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "下面会详细介绍webpack构建流程中各个可以订阅的生命周期，并具体说明插件具体如何扩展webpack功能",
+            "text": {
+              "content": "下面会详细介绍webpack构建流程中各个可以订阅的生命周期，并具体说明插件具体如何扩展webpack功能",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:44:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "完整的生命周期流程图",
+            "text": {
+              "content": "完整的生命周期流程图",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-8037-8237-d74d7243b237",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T12:06:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "mermaid",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "graph TD\n  A[初始化] --> B[Compiler.initialize]\n  B --> C[Compiler.environment]\n  C --> D[Compiler.beforeRun]\n  D --> E[Compiler.run]\n  E --> F[Compiler.compile]\n  F --> G[创建 Compilation]\n  G --> H[Compilation.buildModule]\n  H --> I[Compilation.finishModules]\n  I --> J[Compilation.seal]\n  J --> K[Compilation.optimize]\n  K --> L[Compilation.emitAssets]\n  L --> M[Compiler.emit]\n  M --> N[Compiler.done]",
+            "text": {
+              "content": "graph TD\n  A[初始化] --> B[Compiler.initialize]\n  B --> C[Compiler.environment]\n  C --> D[Compiler.beforeRun]\n  D --> E[Compiler.run]\n  E --> F[Compiler.compile]\n  F --> G[创建 Compilation]\n  G --> H[Compilation.buildModule]\n  H --> I[Compilation.finishModules]\n  I --> J[Compilation.seal]\n  J --> K[Compilation.optimize]\n  K --> L[Compilation.emitAssets]\n  L --> M[Compiler.emit]\n  M --> N[Compiler.done]",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:44:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-807c-8b46-cc82ae891df3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:44:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:44:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8045-bd0f-f42b429738bc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:44:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "具体说明",
+            "text": {
+              "content": "具体说明",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "22ec5387-4c4e-80c0-ac68-c692bf3e4941",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-802c-b227-cae002e600ee",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "1. 初始化阶段",
+            "text": {
+              "content": "1. 初始化阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:25:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80be-8107-fbf942c08f34",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler 钩子",
+            "text": {
+              "content": "Compiler 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8018-b45e-e4813e136401",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-804f-b6ea-e8c20bd69a62",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8089-b028-ddea094787fb",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-804f-b6ea-e8c20bd69a62",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "initialize",
+                  "text": {
+                    "content": "initialize",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "Webpack 初始化时",
+                  "text": {
+                    "content": "Webpack 初始化时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "设置全局工具或缓存（如清理旧缓存）",
+                  "text": {
+                    "content": "设置全局工具或缓存（如清理旧缓存）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-805a-bc8d-ef3342b21ae9",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-804f-b6ea-e8c20bd69a62",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "environment",
+                  "text": {
+                    "content": "environment",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "环境变量和配置应用后",
+                  "text": {
+                    "content": "环境变量和配置应用后",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "修改全局配置（如根据环境注入变量）",
+                  "text": {
+                    "content": "修改全局配置（如根据环境注入变量）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80ad-9592-f6995d3ce18d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-804f-b6ea-e8c20bd69a62",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "afterEnvironment",
+                  "text": {
+                    "content": "afterEnvironment",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "环境准备完成后",
+                  "text": {
+                    "content": "环境准备完成后",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "校验配置合法性或初始化自定义插件",
+                  "text": {
+                    "content": "校验配置合法性或初始化自定义插件",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-804f-b6ea-e8c20bd69a62",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "divider": {},
+      "has_children": false,
+      "id": "22ec5387-4c4e-803b-bfa1-f3c76ac796db",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "divider"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8035-908a-df385824cb33",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2. 构建启动阶段",
+            "text": {
+              "content": "2. 构建启动阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-805f-9da3-c98ca78de964",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler 钩子",
+            "text": {
+              "content": "Compiler 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80bf-81ef-c1a7f007efd3",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80e8-a89e-c4d61d0e4ee6",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "beforeRun",
+                  "text": {
+                    "content": "beforeRun",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "开始构建前",
+                  "text": {
+                    "content": "开始构建前",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "执行前置任务（如检查依赖版本）",
+                  "text": {
+                    "content": "执行前置任务（如检查依赖版本）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80b9-b477-e0a4f784077e",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "run",
+                  "text": {
+                    "content": "run",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "构建启动时（非监听模式）",
+                  "text": {
+                    "content": "构建启动时（非监听模式）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "记录构建开始时间或发送监控事件",
+                  "text": {
+                    "content": "记录构建开始时间或发送监控事件",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-800c-862e-e86067f5c21b",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "watchRun",
+                  "text": {
+                    "content": "watchRun",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "监听模式启动时",
+                  "text": {
+                    "content": "监听模式启动时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "提示开发者已进入监听模式",
+                  "text": {
+                    "content": "提示开发者已进入监听模式",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:15:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80af-bb2f-f344fb5e1a47",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:15:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "infrastructureLog",
+                  "text": {
+                    "content": "infrastructureLog",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "日志系统初始化后",
+                  "text": {
+                    "content": "日志系统初始化后",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "自定义日志格式（如高亮错误）",
+                  "text": {
+                    "content": "自定义日志格式（如高亮错误）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:15:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-8046-bc63-d2d09791f325",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8046-bb41-d87a6ca26f59",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "3. 模块解析与编译阶段",
+            "text": {
+              "content": "3. 模块解析与编译阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80ef-9cc0-e4226a558883",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compilation 钩子",
+            "text": {
+              "content": "Compilation 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80c3-911e-ebcb4a77e2c4",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80a0-9b6b-df40ac0e51cc",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "buildModule",
+                  "text": {
+                    "content": "buildModule",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "开始构建单个模块前",
+                  "text": {
+                    "content": "开始构建单个模块前",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "过滤特定模块（如跳过 node_modules 中的某些库）",
+                  "text": {
+                    "content": "过滤特定模块（如跳过 node_modules 中的某些库）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8079-93d6-cd2bd763d85a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "succeedModule",
+                  "text": {
+                    "content": "succeedModule",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "模块构建成功时",
+                  "text": {
+                    "content": "模块构建成功时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "收集模块元数据（如记录模块大小）",
+                  "text": {
+                    "content": "收集模块元数据（如记录模块大小）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80ba-965a-ef4e264b90f6",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "finishModules",
+                  "text": {
+                    "content": "finishModules",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "所有模块构建完成",
+                  "text": {
+                    "content": "所有模块构建完成",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "分析模块依赖关系（如生成依赖报告）",
+                  "text": {
+                    "content": "分析模块依赖关系（如生成依赖报告）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80c5-bb8f-c29d9e807e0d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "failedModule",
+                  "text": {
+                    "content": "failedModule",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "模块构建失败时",
+                  "text": {
+                    "content": "模块构建失败时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "自定义错误处理（如发送通知到 Slack）",
+                  "text": {
+                    "content": "自定义错误处理（如发送通知到 Slack）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-806b-9d88-d7b146c52c2b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "divider": {},
+      "has_children": false,
+      "id": "22ec5387-4c4e-807e-ab2a-d6d35bdc5ce7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "divider"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8004-9757-d88589b1c3ca",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "4. 优化阶段",
+            "text": {
+              "content": "4. 优化阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80c1-9f6a-dc3103a25b96",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compilation 钩子",
+            "text": {
+              "content": "Compilation 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80a9-bc77-eda80514acb3",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8096-b9ba-f705e74947af",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "optimize",
+                  "text": {
+                    "content": "optimize",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "优化阶段开始时",
+                  "text": {
+                    "content": "优化阶段开始时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "注入自定义优化逻辑（如合并重复代码）",
+                  "text": {
+                    "content": "注入自定义优化逻辑（如合并重复代码）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80bc-92b7-fc1faf956724",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "optimizeModules",
+                  "text": {
+                    "content": "optimizeModules",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "模块优化（Tree Shaking）",
+                  "text": {
+                    "content": "模块优化（Tree Shaking）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "手动标记未使用的导出（辅助 Tree Shaking）",
+                  "text": {
+                    "content": "手动标记未使用的导出（辅助 Tree Shaking）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-804d-8f84-ff43085ad415",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "optimizeChunks",
+                  "text": {
+                    "content": "optimizeChunks",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "Chunk 优化（代码分割）",
+                  "text": {
+                    "content": "Chunk 优化（代码分割）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "调整代码分割策略（如合并小 Chunk）",
+                  "text": {
+                    "content": "调整代码分割策略（如合并小 Chunk）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-806c-bc6f-e4e1d2c5ca9b",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "optimizeChunkAssets",
+                  "text": {
+                    "content": "optimizeChunkAssets",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "Chunk 资源优化前",
+                  "text": {
+                    "content": "Chunk 资源优化前",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "压缩或混淆代码（如自定义 Terser 规则）",
+                  "text": {
+                    "content": "压缩或混淆代码（如自定义 Terser 规则）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80b8-ac66-fc1285a9cf80",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "optimizeAssets",
+                  "text": {
+                    "content": "optimizeAssets",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "所有资源优化完成",
+                  "text": {
+                    "content": "所有资源优化完成",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "最终资源检查（如验证文件哈希）",
+                  "text": {
+                    "content": "最终资源检查（如验证文件哈希）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-8084-85a2-ebc6586b552d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "divider": {},
+      "has_children": false,
+      "id": "22ec5387-4c4e-804c-83a5-dfceacd0970d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "divider"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8047-bf77-ec8a3e24ef50",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "5. 资源生成阶段",
+            "text": {
+              "content": "5. 资源生成阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-800a-a858-ca1661d34621",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compilation 钩子",
+            "text": {
+              "content": "Compilation 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8041-b04c-ede4e93d9e09",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8085-a538-e45f1f1fb5c3",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8014-a045-d373e44ddf67",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8085-a538-e45f1f1fb5c3",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "processAssets",
+                  "text": {
+                    "content": "processAssets",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "处理资源文件时",
+                  "text": {
+                    "content": "处理资源文件时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "修改/添加资源（如插入版权注释、生成 Service Worker）",
+                  "text": {
+                    "content": "修改/添加资源（如插入版权注释、生成 Service Worker）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8025-a59d-f4a6cc0ecc93",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8085-a538-e45f1f1fb5c3",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "additionalAssets",
+                  "text": {
+                    "content": "additionalAssets",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "允许添加额外资源",
+                  "text": {
+                    "content": "允许添加额外资源",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "动态生成文件（如版本号文件、分析报告）",
+                  "text": {
+                    "content": "动态生成文件（如版本号文件、分析报告）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-8085-a538-e45f1f1fb5c3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80e8-bafb-d8b6131496c9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler 钩子",
+            "text": {
+              "content": "Compiler 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8062-8a94-da00b4a77c96",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8088-984d-d9c7b6bde894",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80e4-be54-fbe2bdcb8ed2",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8088-984d-d9c7b6bde894",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "emit",
+                  "text": {
+                    "content": "emit",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "资源写入磁盘前",
+                  "text": {
+                    "content": "资源写入磁盘前",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "最后修改机会（如替换 HTML 模板变量）",
+                  "text": {
+                    "content": "最后修改机会（如替换 HTML 模板变量）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8076-b64c-fb5dec530922",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8088-984d-d9c7b6bde894",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "afterEmit",
+                  "text": {
+                    "content": "afterEmit",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "资源写入磁盘后",
+                  "text": {
+                    "content": "资源写入磁盘后",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发后续任务（如上传 CDN、通知构建完成）",
+                  "text": {
+                    "content": "触发后续任务（如上传 CDN、通知构建完成）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8073-a3b3-eaa76b1ad473",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8088-984d-d9c7b6bde894",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "assetEmitted",
+                  "text": {
+                    "content": "assetEmitted",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "单个文件输出完成",
+                  "text": {
+                    "content": "单个文件输出完成",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "跟踪文件输出状态（如校验文件完整性）",
+                  "text": {
+                    "content": "跟踪文件输出状态（如校验文件完整性）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-8088-984d-d9c7b6bde894",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "divider": {},
+      "has_children": false,
+      "id": "22ec5387-4c4e-8038-9513-fbc3850ec47f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "divider"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8040-be2b-f8e53354de29",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "6. 构建结束阶段",
+            "text": {
+              "content": "6. 构建结束阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8053-838e-fd48dd05deb8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler 钩子",
+            "text": {
+              "content": "Compiler 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8025-afbe-e92ed0f00db2",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-80c8-88f8-ea26b6faaaa5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8018-a7d6-c95ea788ff7d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-80c8-88f8-ea26b6faaaa5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "done",
+                  "text": {
+                    "content": "done",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "构建成功完成",
+                  "text": {
+                    "content": "构建成功完成",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "输出统计信息（如体积分析、耗时报告）",
+                  "text": {
+                    "content": "输出统计信息（如体积分析、耗时报告）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80d1-89ad-d54140604fe3",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-80c8-88f8-ea26b6faaaa5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "failed",
+                  "text": {
+                    "content": "failed",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "构建失败时",
+                  "text": {
+                    "content": "构建失败时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "错误上报或回滚操作",
+                  "text": {
+                    "content": "错误上报或回滚操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-80e2-9bd8-f42ca46c1e3f",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-80c8-88f8-ea26b6faaaa5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "shutdown",
+                  "text": {
+                    "content": "shutdown",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "编译器关闭时",
+                  "text": {
+                    "content": "编译器关闭时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "释放资源（如关闭数据库连接）",
+                  "text": {
+                    "content": "释放资源（如关闭数据库连接）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-80c8-88f8-ea26b6faaaa5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "divider": {},
+      "has_children": false,
+      "id": "22ec5387-4c4e-803e-9409-cd01fb89fe9a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "divider"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8058-9960-d6e437e9993e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "quote": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "7. 监听模式特有阶段",
+            "text": {
+              "content": "7. 监听模式特有阶段",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "quote"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-802f-8b96-cda25e8baa86",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Compiler 钩子",
+            "text": {
+              "content": "Compiler 钩子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8050-89bd-f83c199d0f68",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8031-95b4-f0748c8c3e83",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "钩子",
+                  "text": {
+                    "content": "钩子",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "触发时机",
+                  "text": {
+                    "content": "触发时机",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "适合的操作",
+                  "text": {
+                    "content": "适合的操作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-804a-8bbc-d5d9ac255a96",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8031-95b4-f0748c8c3e83",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "watchClose",
+                  "text": {
+                    "content": "watchClose",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "监听模式停止时",
+                  "text": {
+                    "content": "监听模式停止时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "清理临时文件或恢复环境",
+                  "text": {
+                    "content": "清理临时文件或恢复环境",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2025-07-12T11:18:00.000Z",
+          "has_children": false,
+          "id": "22ec5387-4c4e-8056-b2d5-f851df768ac0",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2025-07-12T11:18:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "22ec5387-4c4e-8031-95b4-f0748c8c3e83",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": true,
+                    "code": true,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "invalid",
+                  "text": {
+                    "content": "invalid",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "文件变化但未触发重新构建时",
+                  "text": {
+                    "content": "文件变化但未触发重新构建时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "提示开发者文件变动（如控制台打印变更文件列表）",
+                  "text": {
+                    "content": "提示开发者文件变动（如控制台打印变更文件列表）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:18:00.000Z",
+      "has_children": true,
+      "id": "22ec5387-4c4e-8031-95b4-f0748c8c3e83",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:27:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-80ee-a8b7-c54673d6ebbe",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-12T11:27:00.000Z",
+      "has_children": false,
+      "id": "22ec5387-4c4e-8077-a4a8-f9c202a0d858",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-12T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

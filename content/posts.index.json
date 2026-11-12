@@ -1,0 +1,651 @@
+[
+  {
+    "id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+    "title": "Transformer(6) - LayerNorm",
+    "slug": "transformer-layernorm",
+    "content": null,
+    "excerpt": "拿一个四维向量手算 LayerNorm：按哪一维统计，减均值、除标准差各在做什么，γ 和 β 怎么用，以及它在 Transformer 里的位置。",
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-28",
+    "created_at": "2026-10-28T08:32:00.000Z",
+    "updated_at": "2026-11-02T09:41:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "406c5387-4c4e-8176-8fcc-ec1aab13558b",
+    "title": "Transformer(5) - multi-head attention",
+    "slug": "transformer-multi-head-attention",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-27",
+    "created_at": "2026-10-27T14:04:00.000Z",
+    "updated_at": "2026-11-02T09:51:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "406c5387-4c4e-8160-931c-d1f8239ebc4d",
+    "title": "Transformer(4) - self-attention",
+    "slug": "transformer-self-attention",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-27",
+    "created_at": "2026-10-27T12:31:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+    "title": "Transformer(3) - 位置编码",
+    "slug": "transformer-positional-encoding",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-27",
+    "created_at": "2026-10-27T11:37:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "406c5387-4c4e-8127-92ba-f92ee8731223",
+    "title": "Transformer(2) - embedding",
+    "slug": "transformer-embedding",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-27",
+    "created_at": "2026-10-27T10:11:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+    "title": "Transformer(0) - 总览",
+    "slug": "transformer-overview",
+    "content": null,
+    "excerpt": "把 Transformer 当成一个黑盒，先搞清楚它的输入输出和特性",
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-26",
+    "created_at": "2026-10-26T03:18:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+    "title": "用太阳能和 18650 让 ESP32-C3 持续运行",
+    "slug": "esp32c3-solar-18650-power",
+    "content": null,
+    "excerpt": "只靠一块 3W 太阳能板和一节 18650，让 XIAO ESP32-C3 长期在户外运行：供电链路设计、电量检测、功耗估算，以及根据电量和昼夜动态切换持续运行与深度睡眠的策略。文中以土壤湿度传感器作为示例负载。",
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-22",
+    "created_at": "2026-10-22T14:17:00.000Z",
+    "updated_at": "2026-10-28T09:12:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "开发",
+        "name": "开发",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "ESP32",
+        "name": "ESP32",
+        "slug": "esp32",
+        "created_at": ""
+      },
+      {
+        "id": "物联网",
+        "name": "物联网",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "嵌入式",
+        "name": "嵌入式",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "太阳能",
+        "name": "太阳能",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "低功耗",
+        "name": "低功耗",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+    "title": "Transformer(1) - tokenizer",
+    "slug": "transformer-tokenizer",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": null,
+    "status": "published",
+    "published_at": "2026-04-19",
+    "created_at": "2026-04-19T13:06:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+    "title": "web前端性能优化经验 - 后置优化",
+    "slug": "web-performance-post",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2026-01-17",
+    "created_at": "2026-01-17T14:34:00.000Z",
+    "updated_at": "2026-05-20T10:11:00.000Z",
+    "tags": [
+      {
+        "id": "性能优化",
+        "name": "性能优化",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "web",
+        "name": "web",
+        "slug": "web",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2d0c5387-4c4e-80ef-9cf9-f37067c007e7",
+    "title": "机器学习 - 符号化求导",
+    "slug": "symbolic-differentiation",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-12-21",
+    "created_at": "2025-12-21T12:07:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2c9c5387-4c4e-8072-b7cb-d2220c022937",
+    "title": "线性代数 - 换基操作",
+    "slug": "linear-algebra-change-of-basis",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-12-14",
+    "created_at": "2025-12-14T13:31:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "线性代数",
+        "name": "线性代数",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+    "title": "线性代数 - 矩阵乘法的几何意义",
+    "slug": "linear-algebra-matrix-multiplication",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-12-14",
+    "created_at": "2025-12-14T09:21:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "线性代数",
+        "name": "线性代数",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2adc5387-4c4e-8023-a307-d0514db1da64",
+    "title": "机器学习 - 反向传播算法（后向模式自动微分）",
+    "slug": "backpropagation",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:16:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2adc5387-4c4e-8087-b92f-c473cdbd7b34",
+    "title": "机器学习 - 逻辑回归",
+    "slug": "logistic-regression",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:16:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+    "title": "机器学习 - 线性回归",
+    "slug": "linear-regression",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:15:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "22ec5387-4c4e-80f2-b200-ec8cf1261750",
+    "title": "webpack系列 — 插件系统",
+    "slug": "webpack-plugins",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://rhq-blog-resources.oss-cn-beijing.aliyuncs.com/20250712194313.png",
+    "category_id": "webpack",
+    "status": "published",
+    "published_at": "2025-07-12",
+    "created_at": "2025-07-12T11:37:00.000Z",
+    "updated_at": "2025-07-12T12:06:00.000Z",
+    "category": {
+      "id": "webpack",
+      "name": "webpack",
+      "slug": "webpack",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "webpack",
+        "name": "webpack",
+        "slug": "webpack",
+        "created_at": ""
+      },
+      {
+        "id": "webpack plugin",
+        "name": "webpack plugin",
+        "slug": "webpack-plugin",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "22ec5387-4c4e-806c-9bfb-f51bb8f86bf8",
+    "title": "webpack系列 — 总览",
+    "slug": "webpack-overview",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://rhq-blog-resources.oss-cn-beijing.aliyuncs.com/20250712172241.png",
+    "category_id": "webpack",
+    "status": "published",
+    "published_at": "2025-07-12",
+    "created_at": "2025-07-12T09:20:00.000Z",
+    "updated_at": "2025-07-12T12:02:00.000Z",
+    "category": {
+      "id": "webpack",
+      "name": "webpack",
+      "slug": "webpack",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "webpack",
+        "name": "webpack",
+        "slug": "webpack",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "227c5387-4c4e-8074-bbdd-d349642831de",
+    "title": "园艺植物 之 月季",
+    "slug": "rose-gardening",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-07-05",
+    "created_at": "2025-07-05T11:54:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z"
+  },
+  {
+    "id": "220c5387-4c4e-8017-ac13-db96be1d6981",
+    "title": "月季品种 之 秋日胭脂",
+    "slug": "autumn-rouge",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "园艺笔记",
+    "status": "published",
+    "published_at": "2025-06-28",
+    "created_at": "2025-06-28T09:30:00.000Z",
+    "updated_at": "2025-06-28T09:45:00.000Z",
+    "category": {
+      "id": "园艺笔记",
+      "name": "园艺笔记",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "月季",
+        "name": "月季",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "园艺",
+        "name": "园艺",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "秋日胭脂",
+        "name": "秋日胭脂",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "日本月季",
+        "name": "日本月季",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "220c5387-4c4e-800e-851a-c79ab84796ea",
+    "title": "月季品种 之 龙沙宝石",
+    "slug": "rose-eden",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://rhq-blog-resources.oss-cn-beijing.aliyuncs.com/20190501_171608.webp",
+    "category_id": "园艺笔记",
+    "status": "published",
+    "published_at": "2025-06-28",
+    "created_at": "2025-06-28T08:12:00.000Z",
+    "updated_at": "2025-07-12T09:08:00.000Z",
+    "category": {
+      "id": "园艺笔记",
+      "name": "园艺笔记",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "月季",
+        "name": "月季",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "龙沙宝石",
+        "name": "龙沙宝石",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "园艺",
+        "name": "园艺",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  {
+    "id": "220c5387-4c4e-8020-a289-edb006be6023",
+    "title": "声明式编程",
+    "slug": "declarative-programming",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2025-06-28",
+    "created_at": "2025-06-28T06:01:00.000Z",
+    "updated_at": "2025-06-28T09:47:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "react",
+        "name": "react",
+        "slug": "react",
+        "created_at": ""
+      },
+      {
+        "id": "声明式编程",
+        "name": "声明式编程",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "immutable",
+        "name": "immutable",
+        "slug": "immutable",
+        "created_at": ""
+      },
+      {
+        "id": "不可变数据结构",
+        "name": "不可变数据结构",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  }
+]

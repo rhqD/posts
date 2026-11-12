@@ -1,0 +1,2495 @@
+{
+  "post": {
+    "id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+    "title": "线性代数 - 矩阵乘法的几何意义",
+    "slug": "linear-algebra-matrix-multiplication",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-12-14",
+    "created_at": "2025-12-14T09:21:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "线性代数",
+        "name": "线性代数",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T09:22:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-807b-8cad-e32840669427",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T15:28:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "矩阵乘法本质上是对某个空间的线性变化。所谓线性变化是指变化完之后",
+            "text": {
+              "content": "矩阵乘法本质上是对某个空间的线性变化。所谓线性变化是指变化完之后",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:31:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80fd-a02f-e7bea2278c61",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T15:29:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "原点不变，比如二维的情况，变化后原点(0,0)的坐标还是(0,0)",
+            "text": {
+              "content": "原点不变，比如二维的情况，变化后原点(0,0)的坐标还是(0,0)",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:33:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80ba-8250-cc1e646b0ea5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:33:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "平行关系不变，即本来平行的两条边，变换后仍然平行",
+            "text": {
+              "content": "平行关系不变，即本来平行的两条边，变换后仍然平行",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:48:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80be-baff-c92e2effb5d7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:48:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-809b-ad6a-cb4c53f21e6b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这种变换有两个角度来理解",
+            "text": {
+              "content": "这种变换有两个角度来理解",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:48:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80fd-8edb-fc3509685f0a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "（一）对向量的线性变化，即在同一个坐标系下，通过矩阵将某个向量变换成另一个向量",
+            "text": {
+              "content": "（一）对向量的线性变化，即在同一个坐标系下，通过矩阵将某个向量变换成另一个向量",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:33:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8058-b5b1-dc25ec8106ce",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:34:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如二维情况下把X轴放大一倍的矩阵",
+            "text": {
+              "content": "比如二维情况下把X轴放大一倍的矩阵",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:38:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-806a-bb2c-da60761fbfe2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:38:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix} 2 & 0 \\\\ 0 & 1 \\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix} 2 & 0 \\\\ 0 & 1 \\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:39:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8077-9ad8-c8b5e5ebeaf5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:44:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对任意列向量",
+            "text": {
+              "content": "对任意列向量",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix} x \\\\ y \\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix} x \\\\ y \\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "或行向量 ",
+            "text": {
+              "content": "或行向量 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix} x & y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix} x & y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "均会被在 ",
+            "text": {
+              "content": "均会被在 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 轴方向上被放大一倍",
+            "text": {
+              "content": " 轴方向上被放大一倍",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:47:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8050-8e73-efc74f876499",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "行向量",
+            "text": {
+              "content": "行向量",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:44:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80cb-9a40-d7be80b02231",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix} x&y\\end{bmatrix} * \\begin{bmatrix} 2&0 \\\\ 0 &1\\end{bmatrix}=\\begin{bmatrix}2x&y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix} x&y\\end{bmatrix} * \\begin{bmatrix} 2&0 \\\\ 0 &1\\end{bmatrix}=\\begin{bmatrix}2x&y\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:47:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8007-b6de-d833d3ae8324",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "列向量",
+            "text": {
+              "content": "列向量",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:46:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-805d-9341-c38d7b47b2e7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix} 2&0 \\\\ 0 &1\\end{bmatrix} * \\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}2x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix} 2&0 \\\\ 0 &1\\end{bmatrix} * \\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}2x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:49:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8087-b509-c12b3db4e714",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:48:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80c6-baae-d51d45a92a81",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:04:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "（二）向量的坐标不变，换到一个新的坐标轴后得到的向量在原坐标轴下的坐标",
+            "text": {
+              "content": "（二）向量的坐标不变，换到一个新的坐标轴后得到的向量在原坐标轴下的坐标",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:51:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-806d-a933-f44a7deb2ac4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如二维情况下某矩阵对列向量的变换",
+            "text": {
+              "content": "比如二维情况下某矩阵对列向量的变换",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T11:51:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-805a-aaa2-d2607ad70c9f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T11:55:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}=x*\\begin{bmatrix}a\\\\c\\end{bmatrix}+y*\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}=x*\\begin{bmatrix}a\\\\c\\end{bmatrix}+y*\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:01:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8089-9483-e139d7b91b74",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:06:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "从上面的公式可以看出来，向量",
+            "text": {
+              "content": "从上面的公式可以看出来，向量",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "经过矩阵变换后得到的向量可以理解为",
+            "text": {
+              "content": "经过矩阵变换后得到的向量可以理解为",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "个列向量 ",
+            "text": {
+              "content": "个列向量 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a\\\\c\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a\\\\c\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和 ",
+            "text": {
+              "content": "和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "个列向量 ",
+            "text": {
+              "content": "个列向量 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的和。",
+            "text": {
+              "content": "的和。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:06:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-800b-b337-fcc116e7e204",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:10:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "也就是把基向量换成原坐标系下 ",
+            "text": {
+              "content": "也就是把基向量换成原坐标系下 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a\\\\c\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a\\\\c\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和 ",
+            "text": {
+              "content": "和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这两个向量后，",
+            "text": {
+              "content": "这两个向量后，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这个坐标对应的向量在原坐标系下的坐标",
+            "text": {
+              "content": "这个坐标对应的向量在原坐标系下的坐标",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:09:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-804a-883d-da2390367b8f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "从行向量的角度也类似，相当于把基向量换成原坐标系下 ",
+            "text": {
+              "content": "从行向量的角度也类似，相当于把基向量换成原坐标系下 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a&b\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a&b\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}c&d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}c&d\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 这两个向量后，",
+            "text": {
+              "content": " 这两个向量后，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x&y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x&y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这个坐标对应的向量在原坐标系下的坐标",
+            "text": {
+              "content": "这个坐标对应的向量在原坐标系下的坐标",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:11:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-800a-8fc4-fd6ed95b9d5c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:11:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "推广",
+            "text": {
+              "content": "推广",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2c9c5387-4c4e-80c1-9e55-dbf664d1a772",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:11:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-806f-aaf9-ce2c796347df",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "换基操作",
+            "text": {
+              "content": "换基操作",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:11:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80a7-a557-ec5e173aff73",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:43:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "给定某个列向量",
+            "text": {
+              "content": "给定某个列向量",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": ",假如将基向量换成",
+            "text": {
+              "content": ",假如将基向量换成",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a\\\\c\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a\\\\c\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和 ",
+            "text": {
+              "content": "和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，那么原来的列向量的坐标会变成什么呢",
+            "text": {
+              "content": "，那么原来的列向量的坐标会变成什么呢",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:14:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8003-bc92-f6564a0e5699",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:40:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "接着上面的第二个角度，本质上是有两个坐标系在的",
+            "text": {
+              "content": "接着上面的第二个角度，本质上是有两个坐标系在的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:40:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80d3-8c66-cf287a0f573e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:41:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一个是我们所在的“标准”坐标系，给定某个矩阵运算",
+            "text": {
+              "content": "一个是我们所在的“标准”坐标系，给定某个矩阵运算",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:41:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8091-b7f1-f8a072b05a79",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:41:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}=x*\\begin{bmatrix}a\\\\c\\end{bmatrix}+y*\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}=x*\\begin{bmatrix}a\\\\c\\end{bmatrix}+y*\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:41:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-805e-a4a3-c77e7a48f206",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "可以理解为：有一个外星人在另一个坐标系，他的那个坐标系的两个基向量从我们的视角看分别是",
+            "text": {
+              "content": "可以理解为：有一个外星人在另一个坐标系，他的那个坐标系的两个基向量从我们的视角看分别是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a\\\\c\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a\\\\c\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}b\\\\d\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}b\\\\d\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。那么上面的乘法就相当于把外星人说的",
+            "text": {
+              "content": "。那么上面的乘法就相当于把外星人说的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "翻译成我们的语言。",
+            "text": {
+              "content": "翻译成我们的语言。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:43:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-804b-80f8-e7e32468eac7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "也就是说外星人说的",
+            "text": {
+              "content": "也就是说外星人说的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "其实从我们的角度看是",
+            "text": {
+              "content": "其实从我们的角度看是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}ax+by\\\\cx+dy\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。那么反过来，我们说的",
+            "text": {
+              "content": "。那么反过来，我们说的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "怎么翻译到外星人的坐标系呢。假如用来做这个翻译的矩阵是",
+            "text": {
+              "content": "怎么翻译到外星人的坐标系呢。假如用来做这个翻译的矩阵是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "M"
+            },
+            "href": null,
+            "plain_text": "M",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。那么我们说的",
+            "text": {
+              "content": "。那么我们说的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "翻译完以后就是",
+            "text": {
+              "content": "翻译完以后就是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:47:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8009-8a0c-e2480a6bf13a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "M*\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "M*\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:49:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8016-9278-f9acc6a52c33",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那么怎么计算翻译矩阵",
+            "text": {
+              "content": "那么怎么计算翻译矩阵",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "M"
+            },
+            "href": null,
+            "plain_text": "M",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "呢。其实很简单，假设我们翻译完之后成了外星人的语言，如果再反向翻译一遍，那么此时他应该会变为原来的",
+            "text": {
+              "content": "呢。其实很简单，假设我们翻译完之后成了外星人的语言，如果再反向翻译一遍，那么此时他应该会变为原来的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "即",
+            "text": {
+              "content": "即",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:53:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80a2-9f4f-ef62b692d732",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:53:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*M*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}x\\\\y\\end{bmatrix}"
+            },
+            "href": null,
+            "plain_text": "\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}*M*\\begin{bmatrix}x\\\\y\\end{bmatrix}=\\begin{bmatrix}x\\\\y\\end{bmatrix}",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:53:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-800d-8889-cbe7abaea807",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:54:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以",
+            "text": {
+              "content": "所以",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:54:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-80d4-87c5-d956a9043f2e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:56:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "M=\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}^{-1}"
+            },
+            "href": null,
+            "plain_text": "M=\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}^{-1}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 也就是原来矩阵的逆矩阵",
+            "text": {
+              "content": " 也就是原来矩阵的逆矩阵",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:56:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8025-895a-d2393b51940c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:56:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-14T12:52:00.000Z",
+      "has_children": false,
+      "id": "2c9c5387-4c4e-8078-82dd-e67760484ee9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-14T12:52:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2c9c5387-4c4e-800e-b4a8-c094a2b11d06",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

@@ -1,0 +1,1734 @@
+{
+  "post": {
+    "id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+    "title": "机器学习 - 线性回归",
+    "slug": "linear-regression",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-11-16",
+    "created_at": "2025-11-16T15:15:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:26:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-80ec-8533-ffcce7d7b26b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T12:23:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "机器学习中一个非常基础的概念就是线性回归，所谓的神经网络中每一个基础的神经元的输入其实就是跟他输入端相连的所有神经元的输出的线性组合。",
+            "text": {
+              "content": "机器学习中一个非常基础的概念就是线性回归，所谓的神经网络中每一个基础的神经元的输入其实就是跟他输入端相连的所有神经元的输出的线性组合。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-21T12:23:00.000Z",
+      "has_children": false,
+      "id": "2d0c5387-4c4e-80ae-a0b6-e3ea7111938d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-21T12:23:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "线性回归的核心就是找一条直线来最准确的“拟合”给定的一系列的样本点。",
+            "text": {
+              "content": "线性回归的核心就是找一条直线来最准确的“拟合”给定的一系列的样本点。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:02:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8047-8582-cc04ace30942",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:04:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如我们采集到了10个志愿者的身高和体重的数据，身高为",
+            "text": {
+              "content": "比如我们采集到了10个志愿者的身高和体重的数据，身高为",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 体重为",
+            "text": {
+              "content": " 体重为",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。采集到的数据是\n",
+            "text": {
+              "content": "。采集到的数据是\n",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "(x_1, y_1), (x_2, y_2), \\ldots, (x_{10}, y_{10})"
+            },
+            "href": null,
+            "plain_text": "(x_1, y_1), (x_2, y_2), \\ldots, (x_{10}, y_{10})",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T07:44:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-80d4-b4aa-d4967065a3b4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "现在我们想要找到一个直线方程 ",
+            "text": {
+              "content": "现在我们想要找到一个直线方程 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "Y = kx + b"
+            },
+            "href": null,
+            "plain_text": "Y = kx + b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "， 能够最准确的表示身高和体重的关系。这个方程核心的参数就两个：",
+            "text": {
+              "content": "， 能够最准确的表示身高和体重的关系。这个方程核心的参数就两个：",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "b"
+            },
+            "href": null,
+            "plain_text": "b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。所以也就是要找到最准确的",
+            "text": {
+              "content": "。所以也就是要找到最准确的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "b"
+            },
+            "href": null,
+            "plain_text": "b",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:35:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-80a7-9507-dd14865b7aa6",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/193b8bbfe6d05402.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T07:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T07:44:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8011-ae30-ef6380afcc5d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "怎么衡量“最准确”就有很多标准了。比如最常见的《最小二乘法》",
+            "text": {
+              "content": "怎么衡量“最准确”就有很多标准了。比如最常见的《最小二乘法》",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:38:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-802d-b9cd-de6433326e91",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:12:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "也就是保证我们找到的公式，计算出来的每一个",
+            "text": {
+              "content": "也就是保证我们找到的公式，计算出来的每一个",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "Y"
+            },
+            "href": null,
+            "plain_text": "Y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "与真实的",
+            "text": {
+              "content": "与真实的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "y"
+            },
+            "href": null,
+            "plain_text": "y",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的差值的",
+            "text": {
+              "content": "的差值的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "平方的和最小，",
+            "text": {
+              "content": "平方的和最小，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "或者说使",
+            "text": {
+              "content": "或者说使",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "误差的平方和最小",
+            "text": {
+              "content": "误差的平方和最小",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。",
+            "text": {
+              "content": "。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:41:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-8099-8250-f035448ae861",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T07:56:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如有10个样本点，",
+            "text": {
+              "content": "比如有10个样本点，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "(x_1, y_1), (x_2, y_2), \\ldots, (x_{10}, y_{10})"
+            },
+            "href": null,
+            "plain_text": "(x_1, y_1), (x_2, y_2), \\ldots, (x_{10}, y_{10})",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": ".我们找到的公式 ",
+            "text": {
+              "content": ".我们找到的公式 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "Y = kx + b"
+            },
+            "href": null,
+            "plain_text": "Y = kx + b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，针对 ",
+            "text": {
+              "content": "，针对 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x_1,x_2,\\ldots,x_{10}"
+            },
+            "href": null,
+            "plain_text": "x_1,x_2,\\ldots,x_{10}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "算出来的 ",
+            "text": {
+              "content": "算出来的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "Y_1, Y_2, \\ldots, Y_{10}"
+            },
+            "href": null,
+            "plain_text": "Y_1, Y_2, \\ldots, Y_{10}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。 ",
+            "text": {
+              "content": "。 ",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T07:56:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-80c2-951d-f7e6fc0788f9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T07:56:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "要使得 ",
+            "text": {
+              "content": "要使得 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\sum_{i=1}^{10} (Y_i - {y_i})^2 "
+            },
+            "href": null,
+            "plain_text": "\\sum_{i=1}^{10} (Y_i - {y_i})^2 ",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的值最小。",
+            "text": {
+              "content": " 的值最小。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:47:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-8008-9e2d-cc1fa694ba0a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T07:58:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "目标确定了，剩下的就是如何通过数值分析的各种方法或者数学推导来计算出",
+            "text": {
+              "content": "目标确定了，剩下的就是如何通过数值分析的各种方法或者数学推导来计算出",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和",
+            "text": {
+              "content": "和",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "b"
+            },
+            "href": null,
+            "plain_text": "b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "可以让“二乘”最小了。这个本质上也是一种机器学习算法，计算机通过“学习”样本，实现对现实的拟合。",
+            "text": {
+              "content": "可以让“二乘”最小了。这个本质上也是一种机器学习算法，计算机通过“学习”样本，实现对现实的拟合。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:08:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8061-bd06-fb774d2332fb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:10:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "使用最小二乘法作为衡量标准的线性回归其计算其实很简单，不需要复杂的数值分析，直接列方程解就可以",
+            "text": {
+              "content": "使用最小二乘法作为衡量标准的线性回归其计算其实很简单，不需要复杂的数值分析，直接列方程解就可以",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:10:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8075-b29e-ea32e831993b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:13:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "令误差的平方和为 ",
+            "text": {
+              "content": "令误差的平方和为 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "S"
+            },
+            "href": null,
+            "plain_text": "S",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，则：",
+            "text": {
+              "content": "，则：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:13:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8029-b252-ff133034903e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:21:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "S=\\sum_{i=1}^{10} (Y_i - {y_i})^2 =\\sum_{i=1}^{10}(kx_i+b-y_i)^2=\\sum_{i=1}^{10}(k^2x_i^2+b^2+2kbx_i+y_i^2-2kx_iy_i-2by_i)"
+            },
+            "href": null,
+            "plain_text": "S=\\sum_{i=1}^{10} (Y_i - {y_i})^2 =\\sum_{i=1}^{10}(kx_i+b-y_i)^2=\\sum_{i=1}^{10}(k^2x_i^2+b^2+2kbx_i+y_i^2-2kx_iy_i-2by_i)",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:15:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8058-9446-f22f89ed191d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:15:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "上面的表达式中只有 ",
+            "text": {
+              "content": "上面的表达式中只有 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "b"
+            },
+            "href": null,
+            "plain_text": "b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 两个未知数",
+            "text": {
+              "content": " 两个未知数",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:13:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-80bf-9647-ca3ce9eabeec",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:36:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "令 ",
+            "text": {
+              "content": "令 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "S"
+            },
+            "href": null,
+            "plain_text": "S",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 对 ",
+            "text": {
+              "content": " 对 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "b"
+            },
+            "href": null,
+            "plain_text": "b",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的偏导均为0 可以得到两个方程。",
+            "text": {
+              "content": " 的偏导均为0 可以得到两个方程。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:24:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8066-a572-cc3d4088e8ef",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:31:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\frac{\\partial S}{\\partial k}=\\sum_{i=1}^{10}(2x_i^2k + 2x_ib - 2x_iy_i)=2(\\sum_{i=1}^{10}x_i^2)k+2(\\sum_{i=1}^{10}x_i)b-2(\\sum_{i=1}^{10}x_iy_i)=0"
+            },
+            "href": null,
+            "plain_text": "\\frac{\\partial S}{\\partial k}=\\sum_{i=1}^{10}(2x_i^2k + 2x_ib - 2x_iy_i)=2(\\sum_{i=1}^{10}x_i^2)k+2(\\sum_{i=1}^{10}x_i)b-2(\\sum_{i=1}^{10}x_iy_i)=0",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:32:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-80b8-a48d-de61fc8e532d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:36:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\frac{\\partial S}{\\partial b}=\\sum_{i=1}^{10}(2b+2x_ik-2y_i)=20b+2(\\sum_{i=1}^{10}x_i)k - 2(\\sum_{i=1}^{10}y_i)=0"
+            },
+            "href": null,
+            "plain_text": "\\frac{\\partial S}{\\partial b}=\\sum_{i=1}^{10}(2b+2x_ik-2y_i)=20b+2(\\sum_{i=1}^{10}x_i)k - 2(\\sum_{i=1}^{10}y_i)=0",
+            "type": "equation"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-12-07T08:17:00.000Z",
+      "has_children": false,
+      "id": "2c2c5387-4c4e-8056-b96d-e675c3f19164",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T08:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "两个未知数，两个方程，剩下的就是解二元一次方程了。",
+            "text": {
+              "content": "两个未知数，两个方程，剩下的就是解二元一次方程了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:49:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-80d8-aa34-de8e0d26b341",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-12-07T09:36:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "上面的例子是针对",
+            "text": {
+              "content": "上面的例子是针对",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "x"
+            },
+            "href": null,
+            "plain_text": "x",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "是一维的情况，对于更高维度的向量上面的计算过程也是成立的只是其计算会变成针对向量和矩阵的计算，后面再详细讨论",
+            "text": {
+              "content": "是一维的情况，对于更高维度的向量上面的计算过程也是成立的只是其计算会变成针对向量和矩阵的计算，后面再详细讨论",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-11-16T15:44:00.000Z",
+      "has_children": false,
+      "id": "2adc5387-4c4e-80d3-8049-ee1f110f690e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-11-16T15:44:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2adc5387-4c4e-80b2-99ab-ee61f4955048",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

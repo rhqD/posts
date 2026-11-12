@@ -1,0 +1,1082 @@
+{
+  "post": {
+    "id": "220c5387-4c4e-8020-a289-edb006be6023",
+    "title": "声明式编程",
+    "slug": "declarative-programming",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2025-06-28",
+    "created_at": "2025-06-28T06:01:00.000Z",
+    "updated_at": "2025-06-28T09:47:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "react",
+        "name": "react",
+        "slug": "react",
+        "created_at": ""
+      },
+      {
+        "id": "声明式编程",
+        "name": "声明式编程",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "immutable",
+        "name": "immutable",
+        "slug": "immutable",
+        "created_at": ""
+      },
+      {
+        "id": "不可变数据结构",
+        "name": "不可变数据结构",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "编程范式是什么",
+            "text": {
+              "content": "编程范式是什么",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "220c5387-4c4e-80ed-b749-cc7b8edae08b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80b9-b034-c951f91958ca",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:05:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "编程范式是写代码的“套路”",
+            "text": {
+              "content": "编程范式是写代码的“套路”",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80b1-8f48-db7e9fba98ad",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:05:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "编程范式只是前人写代码的经验，和具体语言无关",
+            "text": {
+              "content": "编程范式只是前人写代码的经验，和具体语言无关",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为什么需要编程范式",
+            "text": {
+              "content": "为什么需要编程范式",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "220c5387-4c4e-8017-9884-e9ba35cc0111",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8089-9a07-ebf89915e1d1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "归根结底是因为人脑太弱了",
+            "text": {
+              "content": "归根结底是因为人脑太弱了",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:05:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-806c-b951-df1faac5b562",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:05:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8067-b4f4-f0eb78c600bc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "人脑无法驾驭规模太大的复杂逻辑",
+            "text": {
+              "content": "人脑无法驾驭规模太大的复杂逻辑",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-802c-8440-f8e21a3e534f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "人脑短期记忆有限",
+            "text": {
+              "content": "人脑短期记忆有限",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-802e-871f-eb010fcb0aed",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:05:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "人的注意力无法长时间集中",
+            "text": {
+              "content": "人的注意力无法长时间集中",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:06:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80bf-9bc6-cba1c9f57508",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:06:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "人的阅读速度很慢",
+            "text": {
+              "content": "人的阅读速度很慢",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:05:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80a1-a56e-e00978b93834",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:06:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "\n所以我们需要编程范式，来帮人类降低心力负担，换句话说编程范式就是研究怎么写代码可以让自己写起来不那么累，bug不那么多，同时让别人读起来不那么累。",
+            "text": {
+              "content": "\n所以我们需要编程范式，来帮人类降低心力负担，换句话说编程范式就是研究怎么写代码可以让自己写起来不那么累，bug不那么多，同时让别人读起来不那么累。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "什么是声明式编程",
+            "text": {
+              "content": "什么是声明式编程",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "220c5387-4c4e-80cc-9b1c-efadfc0ccb4c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8045-a0a4-c1cd78d3ee80",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "举个例子，你要写一个程序把大象放进冰箱里。\n按照声明式编程的理念你的主程序看起来应该是这样的",
+            "text": {
+              "content": "举个例子，你要写一个程序把大象放进冰箱里。\n按照声明式编程的理念你的主程序看起来应该是这样的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "把大象放进冰箱里() {\n\t打开冰箱门();\n\t大象塞进去();\n\t关闭冰箱门();\n}\n",
+            "text": {
+              "content": "把大象放进冰箱里() {\n\t打开冰箱门();\n\t大象塞进去();\n\t关闭冰箱门();\n}\n",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-805a-974f-f252a652fa30",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8039-a561-e2ed617760e2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "而不太声明式的写法可能是这样",
+            "text": {
+              "content": "而不太声明式的写法可能是这样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "把大象放进冰箱里() {\n\t找到冰箱门把手();\n\t伸手抓住门把手();\n\t往后拉();\n\t找皮姆教授买一些皮姆粒子();\n\t使用皮姆粒子把大象缩小();\n\t拿起大象();\n\t放进冷藏室();\n\t找到冰箱门把手();\n\t伸手抓住门把手();\n\t往前推();\n}\n",
+            "text": {
+              "content": "把大象放进冰箱里() {\n\t找到冰箱门把手();\n\t伸手抓住门把手();\n\t往后拉();\n\t找皮姆教授买一些皮姆粒子();\n\t使用皮姆粒子把大象缩小();\n\t拿起大象();\n\t放进冷藏室();\n\t找到冰箱门把手();\n\t伸手抓住门把手();\n\t往前推();\n}\n",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80ee-b512-fed507d61200",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:03:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:07:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80ad-9b58-d8adfabf4caa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:12:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这两种写法的区别是，不太声明式的写法强迫读代码的人一开始就关注怎么打开冰箱门。但是开冰箱门这种简单操作大概率读代码的人并不关心是怎么实现的。但是现在他得读完前三行以后才会恍然大悟：“哦 这是要开冰箱门啊”。",
+            "text": {
+              "content": "这两种写法的区别是，不太声明式的写法强迫读代码的人一开始就关注怎么打开冰箱门。但是开冰箱门这种简单操作大概率读代码的人并不关心是怎么实现的。但是现在他得读完前三行以后才会恍然大悟：“哦 这是要开冰箱门啊”。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8009-b0a2-e690109dae77",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:12:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "但是反观声明式的写法，进入主函数后你会看到只有三行代码，交代了宏观的整体思路。你关心哪一步的具体实现你再跳进去，大概率你并不感兴趣怎么开和关冰箱门。那么你可以直接跳转到第二步的具体实现，看看是怎么把大象放进去的。",
+            "text": {
+              "content": "但是反观声明式的写法，进入主函数后你会看到只有三行代码，交代了宏观的整体思路。你关心哪一步的具体实现你再跳进去，大概率你并不感兴趣怎么开和关冰箱门。那么你可以直接跳转到第二步的具体实现，看看是怎么把大象放进去的。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-805e-bea4-d776908bc516",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:13:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "同样对于写代码的人来说声明式编程要求他必须划分逻辑层级，在顶级的时候就只考虑宏观的解决方案，不要浪费精力在细节，他甚至可以在将当前层级的任务拆分成多个子任务后，优先去实现他觉得需要投入更多精力的子任务，其他的子任务可以先”假装“已经实现了。等”大象塞进去“这个更有意思的子任务做完之后再去实现低难度且无聊的开关冰箱门，有助于你集中注意力在核心难点上。",
+            "text": {
+              "content": "同样对于写代码的人来说声明式编程要求他必须划分逻辑层级，在顶级的时候就只考虑宏观的解决方案，不要浪费精力在细节，他甚至可以在将当前层级的任务拆分成多个子任务后，优先去实现他觉得需要投入更多精力的子任务，其他的子任务可以先”假装“已经实现了。等”大象塞进去“这个更有意思的子任务做完之后再去实现低难度且无聊的开关冰箱门，有助于你集中注意力在核心难点上。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-8075-aac1-e2229f7e9cf0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:23:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "总而言之声明式编程的核心思想可以总结为“在什么场合就说什么话”，在聊怎么把大象放进冰箱里的时候不要讨论具体怎么开冰箱门。",
+            "text": {
+              "content": "总而言之声明式编程的核心思想可以总结为“在什么场合就说什么话”，在聊怎么把大象放进冰箱里的时候不要讨论具体怎么开冰箱门。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:27:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-805c-aeca-efff0d2e8a6c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:34:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "记得高中时，老师教做阅读理解的技巧：首尾段首尾句，各段首句。意思是对第一段和最后一段你只需要读第一句和最后一句，其他自然段你只需要读第一句就可以知道这篇阅读理解的核心思想。声明式编程也是类似的道理，你最好一上来就一句话把事说清楚，别啰嗦，我有疑问会自己会往后读你的论点。这点和所谓的金字塔表达法也是异曲同工。都是",
+            "text": {
+              "content": "记得高中时，老师教做阅读理解的技巧：首尾段首尾句，各段首句。意思是对第一段和最后一段你只需要读第一句和最后一句，其他自然段你只需要读第一句就可以知道这篇阅读理解的核心思想。声明式编程也是类似的道理，你最好一上来就一句话把事说清楚，别啰嗦，我有疑问会自己会往后读你的论点。这点和所谓的金字塔表达法也是异曲同工。都是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "通过结构化表达来提升效率",
+            "text": {
+              "content": "通过结构化表达来提升效率",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "id": "220c5387-4c4e-80d0-b13d-d638df2e2131",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T06:35:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "如前面所说，编程范式不过是一种“经验“，说起来很简单，但是要真的在日常工作中实践才能变成你的习惯。",
+            "text": {
+              "content": "如前面所说，编程范式不过是一种“经验“，说起来很简单，但是要真的在日常工作中实践才能变成你的习惯。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-06-28T06:03:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": []
+      },
+      "id": "220c5387-4c4e-8009-bcff-e27c2837e3fa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-06-28T09:14:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "220c5387-4c4e-8020-a289-edb006be6023",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    }
+  ]
+}

@@ -1,0 +1,543 @@
+{
+  "post": {
+    "id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+    "title": "Transformer(0) - 总览",
+    "slug": "transformer-overview",
+    "content": null,
+    "excerpt": "把 Transformer 当成一个黑盒，先搞清楚它的输入输出和特性",
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-26",
+    "created_at": "2026-10-26T03:18:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T03:18:00.000Z",
+      "has_children": false,
+      "id": "b6fcafd0-b657-4702-8bf8-740aa275219b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T03:27:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这个系列打算从头系统的学习一下 Transformer。第一篇先不看内部结构，把 Transformer 当成一个黑盒，只关心它的输入是什么，输出是什么，有哪些特性。把这些搞清楚以后，后面拆开每个模块时就比较容易理解它为什么要这么设计。",
+            "text": {
+              "content": "这个系列打算从头系统的学习一下 Transformer。第一篇先不看内部结构，把 Transformer 当成一个黑盒，只关心它的输入是什么，输出是什么，有哪些特性。把这些搞清楚以后，后面拆开每个模块时就比较容易理解它为什么要这么设计。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "背景",
+            "text": {
+              "content": "背景",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "f5ccd00a-3ba7-4777-be8d-63fe3a90ea4a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "id": "f613a819-9595-429e-a460-1c1400210460",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Transformer 是 Google 在 2017 年的论文 Attention Is All You Need 里提出的，最初是用来做机器翻译的，比如把“我爱吃苹果”翻译成“I love eating apples”。",
+            "text": {
+              "content": "Transformer 是 Google 在 2017 年的论文 Attention Is All You Need 里提出的，最初是用来做机器翻译的，比如把“我爱吃苹果”翻译成“I love eating apples”。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "id": "4e0c9273-c6e4-427c-8526-3fab2340b29e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "原版的 Transformer 分为 encoder 和 decoder 两部分，工作的时候",
+            "text": {
+              "content": "原版的 Transformer 分为 encoder 和 decoder 两部分，工作的时候",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "id": "a79f7440-4b74-4ce0-be1c-94ba22133d0f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:25:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "encoder 负责计算原文的向量化表示",
+            "text": {
+              "content": "encoder 负责计算原文的向量化表示",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "id": "ba8218fa-c269-4dde-9d73-c54497b9b9d0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:50:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "decoder 参考 encoder 的结果，自回归的预测下一个词元（可以先简单理解成一个字或者一个词），一个一个的生成译文",
+            "text": {
+              "content": "decoder 参考 encoder 的结果，自回归的预测下一个词元（可以先简单理解成一个字或者一个词），一个一个的生成译文",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:45:00.000Z",
+      "has_children": false,
+      "id": "744156dd-1277-497f-87e1-569f0739a39c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-28T04:34:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这里的向量化，就是把每个词元变成一串数字（向量），比如“苹果”可能变成 [0.21, -1.30, 0.85, ...]，实际有几百到几千个数。之所以要这么做，是因为模型只会对数字做计算，没法直接处理文字。而且这串数字还得有意义，能体现出词元之间的关系。这有点像把城市名换成经纬度：光看“西安”“咸阳”“广州”三个名字看不出谁离谁近，换成坐标一算就知道了。词元变成向量以后，意思相近的词元向量也离得近，模型才能拿来比较和计算。而且 encoder 算出的向量是结合了上下文的，同样是“苹果”，在“我爱吃苹果”和“苹果发布了新手机”里得到的向量是不一样的。",
+            "text": {
+              "content": "这里的向量化，就是把每个词元变成一串数字（向量），比如“苹果”可能变成 [0.21, -1.30, 0.85, ...]，实际有几百到几千个数。之所以要这么做，是因为模型只会对数字做计算，没法直接处理文字。而且这串数字还得有意义，能体现出词元之间的关系。这有点像把城市名换成经纬度：光看“西安”“咸阳”“广州”三个名字看不出谁离谁近，换成坐标一算就知道了。词元变成向量以后，意思相近的词元向量也离得近，模型才能拿来比较和计算。而且 encoder 算出的向量是结合了上下文的，同样是“苹果”，在“我爱吃苹果”和“苹果发布了新手机”里得到的向量是不一样的。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:35:00.000Z",
+      "has_children": false,
+      "id": "a01aa3f9-75c2-49a4-af9c-13bc4698372e",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/40778ed6477edd0f.gif"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:38:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:15:00.000Z",
+      "has_children": false,
+      "id": "62308e9a-d26c-4464-8d17-32ffb3670881",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:15:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "动图里需要注意的一点是，decoder 每一轮输出的并不是一个词，而是词表里",
+            "text": {
+              "content": "动图里需要注意的一点是，decoder 每一轮输出的并不是一个词，而是词表里",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所有词元",
+            "text": {
+              "content": "所有词元",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "的概率分布。比如预测第一个词时，它会给出“I”的概率是多少、“My”的概率是多少……词表里几万个词元每个都有一个概率，加起来等于 1，图里只画了概率最大的 3 个。最终选哪个词元，是从这个分布里挑出来的，挑出来以后再拼回去，进入下一轮。",
+            "text": {
+              "content": "的概率分布。比如预测第一个词时，它会给出“I”的概率是多少、“My”的概率是多少……词表里几万个词元每个都有一个概率，加起来等于 1，图里只画了概率最大的 3 个。最终选哪个词元，是从这个分布里挑出来的，挑出来以后再拼回去，进入下一轮。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:09:00.000Z",
+      "has_children": false,
+      "id": "afb097ec-6c39-436e-9bf1-c9aa273dcfc1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:27:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "后来的大语言模型基本都是在这个结构的基础上做的变体。",
+            "text": {
+              "content": "后来的大语言模型基本都是在这个结构的基础上做的变体。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T06:54:00.000Z",
+      "has_children": false,
+      "id": "405c5387-4c4e-808a-95c1-e580087fe1bd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T06:54:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "405c5387-4c4e-8116-9533-c1bc80913a7d",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

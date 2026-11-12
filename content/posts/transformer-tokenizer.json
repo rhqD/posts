@@ -1,0 +1,5407 @@
+{
+  "post": {
+    "id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+    "title": "Transformer(1) - tokenizer",
+    "slug": "transformer-tokenizer",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": null,
+    "status": "published",
+    "published_at": "2026-04-19",
+    "created_at": "2026-04-19T13:06:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "2493159e-e0a4-4470-87a1-9828d671ecc0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:29:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/posts/transformer-overview",
+            "mention": {
+              "page": {
+                "id": "405c5387-4c4e-8116-9533-c1bc80913a7d"
+              },
+              "type": "page"
+            },
+            "plain_text": "Transformer(0) - 总览",
+            "type": "mention"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 里把 Transformer 当成了一个黑盒，说它的输入是一串词元，并且粗略的把词元理解成“一个字或者一个词”。但一段文字到底该怎么拆成词元，其实很有讲究。负责拆的这个工具叫分词器（tokenizer），词元对应的英文是 token。",
+            "text": {
+              "content": " 里把 Transformer 当成了一个黑盒，说它的输入是一串词元，并且粗略的把词元理解成“一个字或者一个词”。但一段文字到底该怎么拆成词元，其实很有讲究。负责拆的这个工具叫分词器（tokenizer），词元对应的英文是 token。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:47:00.000Z",
+      "has_children": false,
+      "id": "b2d9e8e8-71cf-42eb-ae10-f5f501affaa0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "拆词元这件事有点像活字印刷。如果只刻笔画，几十个活字就够了，但印一页书要拼成千上万块；如果每个常用的句子都刻成一整块，印的时候是快，但要刻的块数是天文数字，碰到没刻过的句子还印不了。实际的做法是常用的字和词刻成整块，不常用的用小块拼。分词器面对的问题和这个几乎一模一样：词元切得太细，一句话要拆成很多块；切得太粗，词表会大到装不下，还总有没见过的词。",
+            "text": {
+              "content": "拆词元这件事有点像活字印刷。如果只刻笔画，几十个活字就够了，但印一页书要拼成千上万块；如果每个常用的句子都刻成一整块，印的时候是快，但要刻的块数是天文数字，碰到没刻过的句子还印不了。实际的做法是常用的字和词刻成整块，不常用的用小块拼。分词器面对的问题和这个几乎一模一样：词元切得太细，一句话要拆成很多块；切得太粗，词表会大到装不下，还总有没见过的词。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:19:00.000Z",
+      "has_children": false,
+      "id": "0bf1433a-d1c5-4d5e-ad5d-2a780cfa17c8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "把两边的概念对应起来就是这样",
+            "text": {
+              "content": "把两边的概念对应起来就是这样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "12b4656d-b8d0-4541-a954-8f1785eb7ef0",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "活字印刷",
+                  "text": {
+                    "content": "活字印刷",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "分词器",
+                  "text": {
+                    "content": "分词器",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "16eefbf1-64e0-4de5-b1c8-afc0e1e64531",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "一块活字",
+                  "text": {
+                    "content": "一块活字",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "一个词元",
+                  "text": {
+                    "content": "一个词元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "d7246d7c-bc7b-45ca-aba7-7d9a41908981",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "所有刻好的活字（字库）",
+                  "text": {
+                    "content": "所有刻好的活字（字库）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "词表",
+                  "text": {
+                    "content": "词表",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "3b33b4f2-cc8d-4ded-85e2-c9e95b6b1f86",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "字库里有多少种活字",
+                  "text": {
+                    "content": "字库里有多少种活字",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "词表大小",
+                  "text": {
+                    "content": "词表大小",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "d273e269-f5b5-4a9f-b854-bfb2b3a4a3ff",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "排版：用字库里的活字拼出一页文字",
+                  "text": {
+                    "content": "排版：用字库里的活字拼出一页文字",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "分词：把一段文字拆成词表里的词元",
+                  "text": {
+                    "content": "分词：把一段文字拆成词表里的词元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "057cf25f-8756-4ac3-8c15-67c5c8b47348",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "印一页要拼多少块",
+                  "text": {
+                    "content": "印一页要拼多少块",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "拆出来的词元数量",
+                  "text": {
+                    "content": "拆出来的词元数量",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "aa6c8ea1-8497-465a-8750-d14271180664",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "根据哪些字常用，决定哪些刻成整块",
+                  "text": {
+                    "content": "根据哪些字常用，决定哪些刻成整块",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "根据语料统计，决定词表里放哪些片段",
+                  "text": {
+                    "content": "根据语料统计，决定词表里放哪些片段",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:19:00.000Z",
+          "has_children": false,
+          "id": "8cee3095-48d8-49cd-8cad-47a043162745",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "没刻过的字印不了",
+                  "text": {
+                    "content": "没刻过的字印不了",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "词表里没有的部分只能当成“未知”",
+                  "text": {
+                    "content": "词表里没有的部分只能当成“未知”",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:19:00.000Z",
+      "has_children": true,
+      "id": "29739e67-0804-4c0c-a448-e4c7a9518ed5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 2
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "3567616e-f073-49f9-9401-83e022193796",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那这套“字库”是怎么定出来的？下面就以最常用的 BPE（Byte Pair Encoding）算法为例，看看一个分词器是怎么生成的。GPT 系列用的就是它。",
+            "text": {
+              "content": "那这套“字库”是怎么定出来的？下面就以最常用的 BPE（Byte Pair Encoding）算法为例，看看一个分词器是怎么生成的。GPT 系列用的就是它。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "生成词表",
+            "text": {
+              "content": "生成词表",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "6411f635-f634-4ef5-9ac4-cca6b8201f5e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "df9972f9-8265-4dbb-a4f1-dfde9d195bac",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "BPE 的思路很朴素：一开始字库里只有最小的单块，比如单个的字。然后统计语料里哪两个相邻的块一起出现的次数最多，就把它们刻成一个新的整块加进字库。反复这么做，直到字库达到事先定好的大小。",
+            "text": {
+              "content": "BPE 的思路很朴素：一开始字库里只有最小的单块，比如单个的字。然后统计语料里哪两个相邻的块一起出现的次数最多，就把它们刻成一个新的整块加进字库。反复这么做，直到字库达到事先定好的大小。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "386d8613-e7a8-48e5-a0a3-e468242f6bb1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "举个例子，假设语料里只有 3 个词，后面是它们出现的次数",
+            "text": {
+              "content": "举个例子，假设语料里只有 3 个词，后面是它们出现的次数",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "机器学习 × 4    深度学习 × 3    机器翻译 × 2",
+            "text": {
+              "content": "机器学习 × 4    深度学习 × 3    机器翻译 × 2",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "id": "be296f29-d8e9-43b8-b619-eae69c1518ab",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:07:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "id": "b427c229-5712-4214-ab7a-de28ee0b56ff",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一开始所有词都拆成单个字，字库里就是这些单字：机、器、学、习、深、度、翻、译。",
+            "text": {
+              "content": "一开始所有词都拆成单个字，字库里就是这些单字：机、器、学、习、深、度、翻、译。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "9307bc24-39c9-4b0b-a443-1e710a72a8e1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "然后开始统计相邻的两个字一起出现了多少次。比如“学习”在“机器学习”里出现了 4 次，在“深度学习”里出现了 3 次，一共 7 次，是最多的，所以第一次合并就是把“学”和“习”合成“学习”。合并完以后，所有词里的“学 习”都变成了一个整块“学习”，再重新统计，再合并出现最多的那一对，依此类推",
+            "text": {
+              "content": "然后开始统计相邻的两个字一起出现了多少次。比如“学习”在“机器学习”里出现了 4 次，在“深度学习”里出现了 3 次，一共 7 次，是最多的，所以第一次合并就是把“学”和“习”合成“学习”。合并完以后，所有词里的“学 习”都变成了一个整块“学习”，再重新统计，再合并出现最多的那一对，依此类推",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "28d4434b-1053-46c7-947f-9a37ade353c2",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第几次合并",
+                  "text": {
+                    "content": "第几次合并",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "合并的两个单元",
+                  "text": {
+                    "content": "合并的两个单元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "一起出现的次数",
+                  "text": {
+                    "content": "一起出现的次数",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "新词元",
+                  "text": {
+                    "content": "新词元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "542348d2-16b9-4be7-bb59-c40d7b9814fc",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学 + 习",
+                  "text": {
+                    "content": "学 + 习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学习",
+                  "text": {
+                    "content": "学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "e67057c8-0036-408a-b677-9da7269c993d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2",
+                  "text": {
+                    "content": "2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "机 + 器",
+                  "text": {
+                    "content": "机 + 器",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "机器",
+                  "text": {
+                    "content": "机器",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "6f6bbd4f-e2aa-4e11-a30e-a976f1a427e1",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3",
+                  "text": {
+                    "content": "3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "机器 + 学习",
+                  "text": {
+                    "content": "机器 + 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "机器学习",
+                  "text": {
+                    "content": "机器学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "261351c4-c4d1-4c44-8cbe-fa3dd1f3e220",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "深 + 度",
+                  "text": {
+                    "content": "深 + 度",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3",
+                  "text": {
+                    "content": "3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "深度",
+                  "text": {
+                    "content": "深度",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "c7003756-3094-4e33-a466-0f47e2b72504",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "5",
+                  "text": {
+                    "content": "5",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "深度 + 学习",
+                  "text": {
+                    "content": "深度 + 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3",
+                  "text": {
+                    "content": "3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "深度学习",
+                  "text": {
+                    "content": "深度学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:48:00.000Z",
+      "has_children": true,
+      "id": "de4d45d5-56d5-45f3-929e-cf41d4cc8b45",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 4
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "2d1e109d-4144-4bc4-9066-604337db322c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "注意第 3 次合并的是“机器”和“学习”这两个已经合并过的整块，也就是说 BPE 可以在合并的结果上继续合并，越常见的组合就会被拼成越长的词元。",
+            "text": {
+              "content": "注意第 3 次合并的是“机器”和“学习”这两个已经合并过的整块，也就是说 BPE 可以在合并的结果上继续合并，越常见的组合就会被拼成越长的词元。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "47afd07b-933d-4e55-8be0-a7866ae0012e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "假设字库到这里就满了，最终得到的词表就是",
+            "text": {
+              "content": "假设字库到这里就满了，最终得到的词表就是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "机  器  学  习  深  度  翻  译  学习  机器  机器学习  深度  深度学习",
+            "text": {
+              "content": "机  器  学  习  深  度  翻  译  学习  机器  机器学习  深度  深度学习",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:48:00.000Z",
+      "has_children": false,
+      "id": "4d47dab9-1c38-48bb-9179-d0d51d699ee5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "1eac83bf-31de-4f2d-98a4-faa1c905c1bb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "出现得多的“机器学习”“深度学习”成了完整的词元，出现得少的“机器翻译”没能合并成整块。",
+            "text": {
+              "content": "出现得多的“机器学习”“深度学习”成了完整的词元，出现得少的“机器翻译”没能合并成整块。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "4c1f2707-da84-4ce3-aaee-8a96c3d6f56f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一个分词器生成好以后，手里其实有两样东西：一张词表，以及上面这张按顺序记录下来的合并规则。",
+            "text": {
+              "content": "一个分词器生成好以后，手里其实有两样东西：一张词表，以及上面这张按顺序记录下来的合并规则。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:29:00.000Z",
+      "has_children": false,
+      "id": "271cce88-a586-4ea7-904d-c96cd2bff852",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "整个过程只是在做统计，不涉及神经网络。它是在训练模型之前单独做的一步，分词器一旦定下来，后面训练模型时就一直用这一套。",
+            "text": {
+              "content": "整个过程只是在做统计，不涉及神经网络。它是在训练模型之前单独做的一步，分词器一旦定下来，后面训练模型时就一直用这一套。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "用生成好的分词器拆新文字",
+            "text": {
+              "content": "用生成好的分词器拆新文字",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "4c8067e5-d78c-4040-8d93-61866d6118d3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "id": "5a60cac7-ca8c-43a3-8678-ce72ff765861",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "拆一段新的文字时，先把它拆成最小的单块，然后按照合并规则的顺序，一条一条的试，能合并的就合并。比如拆“学习深度学习”",
+            "text": {
+              "content": "拆一段新的文字时，先把它拆成最小的单块，然后按照合并规则的顺序，一条一条的试，能合并的就合并。比如拆“学习深度学习”",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "e0c68694-14fa-410d-860a-ef4d5c6eca75",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "步骤",
+                  "text": {
+                    "content": "步骤",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "结果",
+                  "text": {
+                    "content": "结果",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "d91c3eec-3dac-4b18-b60a-265c7f4f040c",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "拆成单字",
+                  "text": {
+                    "content": "拆成单字",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学 | 习 | 深 | 度 | 学 | 习",
+                  "text": {
+                    "content": "学 | 习 | 深 | 度 | 学 | 习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "45c72c2f-1361-4b0e-9a65-bd33545c53d1",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规则 1：学 + 习",
+                  "text": {
+                    "content": "规则 1：学 + 习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学习 | 深 | 度 | 学习",
+                  "text": {
+                    "content": "学习 | 深 | 度 | 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "c5b4b95b-1237-4c2c-91f3-d62331bff541",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规则 2：机 + 器",
+                  "text": {
+                    "content": "规则 2：机 + 器",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "没有可以合并的，不变",
+                  "text": {
+                    "content": "没有可以合并的，不变",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "f463e484-4ee0-4af6-9405-a8adb3a647b8",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规则 3：机器 + 学习",
+                  "text": {
+                    "content": "规则 3：机器 + 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "没有可以合并的，不变",
+                  "text": {
+                    "content": "没有可以合并的，不变",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "e6b58a55-103e-4dda-92f5-2313cf4250a2",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规则 4：深 + 度",
+                  "text": {
+                    "content": "规则 4：深 + 度",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学习 | 深度 | 学习",
+                  "text": {
+                    "content": "学习 | 深度 | 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T08:48:00.000Z",
+          "has_children": false,
+          "id": "a5efe617-c298-46db-8f19-ee075ec79643",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T08:48:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规则 5：深度 + 学习",
+                  "text": {
+                    "content": "规则 5：深度 + 学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "学习 | 深度学习",
+                  "text": {
+                    "content": "学习 | 深度学习",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:48:00.000Z",
+      "has_children": true,
+      "id": "88b86bcd-f03d-4f56-ac1c-e16670df2e1e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 2
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:07:00.000Z",
+      "has_children": false,
+      "id": "9febce8b-de11-4345-bcfa-22158294a694",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最终就拆成了 学习 | 深度学习 两个词元。同样的道理，“机器翻译”会被拆成 机器 | 翻 | 译 三个词元。",
+            "text": {
+              "content": "最终就拆成了 学习 | 深度学习 两个词元。同样的道理，“机器翻译”会被拆成 机器 | 翻 | 译 三个词元。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:51:00.000Z",
+      "has_children": false,
+      "id": "e87d5591-d861-4009-9bfc-8b3fff9a85c8",
+      "image": {
+        "caption": [],
+        "type": "external",
+        "external": {
+          "url": "/images/45eb806ef80830a9.gif"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:53:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "再看一个英文的例子",
+            "text": {
+              "content": "再看一个英文的例子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "9308bae0-723f-4139-a0aa-85cafbe78cdf",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "9184f16e-b29a-48a1-be96-fbc04f3a8e3a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "英文也是一样的道理。来看看 tokenization 这个词是怎么被拆成 token + ization 的。假设语料是",
+            "text": {
+              "content": "英文也是一样的道理。来看看 tokenization 这个词是怎么被拆成 token + ization 的。假设语料是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "token × 5    tokens × 2    realization × 3    organization × 3",
+            "text": {
+              "content": "token × 5    tokens × 2    realization × 3    organization × 3",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "32c0f96e-7165-4afa-9e2a-308013c2d666",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "0dfc61b4-63a1-4d9c-9645-36dd256f7fc7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "注意语料里并没有 tokenization 这个词。",
+            "text": {
+              "content": "注意语料里并没有 tokenization 这个词。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "69db674e-1ae2-4142-8c24-16d3f965a608",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一开始全部拆成单个字母。token 里的每一对相邻字母，在 token 和 tokens 里一共出现了 7 次，是最多的；ization 里的每一对相邻字母，在 realization 和 organization 里一共出现了 6 次，排第二。所以前 10 次合并依次是",
+            "text": {
+              "content": "一开始全部拆成单个字母。token 里的每一对相邻字母，在 token 和 tokens 里一共出现了 7 次，是最多的；ization 里的每一对相邻字母，在 realization 和 organization 里一共出现了 6 次，排第二。所以前 10 次合并依次是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "d49fa8f0-590b-4ecf-b6c2-c62952aee22f",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第几次合并",
+                  "text": {
+                    "content": "第几次合并",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "合并的两个单元",
+                  "text": {
+                    "content": "合并的两个单元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "一起出现的次数",
+                  "text": {
+                    "content": "一起出现的次数",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "新词元",
+                  "text": {
+                    "content": "新词元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "8157c746-77dc-4aae-8c1c-8b3f520b475f",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "t + o",
+                  "text": {
+                    "content": "t + o",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "to",
+                  "text": {
+                    "content": "to",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "fd4bd6e4-3f82-4634-a45e-4e99dac3504c",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2",
+                  "text": {
+                    "content": "2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "to + k",
+                  "text": {
+                    "content": "to + k",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "tok",
+                  "text": {
+                    "content": "tok",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "b3c4e8d0-aaab-4a6e-ae8a-089ca9d5bf11",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3",
+                  "text": {
+                    "content": "3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "tok + e",
+                  "text": {
+                    "content": "tok + e",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "toke",
+                  "text": {
+                    "content": "toke",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "205c88ec-40a6-40ff-a1c8-ea180eb35802",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "toke + n",
+                  "text": {
+                    "content": "toke + n",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "token",
+                  "text": {
+                    "content": "token",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "9c76bdb4-6e25-4515-a693-acada345c53a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "5",
+                  "text": {
+                    "content": "5",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "i + z",
+                  "text": {
+                    "content": "i + z",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "iz",
+                  "text": {
+                    "content": "iz",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "c2157bff-a1d3-446a-bedd-2fbd16a45832",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "iz + a",
+                  "text": {
+                    "content": "iz + a",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "iza",
+                  "text": {
+                    "content": "iza",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "fcc16576-200d-4727-92e1-9579e962a351",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "iza + t",
+                  "text": {
+                    "content": "iza + t",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izat",
+                  "text": {
+                    "content": "izat",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "03863cd4-b91b-49f5-a0de-2970fe9f4e09",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "8",
+                  "text": {
+                    "content": "8",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izat + i",
+                  "text": {
+                    "content": "izat + i",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izati",
+                  "text": {
+                    "content": "izati",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "1c2e8699-1de0-4a9c-a709-f061647fb829",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "9",
+                  "text": {
+                    "content": "9",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izati + o",
+                  "text": {
+                    "content": "izati + o",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izatio",
+                  "text": {
+                    "content": "izatio",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:19:00.000Z",
+          "has_children": false,
+          "id": "e9ab946e-4d99-4ddc-a2df-ad576cb91c1d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "10",
+                  "text": {
+                    "content": "10",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "izatio + n",
+                  "text": {
+                    "content": "izatio + n",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "ization",
+                  "text": {
+                    "content": "ization",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": true,
+      "id": "88160a26-f173-44e2-87f3-30cfa060eb67",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 4
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "245fb82a-d16d-40ef-94b0-1ff558b66c3c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "（次数一样的时候选哪个都可以，这里按先后顺序选）",
+            "text": {
+              "content": "（次数一样的时候选哪个都可以，这里按先后顺序选）",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "dc0267d0-003e-42e3-9229-b95f124edb66",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "合并到这里，token 和 ization 都成了完整的词元，而 real、organ 这些只出现了 3 次的部分还没来得及合并。",
+            "text": {
+              "content": "合并到这里，token 和 ization 都成了完整的词元，而 real、organ 这些只出现了 3 次的部分还没来得及合并。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "bb6a2253-7886-4dda-9de7-e1d026f6c6b4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "现在用这套规则来拆 tokenization。先拆成单个字母，然后按规则 1 到 4 依次合并出 token，再按规则 5 到 10 合并出 ization",
+            "text": {
+              "content": "现在用这套规则来拆 tokenization。先拆成单个字母，然后按规则 1 到 4 依次合并出 token，再按规则 5 到 10 合并出 ization",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "t o k e n i z a t i o n\n→ token i z a t i o n      （规则 1~4）\n→ token ization            （规则 5~10）",
+            "text": {
+              "content": "t o k e n i z a t i o n\n→ token i z a t i o n      （规则 1~4）\n→ token ization            （规则 5~10）",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "54fc6499-82a9-4ce7-807d-31686f3a7508",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:19:00.000Z",
+      "has_children": false,
+      "id": "57516ec6-e8be-4bb2-8899-11df6021d326",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最终 tokenization 被拆成了 token + ization 两个词元。虽然语料里从来没出现过这个词，但它是由两个常见的片段组成的，BPE 就能把它拆成这两块。这也是子词的好处：没见过的词，也能用认识的片段拼出来。",
+            "text": {
+              "content": "最终 tokenization 被拆成了 token + ization 两个词元。虽然语料里从来没出现过这个词，但它是由两个常见的片段组成的，BPE 就能把它拆成这两块。这也是子词的好处：没见过的词，也能用认识的片段拼出来。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "没见过的字怎么办",
+            "text": {
+              "content": "没见过的字怎么办",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "f150d243-fc16-40e0-a129-9f2172d895aa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "f31ea3de-9c11-457f-b1d2-bd41f16729cd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "上面的例子有个问题：如果来了一个语料里从来没出现过的字，比如“人”，字库里根本没有这块活字，就印不出来了。",
+            "text": {
+              "content": "上面的例子有个问题：如果来了一个语料里从来没出现过的字，比如“人”，字库里根本没有这块活字，就印不出来了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T08:48:00.000Z",
+      "has_children": false,
+      "id": "73840a9b-24e0-4512-840a-12df1e54e8b4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以实际的 BPE 一般不从字开始，而是从字节开始。任何文字用 UTF-8 编码以后都是一串字节，而字节一共只有 256 种。只要字库里先备齐这 256 块最小的活字，就没有拼不出来的文字，最坏的情况就是把一个生僻字拆成几个字节。在这个基础上再按前面的方法一轮轮合并，常见的字和词照样会被合成整块。",
+            "text": {
+              "content": "所以实际的 BPE 一般不从字开始，而是从字节开始。任何文字用 UTF-8 编码以后都是一串字节，而字节一共只有 256 种。只要字库里先备齐这 256 块最小的活字，就没有拼不出来的文字，最坏的情况就是把一个生僻字拆成几个字节。在这个基础上再按前面的方法一轮轮合并，常见的字和词照样会被合成整块。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "21dc9351-7973-466a-898e-2c993dc64175",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如 GPT-2 的词表大小是 50257，就是 256 个字节，加上 50000 次合并出来的词元，再加 1 个表示结束的特殊词元。",
+            "text": {
+              "content": "比如 GPT-2 的词表大小是 50257，就是 256 个字节，加上 50000 次合并出来的词元，再加 1 个表示结束的特殊词元。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和霍夫曼编码对比一下",
+            "text": {
+              "content": "和霍夫曼编码对比一下",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "3ee32e19-12e6-48f2-9c60-b4b1c54ad2b1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": false,
+      "id": "b1f4e8cd-48b2-44da-bb68-40538f3ccd4a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "如果学过霍夫曼编码，会觉得 BPE 的思路很眼熟。",
+            "text": {
+              "content": "如果学过霍夫曼编码，会觉得 BPE 的思路很眼熟。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": false,
+      "id": "b5cebee1-dd73-4cb5-923c-311cc304c41a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "霍夫曼编码也是先统计频率，再反复合并。比如一段文字里 A 出现了 5 次，B 出现了 2 次，C 和 D 各出现 1 次。它每次把频率最低的两个合并：先合并 C 和 D，再合并 B 和 CD，最后和 A 合并成一棵树。按树上的路径分配编码，得到 A = 0、B = 10、C = 110、D = 111，出现得越多的符号编码越短，整段文字编码以后就更短。",
+            "text": {
+              "content": "霍夫曼编码也是先统计频率，再反复合并。比如一段文字里 A 出现了 5 次，B 出现了 2 次，C 和 D 各出现 1 次。它每次把频率最低的两个合并：先合并 C 和 D，再合并 B 和 CD，最后和 A 合并成一棵树。按树上的路径分配编码，得到 A = 0、B = 10、C = 110、D = 111，出现得越多的符号编码越短，整段文字编码以后就更短。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": false,
+      "id": "1a28a69d-0fd8-4fb8-a02b-1d686d77366d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "两者的共同点是：都是基于频率统计，都是从小往大反复合并，目的也都是让常见的东西代价更低。但合并的东西和意义完全不一样",
+            "text": {
+              "content": "两者的共同点是：都是基于频率统计，都是从小往大反复合并，目的也都是让常见的东西代价更低。但合并的东西和意义完全不一样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "1a65ef48-7702-4f5f-8c42-1543ccfd9e36",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "霍夫曼编码",
+                  "text": {
+                    "content": "霍夫曼编码",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "BPE",
+                  "text": {
+                    "content": "BPE",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "c2546878-80c8-4b98-96e0-277b658f3b4d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "每次合并什么",
+                  "text": {
+                    "content": "每次合并什么",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "频率最低的两个符号",
+                  "text": {
+                    "content": "频率最低的两个符号",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "一起出现次数最多的两个相邻单元",
+                  "text": {
+                    "content": "一起出现次数最多的两个相邻单元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "794b48be-7e02-44cf-ad51-c519beea31cc",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "合并的作用",
+                  "text": {
+                    "content": "合并的作用",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "搭一棵树，用来分配编码",
+                  "text": {
+                    "content": "搭一棵树，用来分配编码",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "产生一个新的词元，加进词表",
+                  "text": {
+                    "content": "产生一个新的词元，加进词表",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "489b69dd-4708-43e2-be14-f996be8f7199",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "省在哪",
+                  "text": {
+                    "content": "省在哪",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "常见的符号用更短的编码",
+                  "text": {
+                    "content": "常见的符号用更短的编码",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "常见的组合合成一个词元，拆出来的词元更少",
+                  "text": {
+                    "content": "常见的组合合成一个词元，拆出来的词元更少",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "37b25846-3ab3-4123-b361-b74db24a5a0b",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "看不看顺序",
+                  "text": {
+                    "content": "看不看顺序",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "不看，只统计每个符号各自出现几次",
+                  "text": {
+                    "content": "不看，只统计每个符号各自出现几次",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "看，统计的是相邻的两个单元",
+                  "text": {
+                    "content": "看，统计的是相邻的两个单元",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "74cd97f5-0e51-4dd1-a6e7-b2a906b188cc",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "什么时候停",
+                  "text": {
+                    "content": "什么时候停",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "所有符号合成一棵树",
+                  "text": {
+                    "content": "所有符号合成一棵树",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "词表达到事先定好的大小",
+                  "text": {
+                    "content": "词表达到事先定好的大小",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T09:07:00.000Z",
+          "has_children": false,
+          "id": "6f6de583-d97b-4602-982c-6cb2ca748c39",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T09:07:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "结果好不好",
+                  "text": {
+                    "content": "结果好不好",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "数学上保证是最优的",
+                  "text": {
+                    "content": "数学上保证是最优的",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "贪心算法，不保证最优，但实践中够用",
+                  "text": {
+                    "content": "贪心算法，不保证最优，但实践中够用",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": true,
+      "id": "09a2ccc8-13ab-46f8-a4ab-fc30f0600a70",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T09:07:00.000Z",
+      "has_children": false,
+      "id": "98e2ceb7-4419-467c-a502-48da32db7695",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T09:07:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "用活字印刷来说，霍夫曼编码是“常用的字用更简单的记号”，每个字还是一块，只是记号有长有短；BPE 则是“常用的词刻成一整块”，直接减少了要拼的块数。另外霍夫曼编码的目标是纯粹的压缩，越短越好；而 BPE 要同时照顾词表大小，因为后面的模型要给词表里每个词元算概率，词表不能无限变大。所以它们“长得很像”，但解决的是不同的问题。",
+            "text": {
+              "content": "用活字印刷来说，霍夫曼编码是“常用的字用更简单的记号”，每个字还是一块，只是记号有长有短；BPE 则是“常用的词刻成一整块”，直接减少了要拼的块数。另外霍夫曼编码的目标是纯粹的压缩，越短越好；而 BPE 要同时照顾词表大小，因为后面的模型要给词表里每个词元算概率，词表不能无限变大。所以它们“长得很像”，但解决的是不同的问题。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "小结",
+            "text": {
+              "content": "小结",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "c921393d-7f53-4fba-b5ad-ec9dde1996d8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:01:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "b9581c28-7d21-413e-a9bd-e9820bae4325",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T08:48:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "BPE 生成分词器的过程，就像从最小的活字开始，看哪两块总是挨在一起用，就把它们刻成一整块，一直刻到字库满为止。常用的组合因为出现得多，会优先被刻成整块，所以拆出来的词元少；字库大小是事先定好的，所以词表也不会无限变大。",
+            "text": {
+              "content": "BPE 生成分词器的过程，就像从最小的活字开始，看哪两块总是挨在一起用，就把它们刻成一整块，一直刻到字库满为止。常用的组合因为出现得多，会优先被刻成整块，所以拆出来的词元少；字库大小是事先定好的，所以词表也不会无限变大。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-26T07:01:00.000Z",
+      "has_children": false,
+      "id": "15dcbb85-e989-4d66-a8b5-3dab05938520",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-26T07:21:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "拆好以后，每个词元会换成它在词表里的编号交给 Transformer。但就像总览里说的，编号之间的大小没有意义，没法直接拿来计算。下一篇就来看这些编号是怎么变成向量的，也就是 embedding。",
+            "text": {
+              "content": "拆好以后，每个词元会换成它在词表里的编号交给 Transformer。但就像总览里说的，编号之间的大小没有意义，没法直接拿来计算。下一篇就来看这些编号是怎么变成向量的，也就是 embedding。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "347c5387-4c4e-80f9-9c41-e3e3cbe069c7",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

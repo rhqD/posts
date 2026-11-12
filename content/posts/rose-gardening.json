@@ -1,0 +1,833 @@
+{
+  "post": {
+    "id": "227c5387-4c4e-8074-bbdd-d349642831de",
+    "title": "园艺植物 之 月季",
+    "slug": "rose-gardening",
+    "content": null,
+    "excerpt": null,
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": null,
+    "status": "published",
+    "published_at": "2025-07-05",
+    "created_at": "2025-07-05T11:54:00.000Z",
+    "updated_at": "2026-05-20T10:10:00.000Z"
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:57:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-8085-9752-c7245bf6d9eb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "大家都知道玫瑰好看，但是实际上花店卖的玫瑰严格讲都是月季，更具体讲是切花月季。玫瑰和月季在国外统称为Rose，但是中文语境下是严格区分二者的，不过玫瑰的名字显然比月季更洋气。真实的玫瑰香气浓郁，而且很多品种的花是可食用的,可以做成鲜花饼玫瑰酱等，但是花和叶片都并不好看。比如大马士革玫瑰。所以一般切花或者园艺都更多的使用月季而非玫瑰。而月季最为全世界最受欢迎的园艺植物，历经多年的育种，登记在册的品种有四万多。实际流通的也有一万多种。所以院子里挑选月季时其实可选项非常多。总有一个品种满足你的各种要求。",
+            "text": {
+              "content": "大家都知道玫瑰好看，但是实际上花店卖的玫瑰严格讲都是月季，更具体讲是切花月季。玫瑰和月季在国外统称为Rose，但是中文语境下是严格区分二者的，不过玫瑰的名字显然比月季更洋气。真实的玫瑰香气浓郁，而且很多品种的花是可食用的,可以做成鲜花饼玫瑰酱等，但是花和叶片都并不好看。比如大马士革玫瑰。所以一般切花或者园艺都更多的使用月季而非玫瑰。而月季最为全世界最受欢迎的园艺植物，历经多年的育种，登记在册的品种有四万多。实际流通的也有一万多种。所以院子里挑选月季时其实可选项非常多。总有一个品种满足你的各种要求。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "基础知识",
+            "text": {
+              "content": "基础知识",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-80a2-b9ac-c8991547e623",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:12:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:12:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-8087-adf3-d5ce64f9864b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:22:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "月季都是买种苗，不买种子。网上卖月季种子的都是骗小白的",
+            "text": {
+              "content": "月季都是买种苗，不买种子。网上卖月季种子的都是骗小白的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "\n只有培育新品种时才会使用种子繁殖，通过杂交和筛选来找到更好的品种，但是自己种植的话用种子一来太慢，二来性状不稳定，很有可能“龙凤成翔”。\n所以现在网上买的月季基本都是无性繁殖得到的，要么扦插，要么嫁接。也就是说任何一个品种的月季，比如切花朱丽叶，你在地球任何一个角落买到的切花朱丽叶都是从同一株月季的枝条繁殖来的，他们的基因是一模一样的。",
+            "text": {
+              "content": "\n只有培育新品种时才会使用种子繁殖，通过杂交和筛选来找到更好的品种，但是自己种植的话用种子一来太慢，二来性状不稳定，很有可能“龙凤成翔”。\n所以现在网上买的月季基本都是无性繁殖得到的，要么扦插，要么嫁接。也就是说任何一个品种的月季，比如切花朱丽叶，你在地球任何一个角落买到的切花朱丽叶都是从同一株月季的枝条繁殖来的，他们的基因是一模一样的。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:13:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-80d8-b655-d9fa519fd7fa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:25:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "网上卖的大部分是扦插苗，部分品种有根接苗，根接苗更贵，但长势更好。\n",
+            "text": {
+              "content": "网上卖的大部分是扦插苗，部分品种有根接苗，根接苗更贵，但长势更好。\n",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "根接苗就是将目标品种月季的枝条嫁接到根系更发达的蔷薇根上，一般都是嫁接藤本月季这样的大型月季。根接月季长势更好，往往买回去第一年就能开发，第二年就能有小规模的花墙，第三年就能直接有一面花墙。",
+            "text": {
+              "content": "根接苗就是将目标品种月季的枝条嫁接到根系更发达的蔷薇根上，一般都是嫁接藤本月季这样的大型月季。根接月季长势更好，往往买回去第一年就能开发，第二年就能有小规模的花墙，第三年就能直接有一面花墙。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:25:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-802a-b81d-c3a210870418",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:31:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "月季并不一定月月开\n",
+            "text": {
+              "content": "月季并不一定月月开\n",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "古典月季本来确实是月月开的。但是随着不断的杂交选育，逐渐的为了一些性状牺牲了复花性。大部分月季都是过冬休眠后，第二年春天的第一波花质量最高，后面随着气温的升高，以及积累的养分变少，再长出来的新枝条会更加细弱，花的状态也更差。尤其是有些藤本月季，春天第一波花极为壮观。但是后面几波花甚至到秋天的复花基本都是当第一波花的赠品了。",
+            "text": {
+              "content": "古典月季本来确实是月月开的。但是随着不断的杂交选育，逐渐的为了一些性状牺牲了复花性。大部分月季都是过冬休眠后，第二年春天的第一波花质量最高，后面随着气温的升高，以及积累的养分变少，再长出来的新枝条会更加细弱，花的状态也更差。尤其是有些藤本月季，春天第一波花极为壮观。但是后面几波花甚至到秋天的复花基本都是当第一波花的赠品了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:31:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-8096-bf6e-d9af9a1cc265",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:40:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "藤本月季并不会自己爬藤，需要牵引的\n",
+            "text": {
+              "content": "藤本月季并不会自己爬藤，需要牵引的\n",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "藤本月季虽然名字叫藤本，但是其实他并不像爬山虎或者络石藤一样会自己吸附在墙上，是需要人对他进行牵引的。和一般的月季比藤本月季就只是枝条更长而已。而且一般长势很好，每年都会长出来很多的新枝条，很容易看起来很乱，需要经常打理。维护成本相对高很多。每年冬天植株休眠后都需要剪掉枯枝弱枝，还要进行横拉，将枝条拉成水平的，这样来年开春开花效果才会更壮观。",
+            "text": {
+              "content": "藤本月季虽然名字叫藤本，但是其实他并不像爬山虎或者络石藤一样会自己吸附在墙上，是需要人对他进行牵引的。和一般的月季比藤本月季就只是枝条更长而已。而且一般长势很好，每年都会长出来很多的新枝条，很容易看起来很乱，需要经常打理。维护成本相对高很多。每年冬天植株休眠后都需要剪掉枯枝弱枝，还要进行横拉，将枝条拉成水平的，这样来年开春开花效果才会更壮观。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:38:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-806e-b5a0-e30cefdcca42",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:41:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "月季需要春化\n",
+            "text": {
+              "content": "月季需要春化\n",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "月季往往在北方开花状态更好，因为北方冬天更冷，月季会进入休眠期，枝条和叶片里的营养会回流到根部。在休眠期的时候对月季进行修剪，只保留强壮的枝条。那么来年开春的时候开花的状态往往极好。这个叫做春化作用，很多植物都有这个现象。在生存条件变差时月季会集中能量开花结果，保证基因能留存下去。",
+            "text": {
+              "content": "月季往往在北方开花状态更好，因为北方冬天更冷，月季会进入休眠期，枝条和叶片里的营养会回流到根部。在休眠期的时候对月季进行修剪，只保留强壮的枝条。那么来年开春的时候开花的状态往往极好。这个叫做春化作用，很多植物都有这个现象。在生存条件变差时月季会集中能量开花结果，保证基因能留存下去。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:55:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "按植株规模分类",
+            "text": {
+              "content": "按植株规模分类",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-8073-bbd0-c6588b01aa11",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T11:55:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:56:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "1.微月",
+            "text": {
+              "content": "1.微月",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-80d0-95a2-cd384e7d22b3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T11:56:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:42:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-80c2-bd4d-cc57a3af7440",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:42:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "植株规模很小，适合阳台花盆种植",
+            "text": {
+              "content": "植株规模很小，适合阳台花盆种植",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:56:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2.灌木月季",
+            "text": {
+              "content": "2.灌木月季",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-8017-a5ab-ee2a4bb60af7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T11:56:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:42:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-8094-bebd-fa0f9eacd11c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:44:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最常见的月季，没有明显主干，枝条不会长特别高。可以盆栽，但是地栽效果更好。",
+            "text": {
+              "content": "最常见的月季，没有明显主干，枝条不会长特别高。可以盆栽，但是地栽效果更好。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:57:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "3.树月季",
+            "text": {
+              "content": "3.树月季",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-80ad-95af-e1af00024b5d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:44:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:44:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-807e-961b-e3d70d1fe0a4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:45:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一般是在粗壮的蔷薇杆上嫁接其他品种的月季得到的，也叫棒棒糖月季，看着像一棵树。甚至可以同一棵树嫁接好几个品种",
+            "text": {
+              "content": "一般是在粗壮的蔷薇杆上嫁接其他品种的月季得到的，也叫棒棒糖月季，看着像一棵树。甚至可以同一棵树嫁接好几个品种",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T11:56:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "4.藤本月季",
+            "text": {
+              "content": "4.藤本月季",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "227c5387-4c4e-80cc-88dd-cfb842a48aac",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:45:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2025-07-05T12:45:00.000Z",
+      "has_children": false,
+      "id": "227c5387-4c4e-8065-b196-e3f76eb30ed7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2025-07-05T12:47:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "大型月季，枝条一般很长，花量也很大，适合做花墙，拱门。但是一般维护工作量比较大，需要频繁修剪，冬季休眠后需要做横向牵引，打破顶端优势，来年才能整根枝条一起爆花，达到最壮观的效果。",
+            "text": {
+              "content": "大型月季，枝条一般很长，花量也很大，适合做花墙，拱门。但是一般维护工作量比较大，需要频繁修剪，冬季休眠后需要做横向牵引，打破顶端优势，来年才能整根枝条一起爆花，达到最壮观的效果。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "227c5387-4c4e-8074-bbdd-d349642831de",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

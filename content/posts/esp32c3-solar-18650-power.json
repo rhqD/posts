@@ -1,0 +1,6222 @@
+{
+  "post": {
+    "id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+    "title": "用太阳能和 18650 让 ESP32-C3 持续运行",
+    "slug": "esp32c3-solar-18650-power",
+    "content": null,
+    "excerpt": "只靠一块 3W 太阳能板和一节 18650，让 XIAO ESP32-C3 长期在户外运行：供电链路设计、电量检测、功耗估算，以及根据电量和昼夜动态切换持续运行与深度睡眠的策略。文中以土壤湿度传感器作为示例负载。",
+    "cover_url": "https://app.notion.com/images/page-cover/solid_beige.png",
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-22",
+    "created_at": "2026-10-22T14:17:00.000Z",
+    "updated_at": "2026-10-28T09:12:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "开发",
+        "name": "开发",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "ESP32",
+        "name": "ESP32",
+        "slug": "esp32",
+        "created_at": ""
+      },
+      {
+        "id": "物联网",
+        "name": "物联网",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "嵌入式",
+        "name": "嵌入式",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "太阳能",
+        "name": "太阳能",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "低功耗",
+        "name": "低功耗",
+        "slug": "",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "962a28bc-61e8-47a5-893d-a7092b060eea",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "想让一块 ESP32 放在户外长期跑着：不用换电池、不用拉电线，上面还能跑点自己的任务。方案是",
+            "text": {
+              "content": "想让一块 ESP32 放在户外长期跑着：不用换电池、不用拉电线，上面还能跑点自己的任务。方案是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "太阳能板 + 18650 锂电池 + ESP32-C3",
+            "text": {
+              "content": "太阳能板 + 18650 锂电池 + ESP32-C3",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。这篇记录一下供电电路怎么设计、为什么这么接，以及怎么让它只靠一块小太阳能板活下去。",
+            "text": {
+              "content": "。这篇记录一下供电电路怎么设计、为什么这么接，以及怎么让它只靠一块小太阳能板活下去。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:19:00.000Z",
+      "has_children": false,
+      "id": "e5b5d072-bc57-4222-9aa8-1e57dc943965",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "文中用一个土壤湿度传感器当作示例负载，换成温湿度、光照或者别的外设，思路都一样。",
+            "text": {
+              "content": "文中用一个土壤湿度传感器当作示例负载，换成温湿度、光照或者别的外设，思路都一样。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "物料清单",
+            "text": {
+              "content": "物料清单",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "12318017-e823-4393-b682-af41c467316d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "ca6ddc62-ff76-40c5-80cf-39446315c09d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "器件",
+                  "text": {
+                    "content": "器件",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "规格",
+                  "text": {
+                    "content": "规格",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "作用",
+                  "text": {
+                    "content": "作用",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "502459cc-4c1a-4c69-a49f-d431a78aac7d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "Seeed XIAO ESP32-C3",
+                  "text": {
+                    "content": "Seeed XIAO ESP32-C3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "—",
+                  "text": {
+                    "content": "—",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "主控，Wi-Fi 上报",
+                  "text": {
+                    "content": "主控，Wi-Fi 上报",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "0e6eb33a-066c-48b1-9c5d-63945e0e505c",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "太阳能板",
+                  "text": {
+                    "content": "太阳能板",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6V 3W",
+                  "text": {
+                    "content": "6V 3W",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "发电",
+                  "text": {
+                    "content": "发电",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "95babbbb-f616-4c20-a7fd-23818a43207a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "CN3065 充电板",
+                  "text": {
+                    "content": "CN3065 充电板",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "线性锂电充电",
+                  "text": {
+                    "content": "线性锂电充电",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "太阳能给电池充电",
+                  "text": {
+                    "content": "太阳能给电池充电",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "70d48ac6-fc99-4ea5-8bda-dd1fc99091e1",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "18650 锂电池",
+                  "text": {
+                    "content": "18650 锂电池",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1500mAh，带电池仓",
+                  "text": {
+                    "content": "1500mAh，带电池仓",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "储能",
+                  "text": {
+                    "content": "储能",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "63be0177-b012-43bf-8bcc-a9fa7900fb8a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "TPS63802 模块",
+                  "text": {
+                    "content": "TPS63802 模块",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "升降压，输出 3.3V",
+                  "text": {
+                    "content": "升降压，输出 3.3V",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "把 3.0–4.2V 的电池电压稳成 3.3V",
+                  "text": {
+                    "content": "把 3.0–4.2V 的电池电压稳成 3.3V",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:19:00.000Z",
+          "has_children": false,
+          "id": "cefa23cc-8bc6-405f-8c7f-13a69018ec5d",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2N7000",
+                  "text": {
+                    "content": "2N7000",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "N 沟道 MOSFET",
+                  "text": {
+                    "content": "N 沟道 MOSFET",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "给外设断电省电",
+                  "text": {
+                    "content": "给外设断电省电",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:19:00.000Z",
+          "has_children": false,
+          "id": "a953f89e-4bae-4f6c-863d-ad814f112b7c",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:19:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "电容式土壤湿度传感器",
+                  "text": {
+                    "content": "电容式土壤湿度传感器",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "v1.2",
+                  "text": {
+                    "content": "v1.2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "示例负载，可换成其他外设",
+                  "text": {
+                    "content": "示例负载，可换成其他外设",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "ace313f8-c32d-445b-9d31-cf372e0ed53e",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "电阻、电容",
+                  "text": {
+                    "content": "电阻、电容",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1M×2、1k、100k、100nF",
+                  "text": {
+                    "content": "1M×2、1k、100k、100nF",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "分压、限流、下拉、滤波",
+                  "text": {
+                    "content": "分压、限流、下拉、滤波",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "1a074a53-8547-43b5-8739-612089c116bd",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "洞洞板",
+                  "text": {
+                    "content": "洞洞板",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "—",
+                  "text": {
+                    "content": "—",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "焊接",
+                  "text": {
+                    "content": "焊接",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": true,
+      "id": "7f7b7490-2cd2-49b6-a4d4-c138bb05fa29",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 3
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "电路图",
+            "text": {
+              "content": "电路图",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "e5ca5cb9-590e-4a1a-9a7b-a4cd11a4be6f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "4693ddf8-c866-4de7-a813-e78f3ceb2f1e",
+      "image": {
+        "caption": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "整体电路图：红线是电池正极，粗黑线是电池负极，所有地符号都是同一个公共地",
+            "text": {
+              "content": "整体电路图：红线是电池正极，粗黑线是电池负极，所有地符号都是同一个公共地",
+              "link": null
+            },
+            "type": "text"
+          }
+        ],
+        "type": "external",
+        "external": {
+          "url": "/images/d5b97a11e2175c23.svg+xml"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "af4bc186-25ec-422d-91a1-714dbdf400ea",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "核心是两块：供电链路和电池电压检测。2N7000 加土壤湿度传感器只是挂在上面的一个示例负载。",
+            "text": {
+              "content": "核心是两块：供电链路和电池电压检测。2N7000 加土壤湿度传感器只是挂在上面的一个示例负载。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "供电链路",
+            "text": {
+              "content": "供电链路",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "363cc872-944a-45f1-bf5b-cd6dfe3cb3e9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "ed258ecc-ee15-4a8c-8531-e5381c0484ee",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "太阳能板 → CN3065 → 18650 → TPS63802 → XIAO 的 3V3 引脚。",
+            "text": {
+              "content": "太阳能板 → CN3065 → 18650 → TPS63802 → XIAO 的 3V3 引脚。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "太阳能板正负极接 CN3065 的 IN+ / IN−。",
+            "text": {
+              "content": "太阳能板正负极接 CN3065 的 IN+ / IN−。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "96248402-55e4-401d-a6eb-d41677d9d73c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "CN3065 的 BAT+ / BAT− 接电池。电池正极同时接 TPS63802 的 VIN 和分压电阻 R1。",
+            "text": {
+              "content": "CN3065 的 BAT+ / BAT− 接电池。电池正极同时接 TPS63802 的 VIN 和分压电阻 R1。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "f3ea8187-5e27-42d6-bdb1-fc43bec6e0fb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "TPS63802 的 EN 直接短接到 VIN。EN 悬空模块可能不启动。",
+            "text": {
+              "content": "TPS63802 的 EN 直接短接到 VIN。EN 悬空模块可能不启动。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "4328adc4-55fa-4407-975f-5e07b0ef8a40",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "TPS63802 的 VOUT 接 XIAO 的 ",
+            "text": {
+              "content": "TPS63802 的 VOUT 接 XIAO 的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "3V3 引脚",
+            "text": {
+              "content": "3V3 引脚",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，不是 5V 引脚。5V 引脚后面还有一颗板载 LDO，3.3V 进去出来就不够了。",
+            "text": {
+              "content": "，不是 5V 引脚。5V 引脚后面还有一颗板载 LDO，3.3V 进去出来就不够了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "5bd0aba3-5407-478f-8126-56858187e503",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "模块如果有 MODE 脚，接 GND，用省电模式，轻负载效率高；PG 脚悬空即可。",
+            "text": {
+              "content": "模块如果有 MODE 脚，接 GND，用省电模式，轻负载效率高；PG 脚悬空即可。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "518a0091-dc57-4634-b43c-90c884f858a1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "关于地线",
+            "text": {
+              "content": "关于地线",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "57efd5be-9b86-4281-81a1-9d1516da1668",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "56bac69f-470d-4e2d-96b6-5c0e2d15a8a5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "图里的地符号都代表同一个公共地，也就是电池负极。CN3065 内部 IN− 和 BAT− 是通的，TPS63802 的两个 GND 在模块内部也是同一块铺铜。",
+            "text": {
+              "content": "图里的地符号都代表同一个公共地，也就是电池负极。CN3065 内部 IN− 和 BAT− 是通的，TPS63802 的两个 GND 在模块内部也是同一块铺铜。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "99c98fd4-acbf-4063-8200-31115ccd4d81",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那 TPS63802 为什么要引出两个 GND？主要是为了让电源线和地线成对出现：输入侧一对（VIN/GND），输出侧一对（VOUT/GND），接线不用绕。同时两边的开关电流各走各的回路，回路面积小、噪声小，两个焊盘并联载流量也更大。实际焊的时候可以直接把两个 GND 短接，再用一根短而粗的线接到电池负极——输入侧的地是开关电流最大的地方，越短越好。",
+            "text": {
+              "content": "那 TPS63802 为什么要引出两个 GND？主要是为了让电源线和地线成对出现：输入侧一对（VIN/GND），输出侧一对（VOUT/GND），接线不用绕。同时两边的开关电流各走各的回路，回路面积小、噪声小，两个焊盘并联载流量也更大。实际焊的时候可以直接把两个 GND 短接，再用一根短而粗的线接到电池负极——输入侧的地是开关电流最大的地方，越短越好。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "电池电压检测",
+            "text": {
+              "content": "电池电压检测",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2486e9b9-cce9-48e7-835a-812cce0f6d5d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "09a00a90-a45a-470a-827f-a71963f802d9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R1、R2 都是 1MΩ，从电池正极分压后送到 GPIO4（A2）。锂电池最高 4.2V，分压后约 2.1V，在 ESP32-C3 ADC 的量程内。代码里读到的值乘 2 就是电池电压。用 1MΩ 这么大的电阻，是因为这一路一直挂在电池上，只漏约 2µA。",
+            "text": {
+              "content": "R1、R2 都是 1MΩ，从电池正极分压后送到 GPIO4（A2）。锂电池最高 4.2V，分压后约 2.1V，在 ESP32-C3 ADC 的量程内。代码里读到的值乘 2 就是电池电压。用 1MΩ 这么大的电阻，是因为这一路一直挂在电池上，只漏约 2µA。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "03363869-01aa-4c5c-a2f6-4b2893584f36",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "C1（100nF）是干嘛的？",
+            "text": {
+              "content": "C1（100nF）是干嘛的？",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 1M/1M 分压的等效内阻有约 500kΩ，而 ADC 每次采样时内部的采样电容要瞬间吸走一点电荷，这么“弱”的信号源补不上，读数会偏低、跳动。C1 相当于一个小蓄水池，采样时直接从它取电荷，读数就稳了；它和 500kΩ 还组成一个时间常数约 50ms 的低通，顺便滤掉 TPS63802 的开关噪声。焊的时候尽量靠近 GPIO4。",
+            "text": {
+              "content": " 1M/1M 分压的等效内阻有约 500kΩ，而 ADC 每次采样时内部的采样电容要瞬间吸走一点电荷，这么“弱”的信号源补不上，读数会偏低、跳动。C1 相当于一个小蓄水池，采样时直接从它取电荷，读数就稳了；它和 500kΩ 还组成一个时间常数约 50ms 的低通，顺便滤掉 TPS63802 的开关噪声。焊的时候尽量靠近 GPIO4。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "给外设断电：2N7000 低边开关",
+            "text": {
+              "content": "给外设断电：2N7000 低边开关",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "01c5f797-c3f7-414e-85eb-803eef99eea7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "ce60e9ba-28ea-48ef-bcee-3eb68d847ac2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "外设在 ESP32 睡眠时也一直耗电，就把整个系统的睡眠电流抬上去了。所以用一个 2N7000 切断外设的地，需要时再打开。以电容式土壤湿度传感器为例，它工作时大约 5mA：",
+            "text": {
+              "content": "外设在 ESP32 睡眠时也一直耗电，就把整个系统的睡眠电流抬上去了。所以用一个 2N7000 切断外设的地，需要时再打开。以电容式土壤湿度传感器为例，它工作时大约 5mA：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "传感器 VCC 接 3V3，AOUT 接 GPIO3（A1），GND 接 2N7000 的 D。",
+            "text": {
+              "content": "传感器 VCC 接 3V3，AOUT 接 GPIO3（A1），GND 接 2N7000 的 D。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "2434d0c1-40a5-4b3c-8bb9-f04489b022f3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2N7000 的 S 接地；G 经 R3（1kΩ）接 GPIO5（D3），再用 R4（100kΩ）下拉到地，保证上电和深睡眠时传感器是关的。",
+            "text": {
+              "content": "2N7000 的 S 接地；G 经 R3（1kΩ）接 GPIO5（D3），再用 R4（100kΩ）下拉到地，保证上电和深睡眠时传感器是关的。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "28458722-63d2-473b-9416-a9de61a24d53",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "TO-92 封装平面朝自己、引脚朝下，从左到右是 S、G、D。",
+            "text": {
+              "content": "TO-92 封装平面朝自己、引脚朝下，从左到右是 S、G、D。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "694eae8b-d293-42d3-be7c-5c353adf6570",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "844ea804-e205-4a53-b327-47a085ea68c7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "读数流程：GPIO5 拉高 → 等 200ms → 读 ADC → GPIO5 拉低。换成别的外设，只要电流不超过一两百毫安，都可以用同样的接法。",
+            "text": {
+              "content": "读数流程：GPIO5 拉高 → 等 200ms → 读 ADC → GPIO5 拉低。换成别的外设，只要电流不超过一两百毫安，都可以用同样的接法。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2N7000 是怎么工作的",
+            "text": {
+              "content": "2N7000 是怎么工作的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "d88bdbec-3e25-448e-826e-34202af5d13c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "4b904519-9174-4a59-86c2-25ec03dfa4ac",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "MOSFET 可以理解成一个",
+            "text": {
+              "content": "MOSFET 可以理解成一个",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "用电压控制的开关",
+            "text": {
+              "content": "用电压控制的开关",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：D（漏极）和 S（源极）是开关的两个触点，G（栅极）是按钮。它只看 G 相对 S 的电压 Vgs：低于约 0.8V 一定关断，高于约 3V 完全导通，中间是半开的区域（典型开启电压约 2V，每颗管子不一样）。",
+            "text": {
+              "content": "：D（漏极）和 S（源极）是开关的两个触点，G（栅极）是按钮。它只看 G 相对 S 的电压 Vgs：低于约 0.8V 一定关断，高于约 3V 完全导通，中间是半开的区域（典型开启电压约 2V，每颗管子不一样）。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "8545c74e-9aa6-4f7a-adfa-3d95dc005ba9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "关键是",
+            "text": {
+              "content": "关键是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "栅极是绝缘的",
+            "text": {
+              "content": "栅极是绝缘的",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。它和里面的导电沟道之间隔着一层很薄的氧化层，等效成一个约 20pF 的小电容。数据手册里栅极漏电最大 10nA（Vgs = 15V 时），换算下来 G-S 之间的直流电阻至少 1.5GΩ，实际通常更大。所以：",
+            "text": {
+              "content": "。它和里面的导电沟道之间隔着一层很薄的氧化层，等效成一个约 20pF 的小电容。数据手册里栅极漏电最大 10nA（Vgs = 15V 时），换算下来 G-S 之间的直流电阻至少 1.5GΩ，实际通常更大。所以：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "控制它几乎不耗电流，GPIO 可以直接驱动。",
+            "text": {
+              "content": "控制它几乎不耗电流，GPIO 可以直接驱动。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "9a7bc607-fae2-4ebc-a126-7d560df9bffa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "栅极上的电荷没地方去，如果没人管，电压就停在一个不确定的值上。",
+            "text": {
+              "content": "栅极上的电荷没地方去，如果没人管，电压就停在一个不确定的值上。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "845332e3-a8c7-494e-b559-2f0ee3fb2275",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "9943cac5-46c9-4688-a660-c2389beac5cf",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这也是为什么把它接在传感器和地之间（低边开关）：S 接地，GPIO 的 3.3V 就完整地加在 G、S 之间。如果放在 3V3 一侧，S 的电位会跟着升高，Vgs 就不够了。",
+            "text": {
+              "content": "这也是为什么把它接在传感器和地之间（低边开关）：S 接地，GPIO 的 3.3V 就完整地加在 G、S 之间。如果放在 3V3 一侧，S 的电位会跟着升高，Vgs 就不够了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R4：决定“默认关”",
+            "text": {
+              "content": "R4：决定“默认关”",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "5a96f2b3-48cb-475a-a18b-979dd8c0615f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "3d830007-6848-45cd-ae2b-5710e8334c13",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "GPIO 在很多时候会进入高阻态，相当于松手不管：deep sleep（ESP32-C3 睡眠时引脚默认不保持输出）、上电和复位的瞬间、烧录、程序崩溃。这时如果没有 R4，栅极经 R3 连到一个悬空的引脚上，等于栅极也悬空了。悬空的栅极电压由几个偶然因素决定：",
+            "text": {
+              "content": "GPIO 在很多时候会进入高阻态，相当于松手不管：deep sleep（ESP32-C3 睡眠时引脚默认不保持输出）、上电和复位的瞬间、烧录、程序崩溃。这时如果没有 R4，栅极经 R3 连到一个悬空的引脚上，等于栅极也悬空了。悬空的栅极电压由几个偶然因素决定：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "残留电荷",
+            "text": {
+              "content": "残留电荷",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：GPIO 刚输出过高电平就复位或进入睡眠，栅极上留着约 3.3V，管子会一直全开，直到漏电慢慢放掉。",
+            "text": {
+              "content": "：GPIO 刚输出过高电平就复位或进入睡眠，栅极上留着约 3.3V，管子会一直全开，直到漏电慢慢放掉。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "41fe24c0-4f71-495e-b04c-9f2f2e883b85",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "漏极耦合",
+            "text": {
+              "content": "漏极耦合",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：管子关断后漏极经传感器被拉向 3.3V，G-D 之间的寄生电容会把栅极往上带。",
+            "text": {
+              "content": "：管子关断后漏极经传感器被拉向 3.3V，G-D 之间的寄生电容会把栅极往上带。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "c25efb0c-17e5-404a-882d-c5c4fb7ecb27",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "干扰和漏电",
+            "text": {
+              "content": "干扰和漏电",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：手靠近、Wi-Fi 射频、受潮的板子都能在悬空节点上感应出电压。",
+            "text": {
+              "content": "：手靠近、Wi-Fi 射频、受潮的板子都能在悬空节点上感应出电压。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "0d5611a8-c48a-4534-b6f6-41d9faffeeff",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "845d65a9-8cdb-4263-b13c-853455866501",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "结果是管子可能关、可能半开、也可能全开。对长期靠电池运行的设备，“不确定”本身就是问题：哪天赶上一次，传感器就在睡眠中耗一整晚的电，还很难排查。",
+            "text": {
+              "content": "结果是管子可能关、可能半开、也可能全开。对长期靠电池运行的设备，“不确定”本身就是问题：哪天赶上一次，传感器就在睡眠中耗一整晚的电，还很难排查。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "d0775c53-596f-4bef-967a-9769626d5aa2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R4 给栅极一条通往地的确定路径，把它钉在 0V。放电时间常数 τ = 100kΩ × 20pF = 2µs，残留电荷微秒级就放光了。",
+            "text": {
+              "content": "R4 给栅极一条通往地的确定路径，把它钉在 0V。放电时间常数 τ = 100kΩ × 20pF = 2µs，残留电荷微秒级就放光了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "7ca48d30-c99f-4402-a070-c9da613550b8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那为什么不直接把栅极接地？因为那样 GPIO 就再也拉不上去了。R4 是一个",
+            "text": {
+              "content": "那为什么不直接把栅极接地？因为那样 GPIO 就再也拉不上去了。R4 是一个",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "弱下拉",
+            "text": {
+              "content": "弱下拉",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：没人管时它说了算，GPIO 一出手（内阻只有几十欧）就能轻松压过它，代价只是导通时多流 3.3V ÷ 101kΩ ≈ 33µA。",
+            "text": {
+              "content": "：没人管时它说了算，GPIO 一出手（内阻只有几十欧）就能轻松压过它，代价只是导通时多流 3.3V ÷ 101kΩ ≈ 33µA。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "596e3fec-c18d-4984-919b-94779a8d2825",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R4 取值是两头的平衡：",
+            "text": {
+              "content": "R4 取值是两头的平衡：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:46:00.000Z",
+          "has_children": false,
+          "id": "30f99613-bbb2-479f-87ff-e12418650bbb",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:46:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "1712426c-0d24-4434-add2-b935c56dc96d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "R4",
+                  "text": {
+                    "content": "R4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "结果",
+                  "text": {
+                    "content": "结果",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:46:00.000Z",
+          "has_children": false,
+          "id": "a21cd0d8-f56a-4cf8-b05c-1ec83e56bee3",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:46:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "1712426c-0d24-4434-add2-b935c56dc96d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0Ω（直接接地）",
+                  "text": {
+                    "content": "0Ω（直接接地）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "GPIO 拉不上去，MOSFET 打不开",
+                  "text": {
+                    "content": "GPIO 拉不上去，MOSFET 打不开",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:46:00.000Z",
+          "has_children": false,
+          "id": "86168beb-f7a2-47f6-92c3-168a6bd2efaf",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:46:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "1712426c-0d24-4434-add2-b935c56dc96d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1kΩ",
+                  "text": {
+                    "content": "1kΩ",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "和 R3 分压后栅极只剩 1.65V，打不开",
+                  "text": {
+                    "content": "和 R3 分压后栅极只剩 1.65V，打不开",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:46:00.000Z",
+          "has_children": false,
+          "id": "c908c6da-1281-43c5-b0b7-640682c0aff1",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:46:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "1712426c-0d24-4434-add2-b935c56dc96d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "10k–1MΩ",
+                  "text": {
+                    "content": "10k–1MΩ",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "常用范围",
+                  "text": {
+                    "content": "常用范围",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:46:00.000Z",
+          "has_children": false,
+          "id": "86b6b1fc-842e-4644-b4cb-c99d7ae79475",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:46:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "1712426c-0d24-4434-add2-b935c56dc96d",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "100MΩ 以上",
+                  "text": {
+                    "content": "100MΩ 以上",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "拉不住：10nA 的漏电流就能在上面产生 1V，接近开启电压",
+                  "text": {
+                    "content": "拉不住：10nA 的漏电流就能在上面产生 1V，接近开启电压",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": true,
+      "id": "1712426c-0d24-4434-add2-b935c56dc96d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 2
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "f138c9ef-a6fc-4e9f-aecb-e1a7f7be6810",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "注意 R4 太大的问题不是放电慢——就算 100MΩ，τ 也只有 2ms——而是抗干扰能力差。100kΩ 是比较稳妥的中间值。",
+            "text": {
+              "content": "注意 R4 太大的问题不是放电慢——就算 100MΩ，τ 也只有 2ms——而是抗干扰能力差。100kΩ 是比较稳妥的中间值。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "03abcf1a-0c60-47e2-8e4c-8b9bd7ddc553",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "软件上也可以用 ",
+            "text": {
+              "content": "软件上也可以用 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": true,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "gpio_hold_en()",
+            "text": {
+              "content": "gpio_hold_en()",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 让引脚在 deep sleep 时保持低电平，但上电、复位、烧录这些时候软件管不到，R4 这个硬件兜底还是要留。",
+            "text": {
+              "content": " 让引脚在 deep sleep 时保持低电平，但上电、复位、烧录这些时候软件管不到，R4 这个硬件兜底还是要留。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R3：让开关过程更温和",
+            "text": {
+              "content": "R3：让开关过程更温和",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "471188a2-7972-4866-8246-7aa78ab38e9f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "944d4b97-9620-4d2e-b331-9c77d5749c0c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "既然栅极是个电容，充满之后就不再进电流，稳定时流过 R3 的只有流向 R4 的那 33µA，R3 上的压降只有 0.033V，Vgs ≈ 3.27V，几乎不受影响。R3 只在 GPIO 翻转的那一瞬间起作用：",
+            "text": {
+              "content": "既然栅极是个电容，充满之后就不再进电流，稳定时流过 R3 的只有流向 R4 的那 33µA，R3 上的压降只有 0.033V，Vgs ≈ 3.27V，几乎不受影响。R3 只在 GPIO 翻转的那一瞬间起作用：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "限制冲击电流",
+            "text": {
+              "content": "限制冲击电流",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：空的栅极电容瞬间相当于短路，没有 R3 时峰值电流只受 GPIO 内阻限制，有 R3 就限制在 3.3mA。",
+            "text": {
+              "content": "：空的栅极电容瞬间相当于短路，没有 R3 时峰值电流只受 GPIO 内阻限制，有 R3 就限制在 3.3mA。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "56c3239e-3c8d-4864-8303-3837264eeada",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "抑制振铃",
+            "text": {
+              "content": "抑制振铃",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：飞线的寄生电感和栅极电容会形成 LC 谐振，R3 提供阻尼，边沿也更缓、干扰更小。",
+            "text": {
+              "content": "：飞线的寄生电感和栅极电容会形成 LC 谐振，R3 提供阻尼，边沿也更缓、干扰更小。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "7dea5171-4d8c-463c-9957-ea71afaafee6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "故障隔离",
+            "text": {
+              "content": "故障隔离",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：万一 MOSFET 击穿、栅极和漏极短路，R3 能限制灌进 GPIO 的电流。",
+            "text": {
+              "content": "：万一 MOSFET 击穿、栅极和漏极短路，R3 能限制灌进 GPIO 的电流。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "c7204250-04bf-42e8-893c-fce6a6802c66",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "ddbb58e7-7e4f-4454-9c08-790a98b7bafe",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2N7000 的栅极电容只有约 20pF，所以在这个电路里 R3 属于保险，省掉也能用；换成栅极电容大几十倍的大功率 MOSFET 就很有必要了。R3 要比 R4 小两个数量级，否则会把 Vgs 分掉一块。",
+            "text": {
+              "content": "2N7000 的栅极电容只有约 20pF，所以在这个电路里 R3 属于保险，省掉也能用；换成栅极电容大几十倍的大功率 MOSFET 就很有必要了。R3 要比 R4 小两个数量级，否则会把 Vgs 分掉一块。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "a276c8b3-cb9a-4a23-8c36-57d6876e7144",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "另外 R4 要接在 R3 靠栅极的一侧：这样就算 R3 虚焊断开，栅极仍然被下拉，不会悬空。",
+            "text": {
+              "content": "另外 R4 要接在 R3 靠栅极的一侧：这样就算 R3 虚焊断开，栅极仍然被下拉，不会悬空。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:46:00.000Z",
+      "has_children": false,
+      "id": "88312b29-5ef7-450c-8e77-eaa2e2f05496",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:46:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一句话总结：",
+            "text": {
+              "content": "一句话总结：",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "R4 决定默认关，必须有；R3 让开关更温和，是好习惯。",
+            "text": {
+              "content": "R4 决定默认关，必须有；R3 让开关更温和，是好习惯。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "引脚选择：避开 GPIO2",
+            "text": {
+              "content": "引脚选择：避开 GPIO2",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "28bf89ff-4404-4d54-8ba5-4c2bed899007",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "e9a0b78b-6772-4f9a-a2e6-62a368b4e837",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "XIAO 的 D0 是 GPIO2，它是 ESP32-C3 的 strapping 引脚，上电时如果被外部电路拉低可能启动失败。分压电阻在电池电压低时、传感器断电时的输出都可能把它拉低，所以干脆不用，改用 GPIO3 / GPIO4 / GPIO5。另外 ESP32-C3 的 ADC2 不可靠，模拟量都放在 ADC1 的 GPIO3、GPIO4 上。",
+            "text": {
+              "content": "XIAO 的 D0 是 GPIO2，它是 ESP32-C3 的 strapping 引脚，上电时如果被外部电路拉低可能启动失败。分压电阻在电池电压低时、传感器断电时的输出都可能把它拉低，所以干脆不用，改用 GPIO3 / GPIO4 / GPIO5。另外 ESP32-C3 的 ADC2 不可靠，模拟量都放在 ADC1 的 GPIO3、GPIO4 上。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "功耗：能不能一直开着？",
+            "text": {
+              "content": "功耗：能不能一直开着？",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "295710ef-a4bf-43a4-8a35-8ac1772470a7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "ee6e8619-1d62-4d7b-acdf-88521a2206ce",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "我本来还想在 ESP32 上跑点别的东西，所以先算了一下一直开着 Wi-Fi 行不行（都是粗估）：",
+            "text": {
+              "content": "我本来还想在 ESP32 上跑点别的东西，所以先算了一下一直开着 Wi-Fi 行不行（都是粗估）：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "c2951235-3a87-48a4-b310-8cd43d13838a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "项目",
+                  "text": {
+                    "content": "项目",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "估算",
+                  "text": {
+                    "content": "估算",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "afd6de2f-e523-4b3a-9bf7-2f3f0aa1bf19",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "ESP32-C3 连着 Wi-Fi 的平均电流",
+                  "text": {
+                    "content": "ESP32-C3 连着 Wi-Fi 的平均电流",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "约 80mA @3.3V",
+                  "text": {
+                    "content": "约 80mA @3.3V",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "48677a55-c81c-4fb0-b4ec-717931c1e802",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "加上转换损耗，电池端功耗",
+                  "text": {
+                    "content": "加上转换损耗，电池端功耗",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "约 0.3W，一天约 7Wh",
+                  "text": {
+                    "content": "约 0.3W，一天约 7Wh",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "0a205798-d677-456f-bdba-7c4f9ff8a1d0",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "电池容量",
+                  "text": {
+                    "content": "电池容量",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1500mAh × 3.7V ≈ 5.5Wh",
+                  "text": {
+                    "content": "1500mAh × 3.7V ≈ 5.5Wh",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "d28f7f3d-e979-49bf-b5eb-0c374eb1b907",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3W 板子晴天实际能充进去",
+                  "text": {
+                    "content": "3W 板子晴天实际能充进去",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "约 4–6Wh/天",
+                  "text": {
+                    "content": "约 4–6Wh/天",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": true,
+      "id": "295f1a8a-bef8-4520-a5be-1227a765ee3b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 2
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "563be443-9437-4c46-be35-4d91e58cca74",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "结论是",
+            "text": {
+              "content": "结论是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不行",
+            "text": {
+              "content": "不行",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：晴天收进来的电都不够一天用，阴天发电只有晴天的一两成，电池会一天比一天亏。CN3065 是线性充电、没有 MPPT，也吃掉了不少板子的功率。",
+            "text": {
+              "content": "：晴天收进来的电都不够一天用，阴天发电只有晴天的一两成，电池会一天比一天亏。CN3065 是线性充电、没有 MPPT，也吃掉了不少板子的功率。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "ae1f11ac-10f0-4959-a5e2-542c7e76e74d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "反过来，如果每 15 分钟醒一次、干 5 秒活就 deep sleep，一天只要约 15mAh，不晒太阳理论上能撑三个月。",
+            "text": {
+              "content": "反过来，如果每 15 分钟醒一次、干 5 秒活就 deep sleep，一天只要约 15mAh，不晒太阳理论上能撑三个月。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "折中：按电量和昼夜动态调度",
+            "text": {
+              "content": "折中：按电量和昼夜动态调度",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "a31936c1-5377-4e1c-b5b8-49920afc586b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "f487c50f-8663-4f01-8780-f3bea9dfdc78",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最后的方案是：电量充足时持续运行（可以跑别的任务），电量低了就 deep sleep，睡多久根据电量和是不是白天来定。有几个坑：",
+            "text": {
+              "content": "最后的方案是：电量充足时持续运行（可以跑别的任务），电量低了就 deep sleep，睡多久根据电量和是不是白天来定。有几个坑：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "7cf00472-2fbc-40d4-bebd-bd911577b230",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "1. 阈值要有回差。",
+            "text": {
+              "content": "1. 阈值要有回差。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 如果只用一个 25% 的线，带载跑到 25% 去睡，负载一撤电压回弹，醒来一测又高于 25%，马上又跑，很快又睡，反复启停。所以设两条线：运行中低于约 25% 去睡，醒来回到约 60% 才恢复持续运行，中间只做一次测量上报。",
+            "text": {
+              "content": " 如果只用一个 25% 的线，带载跑到 25% 去睡，负载一撤电压回弹，醒来一测又高于 25%，马上又跑，很快又睡，反复启停。所以设两条线：运行中低于约 25% 去睡，醒来回到约 60% 才恢复持续运行，中间只做一次测量上报。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "298b7b02-d7b2-42cc-a82a-54fdf31c665f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "2. 电压测量时机。",
+            "text": {
+              "content": "2. 电压测量时机。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 刚醒、Wi-Fi 还没开时测的最接近静置电压，运行中测到的是带载电压，会低 0.05–0.1V。锂电池电压和电量也不是线性的，大致是 4.2V≈100%、3.9V≈60%、3.7V≈25%、3.5V≈5%，具体电芯要自己实测。",
+            "text": {
+              "content": " 刚醒、Wi-Fi 还没开时测的最接近静置电压，运行中测到的是带载电压，会低 0.05–0.1V。锂电池电压和电量也不是线性的，大致是 4.2V≈100%、3.9V≈60%、3.7V≈25%、3.5V≈5%，具体电芯要自己实测。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "ebfab2e7-e74b-4f63-9c42-1a904ac29fe5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "3. 怎么判断白天。",
+            "text": {
+              "content": "3. 怎么判断白天。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 两个依据：一是 NTP 对时（deep sleep 期间系统时间会继续走），二是这次醒来的静置电压比上次高，说明正在被太阳充电。后者在阴天时也能判断对。",
+            "text": {
+              "content": " 两个依据：一是 NTP 对时（deep sleep 期间系统时间会继续走），二是这次醒来的静置电压比上次高，说明正在被太阳充电。后者在阴天时也能判断对。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "29cd1234-0b6e-4d01-b37f-362ca35c648b",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "情况",
+                  "text": {
+                    "content": "情况",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "动作",
+                  "text": {
+                    "content": "动作",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "7bb77f9b-bbb8-4d02-903d-633b557c51dc",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "电量 ≥60%",
+                  "text": {
+                    "content": "电量 ≥60%",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "持续运行",
+                  "text": {
+                    "content": "持续运行",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "7dcd4e51-05f8-41b4-8914-5e983d55fe14",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "25%–60%，白天",
+                  "text": {
+                    "content": "25%–60%，白天",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "上报后睡 20 分钟",
+                  "text": {
+                    "content": "上报后睡 20 分钟",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "6cbbb409-0b04-4e30-bb7a-258b773f447a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "25%–60%，夜里",
+                  "text": {
+                    "content": "25%–60%，夜里",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "上报后睡 2 小时",
+                  "text": {
+                    "content": "上报后睡 2 小时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "e478238e-8c05-44a6-a229-6bbef4c44284",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "低于 5%，白天",
+                  "text": {
+                    "content": "低于 5%，白天",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "不开 Wi-Fi，睡 1 小时",
+                  "text": {
+                    "content": "不开 Wi-Fi，睡 1 小时",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-22T14:17:00.000Z",
+          "has_children": false,
+          "id": "2113dd01-8c53-492d-97e2-0b8febebad04",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-22T14:17:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "低于 5%，夜里",
+                  "text": {
+                    "content": "低于 5%，夜里",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "不开 Wi-Fi，睡到早上 10 点",
+                  "text": {
+                    "content": "不开 Wi-Fi，睡到早上 10 点",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": true,
+      "id": "73101657-ace2-4d3e-a073-9f53564ffe0a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 2
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "72955fa4-f8d2-4df5-916e-5010725900fc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "另外一个小现象：边充电边运行时，CN3065 可能一直判断不出充满，充满灯不亮，这是正常的，它会把电池稳定在 4.2V。",
+            "text": {
+              "content": "另外一个小现象：边充电边运行时，CN3065 可能一直判断不出充满，充满灯不亮，这是正常的，它会把电池稳定在 4.2V。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "电池耗光了会不会再也醒不来？",
+            "text": {
+              "content": "电池耗光了会不会再也醒不来？",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "5f4d2d21-88cf-4a7f-a856-537a3ba09bf5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "fbe5bbee-7230-4f5f-8be9-abec3f58561a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不会。deep sleep 时整套电路约 60µA，5% 的电量也够睡五十多天，正常情况下不会被睡干。真耗光了，太阳出来后 CN3065 会先小电流预充，电池电压升到 TPS63802 能启动时，ESP32 冷启动，从 ",
+            "text": {
+              "content": "不会。deep sleep 时整套电路约 60µA，5% 的电量也够睡五十多天，正常情况下不会被睡干。真耗光了，太阳出来后 CN3065 会先小电流预充，电池电压升到 TPS63802 能启动时，ESP32 冷启动，从 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": true,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "setup()",
+            "text": {
+              "content": "setup()",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 重新开始。",
+            "text": {
+              "content": " 重新开始。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "1fb4529c-f82e-49ae-b4ad-7e84d17c04db",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "真正要防的是",
+            "text": {
+              "content": "真正要防的是",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "开机-掉电循环",
+            "text": {
+              "content": "开机-掉电循环",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：阳光很弱时刚充上一点电，一开 Wi-Fi 几百毫安的电流把电压拉垮，重启，再开机……永远充不起来。所以程序开机第一件事就是测电压，太低就不开 Wi-Fi 直接睡。",
+            "text": {
+              "content": "：阳光很弱时刚充上一点电，一开 Wi-Fi 几百毫安的电流把电压拉垮，重启，再开机……永远充不起来。所以程序开机第一件事就是测电压，太低就不开 Wi-Fi 直接睡。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "8051ff55-0087-4135-b14e-9a0aab35cce3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "硬件上建议用带保护板的 18650，或者外加一块 DW01 保护板，防止软件出 bug 时把电池过放到 2.5V 以下。",
+            "text": {
+              "content": "硬件上建议用带保护板的 18650，或者外加一块 DW01 保护板，防止软件出 bug 时把电池过放到 2.5V 以下。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "代码框架",
+            "text": {
+              "content": "代码框架",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "6b733705-f732-46f4-b9d4-25cd84973245",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "191bd514-7030-4ceb-931b-9587c9f3e9ee",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "你的其他任务写在 ",
+            "text": {
+              "content": "你的其他任务写在 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": true,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "loop()",
+            "text": {
+              "content": "loop()",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 开头的位置，阈值和睡眠时长都在文件开头可以改。",
+            "text": {
+              "content": " 开头的位置，阈值和睡眠时长都在文件开头可以改。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "c++",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "// XIAO ESP32-C3 太阳能 + 18650 供电 —— 按电量 + 白天/夜晚动态调度\n// 电量充足时持续运行（可放你的其他任务）；电量低于阈值进入 deep sleep，按情况决定睡多久。\n//\n// 接线：GPIO4(A2) 电池分压 1M/1M；GPIO3(A1) 传感器 AOUT；GPIO5(D3) -> 2N7000 栅极\n\n#include <WiFi.h>\n#include <time.h>\n#include \"esp_sleep.h\"\n\nconst char* WIFI_SSID = \"your_ssid\";\nconst char* WIFI_PASS = \"your_password\";\n\n#define PIN_BAT      4\n#define PIN_SOIL     3\n#define PIN_SENS_EN  5\n\n// ---------- 电压阈值（mV），按你的电芯实测后微调 ----------\nconst int V_RUN_ENTER = 3900;  // 静置约 60%：达到这个才恢复持续运行（回差，避免反复启停）\nconst int V_RUN_EXIT  = 3650;  // 运行中（带负载）约 25%：低于这个就去睡\nconst int V_CRITICAL  = 3500;  // 静置约 5%：只睡觉，连 Wi-Fi 都不开\n\n// ---------- 白天时段（本地时间） ----------\nconst int DAY_START = 8;\nconst int DAY_END   = 17;\n\n// ---------- 各种情况的睡眠时长（分钟） ----------\nconst uint32_t SLEEP_DAY_LOW       = 20;   // 白天、电量不足：勤醒，看看充上来没有\nconst uint32_t SLEEP_NIGHT_LOW     = 120;  // 夜里、电量不足：低频上报\nconst uint32_t SLEEP_DAY_CRITICAL  = 60;   // 白天、电量极低：不联网，等太阳\n// 夜里、电量极低：直接睡到 DAY_START + 2 小时\n\nconst uint32_t RUN_CHECK_MS = 60 * 1000;   // 持续运行时每分钟检查一次电量并上报\n\nRTC_DATA_ATTR int lastRestMv = 0;          // 上次唤醒时的静置电压，deep sleep 后保留\n\n// ===================== 测量 =====================\nint readBatMv() {\n  uint32_t sum = 0;\n  for (int i = 0; i < 16; i++) { sum += analogReadMilliVolts(PIN_BAT); delay(2); }\n  return (sum / 16) * 2;                   // 1M/1M 分压，乘 2 还原\n}\n\nint readSoilMv() {\n  digitalWrite(PIN_SENS_EN, HIGH);         // 打开 2N7000，给传感器通电\n  delay(200);                              // 等传感器稳定\n  uint32_t sum = 0;\n  for (int i = 0; i < 16; i++) { sum += analogReadMilliVolts(PIN_SOIL); delay(2); }\n  digitalWrite(PIN_SENS_EN, LOW);\n  return sum / 16;                         // 越干电压越高，需自行标定干/湿两点\n}\n\n// ===================== 时间 / 白天判断 =====================\nint currentHour() {                        // 没对过时返回 -1\n  struct tm t;\n  if (!getLocalTime(&t, 10)) return -1;\n  return t.tm_hour;\n}\n\nuint32_t minutesUntilHour(int hour) {\n  struct tm t;\n  if (!getLocalTime(&t, 10)) return 60;    // 断电重启后不知道时间：保守地 1 小时后再看\n  int now = t.tm_hour * 60 + t.tm_min;\n  int d = hour * 60 - now;\n  if (d <= 0) d += 24 * 60;\n  return d;\n}\n\n// 白天 = 在白天时段内，或者电压比上次高（说明正在被太阳充电）\nbool isDaytime(int restMv) {\n  bool charging = (lastRestMv > 0) && (restMv > lastRestMv + 20);\n  int h = currentHour();\n  if (h < 0) return charging;\n  return (h >= DAY_START && h < DAY_END) || charging;\n}\n\n// ===================== 网络 =====================\nbool connectWiFi(uint32_t timeoutMs = 10000) {\n  WiFi.mode(WIFI_STA);\n  WiFi.begin(WIFI_SSID, WIFI_PASS);\n  uint32_t t0 = millis();\n  while (WiFi.status() != WL_CONNECTED && millis() - t0 < timeoutMs) delay(100);\n  if (WiFi.status() != WL_CONNECTED) return false;\n  configTzTime(\"CST-8\", \"ntp.aliyun.com\", \"pool.ntp.org\");   // 北京时间\n  struct tm t;\n  getLocalTime(&t, 3000);\n  return true;\n}\n\nvoid report(int soilMv, int batMv, const char* mode) {\n  // TODO: 换成你的 MQTT / HTTP 上报\n  Serial.printf(\"[%s] soil=%dmV bat=%dmV\\n\", mode, soilMv, batMv);\n}\n\n// ===================== 睡眠 =====================\nvoid goSleep(uint32_t minutes) {\n  digitalWrite(PIN_SENS_EN, LOW);\n  WiFi.disconnect(true);\n  WiFi.mode(WIFI_OFF);\n  Serial.printf(\"sleep %u min\\n\", minutes);\n  Serial.flush();\n  esp_sleep_enable_timer_wakeup((uint64_t)minutes * 60ULL * 1000000ULL);\n  esp_deep_sleep_start();\n}\n\nuint32_t decideSleep(int restMv, bool day) {\n  if (restMv < V_CRITICAL) return day ? SLEEP_DAY_CRITICAL : minutesUntilHour(DAY_START + 2);\n  return day ? SLEEP_DAY_LOW : SLEEP_NIGHT_LOW;\n}\n\n// ===================== 主流程 =====================\nvoid setup() {\n  pinMode(PIN_SENS_EN, OUTPUT);\n  digitalWrite(PIN_SENS_EN, LOW);\n  Serial.begin(115200);\n  setCpuFrequencyMhz(80);                  // 降频省电，Wi-Fi 照常可用\n\n  int restMv = readBatMv();                // 刚醒、还没开 Wi-Fi，最接近静置电压\n  bool day = isDaytime(restMv);\n\n  // 1) 电量极低：不联网，直接睡\n  if (restMv < V_CRITICAL) {\n    lastRestMv = restMv;\n    goSleep(decideSleep(restMv, day));\n  }\n\n  // 2) 联网、对时、上报一次\n  connectWiFi();\n  day = isDaytime(restMv);                 // 对时后再判断一次\n  report(readSoilMv(), restMv, \"wake\");\n\n  // 3) 电量没回到恢复线：继续睡（回差）\n  if (restMv < V_RUN_ENTER) {\n    lastRestMv = restMv;\n    goSleep(decideSleep(restMv, day));\n  }\n\n  // 4) 电量充足：进入 loop() 持续运行\n  lastRestMv = 0;                          // 运行中的带载电压不能和静置电压比较\n}\n\nuint32_t lastCheck = 0;\n\nvoid loop() {\n  // ========== 在这里放你的其他任务（不要长时间阻塞） ==========\n\n\n  // ========== 定时检查电量 ==========\n  if (millis() - lastCheck >= RUN_CHECK_MS) {\n    lastCheck = millis();\n    if (WiFi.status() != WL_CONNECTED) connectWiFi(5000);\n    int loadMv = readBatMv();              // 带负载电压，会比静置低 0.05–0.1V\n    report(readSoilMv(), loadMv, \"run\");\n    if (loadMv < V_RUN_EXIT) {\n      goSleep(decideSleep(loadMv, isDaytime(loadMv)));\n    }\n  }\n}",
+            "text": {
+              "content": "// XIAO ESP32-C3 太阳能 + 18650 供电 —— 按电量 + 白天/夜晚动态调度\n// 电量充足时持续运行（可放你的其他任务）；电量低于阈值进入 deep sleep，按情况决定睡多久。\n//\n// 接线：GPIO4(A2) 电池分压 1M/1M；GPIO3(A1) 传感器 AOUT；GPIO5(D3) -> 2N7000 栅极\n\n#include <WiFi.h>\n#include <time.h>\n#include \"esp_sleep.h\"\n\nconst char* WIFI_SSID = \"your_ssid\";\nconst char* WIFI_PASS = \"your_password\";\n\n#define PIN_BAT      4\n#define PIN_SOIL     3\n#define PIN_SENS_EN  5\n\n// ---------- 电压阈值（mV），按你的电芯实测后微调 ----------\nconst int V_RUN_ENTER = 3900;  // 静置约 60%：达到这个才恢复持续运行（回差，避免反复启停）\nconst int V_RUN_EXIT  = 3650;  // 运行中（带负载）约 25%：低于这个就去睡\nconst int V_CRITICAL  = 3500;  // 静置约 5%：只睡觉，连 Wi-Fi 都不开\n\n// ---------- 白天时段（本地时间） ----------\nconst int DAY_START = 8;\nconst int DAY_END   = 17;\n\n// ---------- 各种情况的睡眠时长（分钟） ----------\nconst uint32_t SLEEP_DAY_LOW       = 20;   // 白天、电量不足：勤醒，看看充上来没有\nconst uint32_t SLEEP_NIGHT_LOW     = 120;  // 夜里、电量不足：低频上报\nconst uint32_t SLEEP_DAY_CRITICAL  = 60;   // 白天、电量极低：不联网，等太阳\n// 夜里、电量极低：直接睡到 DAY_START + 2 小时\n\nconst uint32_t RUN_CHECK_MS = 60 * 1000;   // 持续运行时每分钟检查一次电量并上报\n\nRTC_DATA_ATTR int lastRestMv = 0;          // 上次唤醒时的静置电压，deep sleep 后保留\n\n// ===================== 测量 =====================\nint readBatMv() {\n  uint32_t sum = 0;\n  for (int i = 0; i < 16; i++) { sum += analogReadMilliVolts(PIN_BAT); delay(2); }\n  return (sum / 16) * 2;                   // 1M/1M 分压，乘 2 还原\n}\n\nint readSoilMv() {\n  digitalWrite(PIN_SENS_EN, HIGH);         // 打开 2N7000，给传感器通电\n  delay(200);                              // 等传感器稳定\n  uint32_t sum = 0;\n  for (int i = 0; i < 16; i++) { sum += analogReadMilliVolts(PIN_SOIL); delay(2); }\n  digitalWrite(PIN_SENS_EN, LOW);\n  return sum / 16;                         // 越干电压越高，需自行标定干/湿两点\n}\n\n// ===================== 时间 / 白天判断 =====================\nint currentHour() {                        // 没对过时返回 -1\n  struct tm t;\n  if (!getLocalTime(&t, 10)) return -1;\n  return t.tm_hour;\n}\n\nuint32_t minutesUntilHour(int hour) {\n  struct tm t;\n  if (!getLocalTime(&t, 10)) return 60;    // 断电重启后不知道时间：保守地 1 小时后再看\n  int now = t.tm_hour * 60 + t.tm_min;\n  int d = hour * 60 - now;\n  if (d <= 0) d += 24 * 60;\n  return d;\n}\n\n// 白天 = 在白天时段内，或者电压比上次高（说明正在被太阳充电）\nbool isDaytime(int restMv) {\n  bool charging = (lastRestMv > 0) && (restMv > lastRestMv + 20);\n  int h = currentHour();\n  if (h < 0) return charging;\n  return (h >= DAY_START && h < DAY_END) || charging;\n}\n\n// ===================== 网络 =====================\nbool connectWiFi(uint32_t timeoutMs = 10000) {\n  WiFi.mode(WIFI_STA);\n  WiFi.begin(WIFI_SSID, WIFI_PASS);\n  uint32_t t0 = millis();\n  while (WiFi.status() != WL_CONNECTED && millis() - t0 < timeoutMs) delay(100);\n  if (WiFi.status() != WL_CONNECTED) return false;\n  configTzTime(\"CST-8\", \"ntp.aliyun.com\", \"pool.ntp.org\");   // 北京时间\n  struct tm t;\n  getLocalTime(&t, 3000);\n  return true;\n}\n\nvoid report(int soilMv, int batMv, const char* mode) {\n  // TODO: 换成你的 MQTT / HTTP 上报\n  Serial.printf(\"[%s] soil=%dmV bat=%dmV\\n\", mode, soilMv, batMv);\n}\n\n// ===================== 睡眠 =====================\nvoid goSleep(uint32_t minutes) {\n  digitalWrite(PIN_SENS_EN, LOW);\n  WiFi.disconnect(true);\n  WiFi.mode(WIFI_OFF);\n  Serial.printf(\"sleep %u min\\n\", minutes);\n  Serial.flush();\n  esp_sleep_enable_timer_wakeup((uint64_t)minutes * 60ULL * 1000000ULL);\n  esp_deep_sleep_start();\n}\n\nuint32_t decideSleep(int restMv, bool day) {\n  if (restMv < V_CRITICAL) return day ? SLEEP_DAY_CRITICAL : minutesUntilHour(DAY_START + 2);\n  return day ? SLEEP_DAY_LOW : SLEEP_NIGHT_LOW;\n}\n\n// ===================== 主流程 =====================\nvoid setup() {\n  pinMode(PIN_SENS_EN, OUTPUT);\n  digitalWrite(PIN_SENS_EN, LOW);\n  Serial.begin(115200);\n  setCpuFrequencyMhz(80);                  // 降频省电，Wi-Fi 照常可用\n\n  int restMv = readBatMv();                // 刚醒、还没开 Wi-Fi，最接近静置电压\n  bool day = isDaytime(restMv);\n\n  // 1) 电量极低：不联网，直接睡\n  if (restMv < V_CRITICAL) {\n    lastRestMv = restMv;\n    goSleep(decideSleep(restMv, day));\n  }\n\n  // 2) 联网、对时、上报一次\n  connectWiFi();\n  day = isDaytime(restMv);                 // 对时后再判断一次\n  report(readSoilMv(), restMv, \"wake\");\n\n  // 3) 电量没回到恢复线：继续睡（回差）\n  if (restMv < V_RUN_ENTER) {\n    lastRestMv = restMv;\n    goSleep(decideSleep(restMv, day));\n  }\n\n  // 4) 电量充足：进入 loop() 持续运行\n  lastRestMv = 0;                          // 运行中的带载电压不能和静置电压比较\n}\n\nuint32_t lastCheck = 0;\n\nvoid loop() {\n  // ========== 在这里放你的其他任务（不要长时间阻塞） ==========\n\n\n  // ========== 定时检查电量 ==========\n  if (millis() - lastCheck >= RUN_CHECK_MS) {\n    lastCheck = millis();\n    if (WiFi.status() != WL_CONNECTED) connectWiFi(5000);\n    int loadMv = readBatMv();              // 带负载电压，会比静置低 0.05–0.1V\n    report(readSoilMv(), loadMv, \"run\");\n    if (loadMv < V_RUN_EXIT) {\n      goSleep(decideSleep(loadMv, isDaytime(loadMv)));\n    }\n  }\n}",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "c2174b72-52ab-41ca-8ea1-a527de3b06ed",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "几个注意事项",
+            "text": {
+              "content": "几个注意事项",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "e6047cb1-e000-46cc-a046-804fc02a62f0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "太阳能板开路电压。",
+            "text": {
+              "content": "太阳能板开路电压。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 标称 6V 的板子空载可能接近 7V，而 CN3065 输入绝对最大值约 6.5V。先用万用表量一下，超了就在正极串一个 1N5819，或在输入端并一个 6.2V 稳压管。",
+            "text": {
+              "content": " 标称 6V 的板子空载可能接近 7V，而 CN3065 输入绝对最大值约 6.5V。先用万用表量一下，超了就在正极串一个 1N5819，或在输入端并一个 6.2V 稳压管。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "46e2d046-e549-45e0-8961-e9efe84fd8fb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "调试时别同时插 USB。",
+            "text": {
+              "content": "调试时别同时插 USB。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " USB 供电时板载 LDO 也会往 3V3 输出，和 TPS63802 并在一起，烧录前先断开 TPS。",
+            "text": {
+              "content": " USB 供电时板载 LDO 也会往 3V3 输出，和 TPS63802 并在一起，烧录前先断开 TPS。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "2214b91e-0a64-43f2-86c7-d33c9882f6d4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "示例传感器要标定。",
+            "text": {
+              "content": "示例传感器要标定。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 土壤湿度传感器 3.3V 供电时输出大约 1.0–2.3V，把探头分别放在空气里和水里记下读数，作为干湿两端。",
+            "text": {
+              "content": " 土壤湿度传感器 3.3V 供电时输出大约 1.0–2.3V，把探头分别放在空气里和水里记下读数，作为干湿两端。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "6d7f3f96-02ce-4728-a5db-5ba041f2542f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "bulleted_list_item": {
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "想长期在线就得升级硬件。",
+            "text": {
+              "content": "想长期在线就得升级硬件。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 太阳能板换 6–10W，充电换成带 MPPT 的 CN3791，电池换 2–3 节同型号 3000mAh 以上并联，软件开 Wi-Fi 省电模式。",
+            "text": {
+              "content": " 太阳能板换 6–10W，充电换成带 MPPT 的 CN3791，电池换 2–3 节同型号 3000mAh 以上并联，软件开 Wi-Fi 省电模式。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "660e25ab-7c29-4f41-86e8-16c09c6df296",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "bulleted_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "后续",
+            "text": {
+              "content": "后续",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "c531bcac-13ed-4fba-85b1-474c760dcca6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "b10f244a-dc39-4b81-b45d-9af06a215208",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "to_do": {
+        "checked": false,
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "洞洞板焊接，实测待机电流",
+            "text": {
+              "content": "洞洞板焊接，实测待机电流",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "to_do"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "724773b2-ac02-48f3-b58c-5ea922b11f64",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:17:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "to_do": {
+        "checked": false,
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "用自己的电芯标定电压和电量的对应关系",
+            "text": {
+              "content": "用自己的电芯标定电压和电量的对应关系",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "to_do"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-22T14:17:00.000Z",
+      "has_children": false,
+      "id": "6c5fa74b-1f3c-4d2a-9755-a4cb56cefb4d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-22T14:19:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "401c5387-4c4e-8134-91d3-c7df8f3e947b",
+        "type": "page_id"
+      },
+      "to_do": {
+        "checked": false,
+        "color": "default",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "接上 MQTT，做一个电量和运行状态的监控面板",
+            "text": {
+              "content": "接上 MQTT，做一个电量和运行状态的监控面板",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "type": "to_do"
+    }
+  ]
+}

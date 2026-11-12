@@ -1,0 +1,6007 @@
+{
+  "post": {
+    "id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+    "title": "Transformer(3) - 位置编码",
+    "slug": "transformer-positional-encoding",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-27",
+    "created_at": "2026-10-27T11:37:00.000Z",
+    "updated_at": "2026-10-28T08:50:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "e560a5c3-6a2f-4edb-9e39-7986836271ff",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/posts/transformer-embedding",
+            "mention": {
+              "page": {
+                "id": "406c5387-4c4e-8127-92ba-f92ee8731223"
+              },
+              "type": "page"
+            },
+            "plain_text": "Transformer(2) - embedding",
+            "type": "mention"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 留了一个问题：查表得到的向量只跟“是哪个 token”有关，跟它在句子里的位置无关。这一篇就来看模型是怎么知道“谁在前、谁在后”的，也就是位置编码（positional encoding）。",
+            "text": {
+              "content": " 留了一个问题：查表得到的向量只跟“是哪个 token”有关，跟它在句子里的位置无关。这一篇就来看模型是怎么知道“谁在前、谁在后”的，也就是位置编码（positional encoding）。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "解决什么问题",
+            "text": {
+              "content": "解决什么问题",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "12427343-1dfb-4ce5-8bb1-8bd07c657148",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "daa3e98e-151e-41ca-8efb-8ff1f33a10a4",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "“狗咬人”和“人咬狗”用的是同样三个 token，经过 embedding 以后也是同样三个向量，只是排列的顺序不同。但这两句话意思完全相反，模型必须分得清。",
+            "text": {
+              "content": "“狗咬人”和“人咬狗”用的是同样三个 token，经过 embedding 以后也是同样三个向量，只是排列的顺序不同。但这两句话意思完全相反，模型必须分得清。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "11b22b61-a4ce-49dc-8e7e-a53cbe107f0e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "问题在于，后面要讲的 attention 处理这组向量的方式，是让每个 token 去“看”其他所有 token，然后按相关程度把它们的信息汇总起来。这个过程只看向量的内容，不看它们排在第几位。可以证明，把输入的顺序打乱，输出也只是跟着打乱，每个 token 得到的结果本身不变。也就是说，如果什么都不加，在模型眼里一句话就是一袋打乱了的词。",
+            "text": {
+              "content": "问题在于，后面要讲的 attention 处理这组向量的方式，是让每个 token 去“看”其他所有 token，然后按相关程度把它们的信息汇总起来。这个过程只看向量的内容，不看它们排在第几位。可以证明，把输入的顺序打乱，输出也只是跟着打乱，每个 token 得到的结果本身不变。也就是说，如果什么都不加，在模型眼里一句话就是一袋打乱了的词。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "c78f4df1-9246-44ea-8182-a99c02977214",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "（这里要修正一下上一篇的说法。decoder 里的 attention 有一个限制，每个 token 只能看到它前面的 token，这本身就带了一点位置信息，第 1 个 token 只能看到自己，第 100 个 token 能看到 100 个。有研究发现只靠这一点模型也能学到一些顺序，但远远不够可靠，所以实际的模型都会显式的加上位置信息。）",
+            "text": {
+              "content": "（这里要修正一下上一篇的说法。decoder 里的 attention 有一个限制，每个 token 只能看到它前面的 token，这本身就带了一点位置信息，第 1 个 token 只能看到自己，第 100 个 token 能看到 100 个。有研究发现只靠这一点模型也能学到一些顺序，但远远不够可靠，所以实际的模型都会显式的加上位置信息。）",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "5dfb63bd-57cb-4166-a208-511aeba0ac9d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以需要另外想办法，把“第几个”这个信息也告诉模型。",
+            "text": {
+              "content": "所以需要另外想办法，把“第几个”这个信息也告诉模型。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "思路：给每个位置一个向量",
+            "text": {
+              "content": "思路：给每个位置一个向量",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "ddb0b331-391d-4338-82fb-a29411c13fee",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "bec493ab-2085-4109-aedd-abd256d38c9c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最常见的做法是给每个位置也准备一个 ",
+            "text": {
+              "content": "最常见的做法是给每个位置也准备一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维的向量 ",
+            "text": {
+              "content": " 维的向量 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{p}_{pos}"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{p}_{pos}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，然后直接加到 token 的 embedding 上：",
+            "text": {
+              "content": "，然后直接加到 token 的 embedding 上：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{h}_{pos} = \\mathbf{e}_{t_{pos}} + \\mathbf{p}_{pos}"
+      },
+      "has_children": false,
+      "id": "0560aa48-7d64-4f97-8473-e0f71979105c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "a5806866-fb7b-4bc5-b9b4-64d0add8d09e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "其中 ",
+            "text": {
+              "content": "其中 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{e}_{t_{pos}}"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{e}_{t_{pos}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 是第 ",
+            "text": {
+              "content": " 是第 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos"
+            },
+            "href": null,
+            "plain_text": "pos",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 个位置上那个 token 的 embedding，",
+            "text": {
+              "content": " 个位置上那个 token 的 embedding，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{h}_{pos}"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{h}_{pos}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 是最终交给后面各层的向量。这样同一个“狗”，放在第 1 个位置和第 3 个位置，加上的位置向量不一样，得到的 ",
+            "text": {
+              "content": " 是最终交给后面各层的向量。这样同一个“狗”，放在第 1 个位置和第 3 个位置，加上的位置向量不一样，得到的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{h}"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{h}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 也就不一样了。",
+            "text": {
+              "content": " 也就不一样了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "加起来不会混淆吗",
+            "text": {
+              "content": "加起来不会混淆吗",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "04ee7037-521e-4205-a45d-cd24e6def0e5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "42427c7d-52d2-4ae9-a09f-5df7380d85a3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这里很自然会有一个担心：两个向量加在一起，会不会正好等于另一个词的向量？比如“狗”在第 3 个位置，加完以后和“猫”在第 1 个位置一模一样：",
+            "text": {
+              "content": "这里很自然会有一个担心：两个向量加在一起，会不会正好等于另一个词的向量？比如“狗”在第 3 个位置，加完以后和“猫”在第 1 个位置一模一样：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{e}_{\\text{狗}} + \\mathbf{p}_3 = \\mathbf{e}_{\\text{猫}} + \\mathbf{p}_1 \\; ?"
+      },
+      "has_children": false,
+      "id": "9621f4a4-f6f6-44a2-8c70-41cff7557467",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "5bf37413-a825-4876-b2f4-a1716f7d5e9e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这样模型就分不清到底是哪个词、在哪个位置了。答案是实际上不会，原因可以从几个角度来看。",
+            "text": {
+              "content": "这样模型就分不清到底是哪个词、在哪个位置了。答案是实际上不会，原因可以从几个角度来看。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "heading_4": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(一) 先看一个二维的例子",
+            "text": {
+              "content": "(一) 先看一个二维的例子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "e9bd150c-11a8-4513-b359-1b65e50685ed",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_4"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "f15fd75e-d64c-42ea-ae89-ee740d26b4f1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "假设向量只有 2 维，而且恰好词向量只用第 1 维，位置向量只用第 2 维：",
+            "text": {
+              "content": "假设向量只有 2 维，而且恰好词向量只用第 1 维，位置向量只用第 2 维：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{e}_{\\text{狗}} = (3, 0), \\quad \\mathbf{p}_5 = (0, 5), \\quad \\mathbf{e}_{\\text{狗}} + \\mathbf{p}_5 = (3, 5)"
+      },
+      "has_children": false,
+      "id": "fad5de62-4211-4439-a2d0-9633e8d720ae",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "c1d9a11d-02aa-4952-b121-5b524b5bade8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "看到 (3, 5)，就能直接读出“词是 3，位置是 5”，完全不会混淆。因为两类向量各占一个互相垂直的方向，相加其实就是把两份信息放进了不同的格子里。",
+            "text": {
+              "content": "看到 (3, 5)，就能直接读出“词是 3，位置是 5”，完全不会混淆。因为两类向量各占一个互相垂直的方向，相加其实就是把两份信息放进了不同的格子里。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "18ca7aa6-27fb-407f-8662-84638346040b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "当然实际的向量不会这么整齐，但在高维空间里，它们天然就很接近这种状态。",
+            "text": {
+              "content": "当然实际的向量不会这么整齐，但在高维空间里，它们天然就很接近这种状态。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "heading_4": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(二) 高维空间里，随便两个方向几乎都是垂直的",
+            "text": {
+              "content": "(二) 高维空间里，随便两个方向几乎都是垂直的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "4fb5d97d-095a-4bcf-9b67-c2c3a612f682",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_4"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "834037bd-088d-41a7-8c4e-2a6b63533d38",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这是高维空间一个反直觉的性质。在 ",
+            "text": {
+              "content": "这是高维空间一个反直觉的性质。在 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d"
+            },
+            "href": null,
+            "plain_text": "d",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维空间里随机取两个向量，它们夹角的余弦值大致在 0 附近波动，波动的幅度大约是",
+            "text": {
+              "content": " 维空间里随机取两个向量，它们夹角的余弦值大致在 0 附近波动，波动的幅度大约是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "equation": {
+        "expression": "\\frac{1}{\\sqrt{d}}"
+      },
+      "has_children": false,
+      "id": "28dbec16-b28d-4e5f-84b7-0b1c564108a1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "2da57fcf-37a5-407a-a2f4-adcda535b056",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d = 768"
+            },
+            "href": null,
+            "plain_text": "d = 768",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 时只有 0.036 左右，也就是说随便两个方向几乎都是垂直的。二维平面上只有 2 个互相垂直的方向，而高维空间里“几乎垂直”的方向多到数不清。所以词向量和位置向量就算没有刻意安排，也很自然的处在互相垂直的方向上，跟上面二维的例子差不多。",
+            "text": {
+              "content": " 时只有 0.036 左右，也就是说随便两个方向几乎都是垂直的。二维平面上只有 2 个互相垂直的方向，而高维空间里“几乎垂直”的方向多到数不清。所以词向量和位置向量就算没有刻意安排，也很自然的处在互相垂直的方向上，跟上面二维的例子差不多。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "3833e5fb-48e7-4baf-9fed-4932393e1c05",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "我用随机向量做了一个小实验：",
+            "text": {
+              "content": "我用随机向量做了一个小实验：",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}} = 768"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}} = 768",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，随机生成 5000 个词向量，再用下面要讲的正弦公式生成 512 个位置向量",
+            "text": {
+              "content": "，随机生成 5000 个词向量，再用下面要讲的正弦公式生成 512 个位置向量",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "7dcd7921-be0e-4592-873c-6746ae5bd47c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "词向量和位置向量之间的余弦值，最大也只有 0.14 左右，确实几乎都是垂直的",
+            "text": {
+              "content": "词向量和位置向量之间的余弦值，最大也只有 0.14 左右，确实几乎都是垂直的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "2520ea45-5994-4966-9187-5e649c1e20c1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "一个词向量加上位置向量以后，离自己原来的位置移动了大约 20，而两个不同词向量之间的距离大约是 38。加完以后它还是离自己最近，不会跑到别的词那里去",
+            "text": {
+              "content": "一个词向量加上位置向量以后，离自己原来的位置移动了大约 20，而两个不同词向量之间的距离大约是 38。加完以后它还是离自己最近，不会跑到别的词那里去",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "00fd0bcc-855b-4ba0-b430-81d6b2085272",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "随机取 3000 个“词 + 位置”的组合，加完以后再找离它最近的词向量，3000 次全部找回了原来的词",
+            "text": {
+              "content": "随机取 3000 个“词 + 位置”的组合，加完以后再找离它最近的词向量，3000 次全部找回了原来的词",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "9aa48c31-b6f7-4738-b418-a92ae916a13a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这还只是随机初始化的情况，训练好的模型还会更有意识的把它们分开，见下面的第 (四) 点。",
+            "text": {
+              "content": "这还只是随机初始化的情况，训练好的模型还会更有意识的把它们分开，见下面的第 (四) 点。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "heading_4": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(三) “恰好相等”几乎不可能",
+            "text": {
+              "content": "(三) “恰好相等”几乎不可能",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "dcc92aaf-a280-45ca-874e-c23aa6715cf1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_4"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "3f8f4aba-4b70-4891-8922-32b299b9de73",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "把上面担心的那个等式移一下项：",
+            "text": {
+              "content": "把上面担心的那个等式移一下项：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{e}_{\\text{狗}} - \\mathbf{e}_{\\text{猫}} = \\mathbf{p}_1 - \\mathbf{p}_3"
+      },
+      "has_children": false,
+      "id": "197c45ad-908b-41d9-b1fb-bbd70c699793",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "f1e8d752-d1ad-4525-821c-e35388f36a53",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "左右两边都是 ",
+            "text": {
+              "content": "左右两边都是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维的向量，要相等就得每一维都分毫不差。词向量里都是训练出来的任意实数，768 个数全部碰巧对上的概率可以认为是 0。真正值得担心的不是“恰好相等”，而是“离得太近”，而第 (二) 点已经说明了一般也不会。",
+            "text": {
+              "content": " 维的向量，要相等就得每一维都分毫不差。词向量里都是训练出来的任意实数，768 个数全部碰巧对上的概率可以认为是 0。真正值得担心的不是“恰好相等”，而是“离得太近”，而第 (二) 点已经说明了一般也不会。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "heading_4": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(四) 模型是带着位置编码一起训练的",
+            "text": {
+              "content": "(四) 模型是带着位置编码一起训练的",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "10b4fa19-ca04-4b15-b3d5-b530205b7f73",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_4"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "33d22d4e-15d9-4430-893e-31fcd283c304",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这一点最关键。词向量不是先学好、再硬塞一个位置向量进去的，而是从一开始就在“会被加上位置向量”的前提下训练的。如果某个词加上某个位置以后容易和别的词搞混，模型就会预测错，训练时就会把相关的向量往不容易搞混的方向推。时间长了，模型会自己学会把“是什么”和“在哪”放在不同的方向上。有研究观察过 GPT-2 学出来的位置向量，发现位置信息主要集中在少数几个方向上，其余的维度留给了词本身的含义。",
+            "text": {
+              "content": "这一点最关键。词向量不是先学好、再硬塞一个位置向量进去的，而是从一开始就在“会被加上位置向量”的前提下训练的。如果某个词加上某个位置以后容易和别的词搞混，模型就会预测错，训练时就会把相关的向量往不容易搞混的方向推。时间长了，模型会自己学会把“是什么”和“在哪”放在不同的方向上。有研究观察过 GPT-2 学出来的位置向量，发现位置信息主要集中在少数几个方向上，其余的维度留给了词本身的含义。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "b89ba87c-03f9-4649-a20e-705fcc5ecd49",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "而且后面的层拿到向量以后做的第一件事，就是乘上一个矩阵。线性变换对加法是可以拆开的：",
+            "text": {
+              "content": "而且后面的层拿到向量以后做的第一件事，就是乘上一个矩阵。线性变换对加法是可以拆开的：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "equation": {
+        "expression": "W(\\mathbf{e} + \\mathbf{p}) = W\\mathbf{e} + W\\mathbf{p}"
+      },
+      "has_children": false,
+      "id": "03a345e1-3d78-473d-938a-6391baccf1de",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "710a5f49-3b90-444a-9ce1-c7afc1bf3b7a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以后面的层可以学出只关心词、不关心位置的变换，也可以学出反过来的变换，按需取用。",
+            "text": {
+              "content": "所以后面的层可以学出只关心词、不关心位置的变换，也可以学出反过来的变换，按需取用。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "heading_4": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为什么不干脆拼接",
+            "text": {
+              "content": "为什么不干脆拼接",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "25aae611-890c-41ac-ac08-17608fa18560",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_4"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:49:00.000Z",
+      "has_children": false,
+      "id": "bbce47d9-3add-4498-864e-661ce57737b6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:49:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "既然担心混淆，为什么不把位置向量拼在词向量后面，像二维例子那样彻底分开？拼接当然可以，但向量会变长，后面每一层都要跟着变大。而从上面的分析可以看到，在几百上千维的空间里直接相加，效果已经接近“各占各的格子”了，没必要为此多花维度。",
+            "text": {
+              "content": "既然担心混淆，为什么不把位置向量拼在词向量后面，像二维例子那样彻底分开？拼接当然可以，但向量会变长，后面每一层都要跟着变大。而从上面的分析可以看到，在几百上千维的空间里直接相加，效果已经接近“各占各的格子”了，没必要为此多花维度。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "a0b20a4b-e543-4e02-9a1a-21bf7d81e36e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "剩下的问题就是：位置向量 ",
+            "text": {
+              "content": "剩下的问题就是：位置向量 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{p}_{pos}"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{p}_{pos}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 应该长什么样？",
+            "text": {
+              "content": " 应该长什么样？",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "几种朴素的办法",
+            "text": {
+              "content": "几种朴素的办法",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "538f94a1-10b5-4743-9070-db6651d5c4e1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(一) 直接用序号",
+            "text": {
+              "content": "(一) 直接用序号",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "64d7c59f-9d28-4b5a-aca7-ea7ba6978267",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "073d7df3-59c4-484c-9dcc-1485bdc69566",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最直接的办法是第 1 个位置加 1，第 2 个位置加 2，以此类推。问题是句子一长，第 1000 个位置就要加 1000。而 embedding 里的数字通常都很小，加上这么大的数，token 本身的信息就被淹没了。",
+            "text": {
+              "content": "最直接的办法是第 1 个位置加 1，第 2 个位置加 2，以此类推。问题是句子一长，第 1000 个位置就要加 1000。而 embedding 里的数字通常都很小，加上这么大的数，token 本身的信息就被淹没了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(二) 压到 0 到 1 之间",
+            "text": {
+              "content": "(二) 压到 0 到 1 之间",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "9ccbc09b-4bd9-4f50-95e5-77cc187a16bc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "35b39529-a577-4d3d-b025-82473560a2e8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那用序号除以句子长度，把数值压到 0 到 1 之间呢？又有新问题：同样是第 3 个位置，在 10 个 token 的句子里是 0.3，在 100 个 token 的句子里是 0.03。相邻两个位置的差距也随句子长度变化，模型没法从中学到稳定的规律。",
+            "text": {
+              "content": "那用序号除以句子长度，把数值压到 0 到 1 之间呢？又有新问题：同样是第 3 个位置，在 10 个 token 的句子里是 0.3，在 100 个 token 的句子里是 0.03。相邻两个位置的差距也随句子长度变化，模型没法从中学到稳定的规律。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "05390a5a-5e2f-4209-b864-52d66216d0d0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "从这两个失败的尝试里，可以总结出一个好的位置编码应该满足的几个条件",
+            "text": {
+              "content": "从这两个失败的尝试里，可以总结出一个好的位置编码应该满足的几个条件",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "58573b73-e630-44bf-82ee-1bf300e3bc37",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "每个位置的编码都不一样",
+            "text": {
+              "content": "每个位置的编码都不一样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "57b27d6f-a62b-4732-9ca7-f51acdad92ac",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "数值有界，不会因为句子变长就无限变大",
+            "text": {
+              "content": "数值有界，不会因为句子变长就无限变大",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "b6235d5b-4320-47f9-9708-2281263560f0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "同一个位置不管在多长的句子里，编码都一样",
+            "text": {
+              "content": "同一个位置不管在多长的句子里，编码都一样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "edc45acd-3f08-4a27-8165-0d670b6adf6f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最好能体现位置之间的距离，比如第 5 和第 6 个位置的关系，跟第 50 和第 51 个位置的关系差不多",
+            "text": {
+              "content": "最好能体现位置之间的距离，比如第 5 和第 6 个位置的关系，跟第 50 和第 51 个位置的关系差不多",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "原版论文的做法：正弦位置编码",
+            "text": {
+              "content": "原版论文的做法：正弦位置编码",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "24c9ee9f-ee08-43a8-a9c5-966c10a0e5a3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "先看一个类比：二进制计数",
+            "text": {
+              "content": "先看一个类比：二进制计数",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "848bf842-4d52-43ee-b36f-907454ce6c88",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "58eea589-237a-4bcd-a73e-62005e0e47e5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "如果把位置写成二进制，会发现一个有意思的规律",
+            "text": {
+              "content": "如果把位置写成二进制，会发现一个有意思的规律",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "9a961763-4cfb-4a37-938e-b44234f7c153",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "位置",
+                  "text": {
+                    "content": "位置",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 3 位",
+                  "text": {
+                    "content": "第 3 位",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 2 位",
+                  "text": {
+                    "content": "第 2 位",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 1 位",
+                  "text": {
+                    "content": "第 1 位",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "acba8dd2-edd5-460e-a733-5b23bbd006b6",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "a77578b5-1a72-4756-bd1b-bb1b43e9f71a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "826dc8d9-f657-453c-91f4-236bdb442d51",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2",
+                  "text": {
+                    "content": "2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "cd65a5d1-7484-4a9b-8421-e7e34c715d5a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "3",
+                  "text": {
+                    "content": "3",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "223f3e08-9cbe-425c-9ef2-0e0162bb55ce",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "fad0448b-9216-4fe2-b42e-0e1188bb3f96",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "5",
+                  "text": {
+                    "content": "5",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "78929d28-ad6e-45fd-a5c2-46466f6e13dd",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "0",
+                  "text": {
+                    "content": "0",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-10-27T11:37:00.000Z",
+          "has_children": false,
+          "id": "d856c8c7-e4c2-4e6b-814f-f91c4b3198ea",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-10-27T11:37:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "7",
+                  "text": {
+                    "content": "7",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "1",
+                  "text": {
+                    "content": "1",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": true,
+      "id": "bd34aeca-bb77-4516-8d33-6dc86ab0c661",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 4
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "e6081496-001e-4c7e-92f1-e7280198672e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最低位每一步都在 0 和 1 之间切换，第 2 位每 2 步切换一次，第 3 位每 4 步切换一次。每一位都在 0 和 1 之间，数值有界，但合在一起又能区分所有的位置。就像钟表的秒针、分针、时针，转得有快有慢，合起来就能表示任意时刻。",
+            "text": {
+              "content": "最低位每一步都在 0 和 1 之间切换，第 2 位每 2 步切换一次，第 3 位每 4 步切换一次。每一位都在 0 和 1 之间，数值有界，但合在一起又能区分所有的位置。就像钟表的秒针、分针、时针，转得有快有慢，合起来就能表示任意时刻。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "261f8c84-3eb3-4d83-bf66-0773bf29cbac",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "正弦位置编码用的就是这个思路，只是把“在 0 和 1 之间跳”换成了更平滑的正弦、余弦波。",
+            "text": {
+              "content": "正弦位置编码用的就是这个思路，只是把“在 0 和 1 之间跳”换成了更平滑的正弦、余弦波。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "公式",
+            "text": {
+              "content": "公式",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "f01a56ae-1360-41b5-839c-0c884bbd8bb6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "956e8849-2e4f-475d-ab49-2132507222d5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对于第 ",
+            "text": {
+              "content": "对于第 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos"
+            },
+            "href": null,
+            "plain_text": "pos",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 个位置，位置向量的第 ",
+            "text": {
+              "content": " 个位置，位置向量的第 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2i"
+            },
+            "href": null,
+            "plain_text": "2i",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维和第 ",
+            "text": {
+              "content": " 维和第 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2i+1"
+            },
+            "href": null,
+            "plain_text": "2i+1",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维分别是：",
+            "text": {
+              "content": " 维分别是：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "PE_{(pos,\\,2i)} = \\sin\\left(\\frac{pos}{10000^{2i/d_{\\text{model}}}}\\right), \\qquad PE_{(pos,\\,2i+1)} = \\cos\\left(\\frac{pos}{10000^{2i/d_{\\text{model}}}}\\right)"
+      },
+      "has_children": false,
+      "id": "89b2ab6c-ea5a-4b30-8a47-e5149d3505c9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "36a42094-c2f5-4e3a-89e4-bc43348d3486",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "也就是说，",
+            "text": {
+              "content": "也就是说，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维的位置向量被分成了 ",
+            "text": {
+              "content": " 维的位置向量被分成了 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}/2"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}/2",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 对，每一对是同一个频率的 sin 和 cos。第 ",
+            "text": {
+              "content": " 对，每一对是同一个频率的 sin 和 cos。第 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "i"
+            },
+            "href": null,
+            "plain_text": "i",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 对的频率是",
+            "text": {
+              "content": " 对的频率是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "\\omega_i = \\frac{1}{10000^{2i/d_{\\text{model}}}}"
+      },
+      "has_children": false,
+      "id": "89b2d8b6-c43f-4f9e-9445-ee7bac4c740c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "e1234fe7-6e32-4cf5-9bf2-e4aeb195891c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "i = 0"
+            },
+            "href": null,
+            "plain_text": "i = 0",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 时 ",
+            "text": {
+              "content": " 时 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\omega_0 = 1"
+            },
+            "href": null,
+            "plain_text": "\\omega_0 = 1",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，位置每加 1，角度就转 1 弧度，变得最快，相当于秒针。",
+            "text": {
+              "content": "，位置每加 1，角度就转 1 弧度，变得最快，相当于秒针。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "i"
+            },
+            "href": null,
+            "plain_text": "i",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 越大频率越低，到最后一对时几乎不怎么变，相当于时针。所有频率对应的周期从 ",
+            "text": {
+              "content": " 越大频率越低，到最后一对时几乎不怎么变，相当于时针。所有频率对应的周期从 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "2\\pi"
+            },
+            "href": null,
+            "plain_text": "2\\pi",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 一直到 ",
+            "text": {
+              "content": " 一直到 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "10000 \\cdot 2\\pi"
+            },
+            "href": null,
+            "plain_text": "10000 \\cdot 2\\pi",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，按等比数列分布。",
+            "text": {
+              "content": "，按等比数列分布。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "cb5de1ee-4ee8-4e72-af03-7de45ea47434",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对照前面的几个条件来看",
+            "text": {
+              "content": "对照前面的几个条件来看",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "f9251926-0b90-45a6-ab7c-c148e730d3a1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "每个位置不一样：快的频率区分相邻位置，慢的频率区分远处的位置，合起来在很长的范围内都不会重复",
+            "text": {
+              "content": "每个位置不一样：快的频率区分相邻位置，慢的频率区分远处的位置，合起来在很长的范围内都不会重复",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "d0ada87c-3491-4169-960a-1790d070c4fa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "数值有界：sin 和 cos 永远在 -1 到 1 之间",
+            "text": {
+              "content": "数值有界：sin 和 cos 永远在 -1 到 1 之间",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "c512ff83-11cb-4acd-87b3-875521740361",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和句子长度无关：公式里只有 ",
+            "text": {
+              "content": "和句子长度无关：公式里只有 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos"
+            },
+            "href": null,
+            "plain_text": "pos",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，没有句子长度",
+            "text": {
+              "content": "，没有句子长度",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "75d0055d-b565-4735-9488-0eea2d466a37",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "能体现距离：这一条下面单独说",
+            "text": {
+              "content": "能体现距离：这一条下面单独说",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为什么能体现距离",
+            "text": {
+              "content": "为什么能体现距离",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "bf48ca8a-da37-441c-ac96-7461281c3c74",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "61f3269c-4093-42aa-a34b-e3f0b3bee750",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "正弦编码最妙的地方在于，位置 ",
+            "text": {
+              "content": "正弦编码最妙的地方在于，位置 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos + k"
+            },
+            "href": null,
+            "plain_text": "pos + k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的编码可以由位置 ",
+            "text": {
+              "content": " 的编码可以由位置 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos"
+            },
+            "href": null,
+            "plain_text": "pos",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的编码通过一个只和 ",
+            "text": {
+              "content": " 的编码通过一个只和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 有关的变换得到。拿其中一对来看，由三角函数的和角公式：",
+            "text": {
+              "content": " 有关的变换得到。拿其中一对来看，由三角函数的和角公式：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "\\begin{bmatrix} \\sin(\\omega_i (pos+k)) \\\\ \\cos(\\omega_i (pos+k)) \\end{bmatrix} = \\begin{bmatrix} \\cos(\\omega_i k) & \\sin(\\omega_i k) \\\\ -\\sin(\\omega_i k) & \\cos(\\omega_i k) \\end{bmatrix} \\begin{bmatrix} \\sin(\\omega_i \\, pos) \\\\ \\cos(\\omega_i \\, pos) \\end{bmatrix}"
+      },
+      "has_children": false,
+      "id": "d433c690-99c5-47f2-af59-30f1b6aa84f2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "2acde2cd-b2b4-411b-b0ca-70bb18750892",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "中间那个矩阵就是一个旋转矩阵，只和距离 ",
+            "text": {
+              "content": "中间那个矩阵就是一个旋转矩阵，只和距离 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 有关，和 ",
+            "text": {
+              "content": " 有关，和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "pos"
+            },
+            "href": null,
+            "plain_text": "pos",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 在哪无关。也就是说“往后挤 ",
+            "text": {
+              "content": " 在哪无关。也就是说“往后挤 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "k"
+            },
+            "href": null,
+            "plain_text": "k",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 个位置”在每一对维度上都是转一个固定的角度。第 5 和第 6 个位置之间的关系，跟第 50 和第 51 个位置之间的关系是一模一样的。论文作者认为这能帮助模型学会按相对位置来关注其他 token。",
+            "text": {
+              "content": " 个位置”在每一对维度上都是转一个固定的角度。第 5 和第 6 个位置之间的关系，跟第 50 和第 51 个位置之间的关系是一模一样的。论文作者认为这能帮助模型学会按相对位置来关注其他 token。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "和 embedding 相加",
+            "text": {
+              "content": "和 embedding 相加",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "d4b4dbb0-f9f4-4e58-b4d0-c1757d22e09b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "72ca1f2a-aa2d-41d6-9bb3-d2516fea988e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "算出来的位置编码是固定的，不需要训练。原版论文里还有一个细节：相加之前会先把 embedding 乘以 ",
+            "text": {
+              "content": "算出来的位置编码是固定的，不需要训练。原版论文里还有一个细节：相加之前会先把 embedding 乘以 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\sqrt{d_{\\text{model}}}"
+            },
+            "href": null,
+            "plain_text": "\\sqrt{d_{\\text{model}}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "：",
+            "text": {
+              "content": "：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{h}_{pos} = \\sqrt{d_{\\text{model}}} \\cdot \\mathbf{e}_{t_{pos}} + PE_{pos}"
+      },
+      "has_children": false,
+      "id": "33f103c3-43f3-486f-a7db-cc99dca19f89",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "6b0aef66-b14f-4d64-91b2-4550e8073a4e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "论文没有细说原因，一种常见的解释是 embedding 里的数值一般比较小，放大一下可以避免被位置编码盖过去。",
+            "text": {
+              "content": "论文没有细说原因，一种常见的解释是 embedding 里的数值一般比较小，放大一下可以避免被位置编码盖过去。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "可学习的位置编码",
+            "text": {
+              "content": "可学习的位置编码",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "6d924f81-562a-448d-a8f5-36f6b2c5033e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "26002692-d6b2-4db7-bfe3-ecad5179dba7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "还有一种更简单粗暴的做法：位置向量也不用公式算了，直接像 embedding 一样建一张表，每个位置占一行，跟着模型一起训练：",
+            "text": {
+              "content": "还有一种更简单粗暴的做法：位置向量也不用公式算了，直接像 embedding 一样建一张表，每个位置占一行，跟着模型一起训练：",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "equation": {
+        "expression": "P \\in \\mathbb{R}^{L \\times d_{\\text{model}}}, \\qquad \\mathbf{p}_{pos} = P[pos]"
+      },
+      "has_children": false,
+      "id": "93ac65a4-2e7a-4dda-bba0-d678a1910deb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "15bdbb1e-94b5-4604-a24e-9922e1c95941",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "其中 ",
+            "text": {
+              "content": "其中 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "L"
+            },
+            "href": null,
+            "plain_text": "L",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 是模型支持的最大长度。GPT-2 和 BERT 用的都是这种方式，GPT-2 的 ",
+            "text": {
+              "content": " 是模型支持的最大长度。GPT-2 和 BERT 用的都是这种方式，GPT-2 的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "L"
+            },
+            "href": null,
+            "plain_text": "L",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 是 1024，BERT 是 512。",
+            "text": {
+              "content": " 是 1024，BERT 是 512。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "eb0ddacd-93ce-449d-95d6-05dcc2b0cc95",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "它的好处是灵活，位置向量长什么样完全由数据决定。实际效果和正弦编码差不多，原版论文里也试过这种做法，结果几乎一样。",
+            "text": {
+              "content": "它的好处是灵活，位置向量长什么样完全由数据决定。实际效果和正弦编码差不多，原版论文里也试过这种做法，结果几乎一样。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "2b1c65dd-ba9f-45e4-83fe-ab842b3114c9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "但它有一个硬伤：表只有 ",
+            "text": {
+              "content": "但它有一个硬伤：表只有 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "L"
+            },
+            "href": null,
+            "plain_text": "L",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 行，超过 ",
+            "text": {
+              "content": " 行，超过 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "L"
+            },
+            "href": null,
+            "plain_text": "L",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的位置根本没有对应的向量。GPT-2 最多只能处理 1024 个 token，这就是原因之一。而正弦编码至少在公式上能算出任意位置的编码，虽然实际上模型对没见过的长度往往也处理得不好。",
+            "text": {
+              "content": " 的位置根本没有对应的向量。GPT-2 最多只能处理 1024 个 token，这就是原因之一。而正弦编码至少在公式上能算出任意位置的编码，虽然实际上模型对没见过的长度往往也处理得不好。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "现在的主流：RoPE",
+            "text": {
+              "content": "现在的主流：RoPE",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2226b3ce-6d67-428c-bd9b-e13c34a17c0e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "91e7a37e-90a0-42e1-a659-5b45c20280d7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "上面两种做法都是把位置信息“加”到 embedding 上，属于绝对位置编码：告诉模型每个 token 在第几位。但仔细想想，理解一句话时更重要的往往是相对位置，比如“这个词在那个词前面两个位置”，而不是“这个词在第 37 位”。",
+            "text": {
+              "content": "上面两种做法都是把位置信息“加”到 embedding 上，属于绝对位置编码：告诉模型每个 token 在第几位。但仔细想想，理解一句话时更重要的往往是相对位置，比如“这个词在那个词前面两个位置”，而不是“这个词在第 37 位”。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "f8fd567e-2d12-4b65-aaa1-6bce46aa12e5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "现在 Llama、Qwen 等大多数大模型用的是 RoPE（Rotary Position Embedding，旋转位置编码）。它和前面的做法有两个明显的不同",
+            "text": {
+              "content": "现在 Llama、Qwen 等大多数大模型用的是 RoPE（Rotary Position Embedding，旋转位置编码）。它和前面的做法有两个明显的不同",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "a4da0a35-95c7-4a09-8172-469341d62099",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不是加而是转。它不往向量上加东西，而是按照位置把向量“转”一个角度，位置越靠后转得越多。这个思路和上面正弦编码里的旋转矩阵一脉相承，也是把向量分成一对一对，每对用不同的频率转",
+            "text": {
+              "content": "不是加而是转。它不往向量上加东西，而是按照位置把向量“转”一个角度，位置越靠后转得越多。这个思路和上面正弦编码里的旋转矩阵一脉相承，也是把向量分成一对一对，每对用不同的频率转",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "17bc55e6-c731-4c9a-844f-0c7ca396a654",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "numbered_list_item": {
+        "color": "default",
+        "list_format": "numbers",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不在入口，而在 attention 里面。它不动 embedding，而是在 attention 计算“两个 token 有多相关”的时候才去转。两个 token 各转各的角度，比较时起作用的就只剩下它们之间的角度差，也就是相对距离",
+            "text": {
+              "content": "不在入口，而在 attention 里面。它不动 embedding，而是在 attention 计算“两个 token 有多相关”的时候才去转。两个 token 各转各的角度，比较时起作用的就只剩下它们之间的角度差，也就是相对距离",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "numbered_list_item"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "5d4573fd-0052-4e21-abc0-481527344a69",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "因为 RoPE 是作用在 attention 内部的，要把它讲清楚得先知道 attention 是怎么算的，所以这里先留个印象，等讲完 attention 以后再单独写一篇。",
+            "text": {
+              "content": "因为 RoPE 是作用在 attention 内部的，要把它讲清楚得先知道 attention 是怎么算的，所以这里先留个印象，等讲完 attention 以后再单独写一篇。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "小结",
+            "text": {
+              "content": "小结",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "262dd30e-5dea-4961-98a8-afc4284e4e6c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "de41b941-fe9b-4eeb-b60c-2c64a75df1bc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "embedding 只知道“是什么”，不知道“在哪”，而 attention 本身又很难分清顺序，所以要额外加上位置信息。原版 Transformer 用的是正弦位置编码，用不同频率的 sin 和 cos 给每个位置一个独一无二、数值有界的向量，加到 embedding 上；GPT-2、BERT 则是直接学一张位置表；现在的大模型大多用 RoPE，在 attention 里用旋转来表示相对位置。",
+            "text": {
+              "content": "embedding 只知道“是什么”，不知道“在哪”，而 attention 本身又很难分清顺序，所以要额外加上位置信息。原版 Transformer 用的是正弦位置编码，用不同频率的 sin 和 cos 给每个位置一个独一无二、数值有界的向量，加到 embedding 上；GPT-2、BERT 则是直接学一张位置表；现在的大模型大多用 RoPE，在 attention 里用旋转来表示相对位置。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-10-27T11:37:00.000Z",
+      "has_children": false,
+      "id": "ec3d4e8d-bca2-4596-a249-0941962a9192",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-27T11:37:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "到这里，输入的准备工作就做完了：一段文字被拆成 token，每个 token 变成一个带着位置信息的 ",
+            "text": {
+              "content": "到这里，输入的准备工作就做完了：一段文字被拆成 token，每个 token 变成一个带着位置信息的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维向量。下一篇就正式进入 Transformer 的核心：self-attention。",
+            "text": {
+              "content": " 维向量。下一篇就正式进入 Transformer 的核心：self-attention。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "406c5387-4c4e-81f0-9f3e-d8dd668938c2",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

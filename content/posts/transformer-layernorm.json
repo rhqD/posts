@@ -1,0 +1,4921 @@
+{
+  "post": {
+    "id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+    "title": "Transformer(6) - LayerNorm",
+    "slug": "transformer-layernorm",
+    "content": null,
+    "excerpt": "拿一个四维向量手算 LayerNorm：按哪一维统计，减均值、除标准差各在做什么，γ 和 β 怎么用，以及它在 Transformer 里的位置。",
+    "cover_url": null,
+    "category_id": "技术分享",
+    "status": "published",
+    "published_at": "2026-10-28",
+    "created_at": "2026-10-28T08:32:00.000Z",
+    "updated_at": "2026-11-02T09:41:00.000Z",
+    "category": {
+      "id": "技术分享",
+      "name": "技术分享",
+      "slug": "",
+      "created_at": ""
+    },
+    "tags": [
+      {
+        "id": "机器学习",
+        "name": "机器学习",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "transformer",
+        "name": "transformer",
+        "slug": "transformer",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8172-821e-e8e71c9ce55c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "/posts/transformer-multi-head-attention",
+            "mention": {
+              "page": {
+                "id": "406c5387-4c4e-8176-8fcc-ec1aab13558b"
+              },
+              "type": "page"
+            },
+            "plain_text": "Transformer(5) - multi-head attention",
+            "type": "mention"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 最后把各个 head 的结果拼起来，再乘一个输出矩阵 ",
+            "text": {
+              "content": " 最后把各个 head 的结果拼起来，再乘一个输出矩阵 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "W_O"
+            },
+            "href": null,
+            "plain_text": "W_O",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，得到一个 ",
+            "text": {
+              "content": "，得到一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "n\\times d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "n\\times d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的矩阵。先不急着往下走，看看这个结果到底表示什么。",
+            "text": {
+              "content": " 的矩阵。先不急着往下走，看看这个结果到底表示什么。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "attention 算完以后，得到了什么",
+            "text": {
+              "content": "attention 算完以后，得到了什么",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-815f-a2f4-cc5991fb159d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "7cb2ec13-95c8-400f-8743-da1933d151d0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "还是用前面的“我 吃 苹果”。输入时，每个 token 有一个自己的向量；multi-head attention 算完以后，每个 token 又得到一个向量，长度仍然是 ",
+            "text": {
+              "content": "还是用前面的“我 吃 苹果”。输入时，每个 token 有一个自己的向量；multi-head attention 算完以后，每个 token 又得到一个向量，长度仍然是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。",
+            "text": {
+              "content": "。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:41:00.000Z",
+      "has_children": false,
+      "id": "b4f04daf-05fc-4885-ac57-d87cc2972cde",
+      "image": {
+        "caption": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "多头注意力输出与输入 token 逐行对应。下半图从“苹果”出发，展开各 head 的汇总、拼接和输出投影。图中已标注各步尺寸，尚未加回输入或做 LayerNorm。",
+            "text": {
+              "content": "多头注意力输出与输入 token 逐行对应。下半图从“苹果”出发，展开各 head 的汇总、拼接和输出投影。图中已标注各步尺寸，尚未加回输入或做 LayerNorm。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ],
+        "type": "external",
+        "external": {
+          "url": "/images/0f0400daf16d1a7f.webp"
+        }
+      },
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:41:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "image"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8140-b7e3-d82697bab5fe",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "拿“苹果”这一行来说，它是“苹果”从整句话里读到的信息：每个 head 按自己的关注方式，把其他 token 的信息加权汇总，再由 ",
+            "text": {
+              "content": "拿“苹果”这一行来说，它是“苹果”从整句话里读到的信息：每个 head 按自己的关注方式，把其他 token 的信息加权汇总，再由 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "W_O"
+            },
+            "href": null,
+            "plain_text": "W_O",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 融合起来。在“我 吃 苹果”里，它可以从“吃”那里读到与食物有关的信息；换成“苹果 发布 手机”，读到的上下文就不同了。",
+            "text": {
+              "content": " 融合起来。在“我 吃 苹果”里，它可以从“吃”那里读到与食物有关的信息；换成“苹果 发布 手机”，读到的上下文就不同了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "75ce665c-46e4-4515-90a2-2a7e5daa70f6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以输出的每一行，都对应原来那个位置上的 token，但内容已经参考了整句话。它仍然是一串供后续网络计算的数字，最终的词表概率还要经过后面的处理才能得到。",
+            "text": {
+              "content": "所以输出的每一行，都对应原来那个位置上的 token，但内容已经参考了整句话。它仍然是一串供后续网络计算的数字，最终的词表概率还要经过后面的处理才能得到。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-814d-8a90-d352577635a5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那这一串数字该怎么看？和 embedding 一样，它是模型学出来的一组特征。真实模型通常不能给每一维都起一个明确的名字，比如“第 1 维就是水果，第 2 维就是公司”。有用的含义往往分散在多个维度里，我们先把它当成模型内部描述上下文的一组坐标。",
+            "text": {
+              "content": "那这一串数字该怎么看？和 embedding 一样，它是模型学出来的一组特征。真实模型通常不能给每一维都起一个明确的名字，比如“第 1 维就是水果，第 2 维就是公司”。有用的含义往往分散在多个维度里，我们先把它当成模型内部描述上下文的一组坐标。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "接下来：先加回输入，再做归一化",
+            "text": {
+              "content": "接下来：先加回输入，再做归一化",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "1b23c83b-db97-4f7b-adc5-69bfeb16e5a7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8138-971a-c89ba2443704",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "在原版 Transformer 里，attention 的输出还要加上进入 attention 之前的向量。也就是让每个 token 保留原来的表示，同时加上这次从上下文读到的结果。这一步叫残差连接，后面再单独讲。",
+            "text": {
+              "content": "在原版 Transformer 里，attention 的输出还要加上进入 attention 之前的向量。也就是让每个 token 保留原来的表示，同时加上这次从上下文读到的结果。这一步叫残差连接，后面再单独讲。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "cac73a8b-98ae-4e14-9185-602bf35522a6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为了看清数字怎么接上，假设“苹果”只有 4 维，做一个手算用的例子",
+            "text": {
+              "content": "为了看清数字怎么接上，假设“苹果”只有 4 维，做一个手算用的例子",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "进入 attention 前：[1, 1, 2, 3]\nattention 的输出：[1, 3, 4, 5]\n对应位置相加：  [2, 4, 6, 8]",
+            "text": {
+              "content": "进入 attention 前：[1, 1, 2, 3]\nattention 的输出：[1, 3, 4, 5]\n对应位置相加：  [2, 4, 6, 8]",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "95e32b1a-305a-4363-96c3-a7d3c8a10bfc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "380e7c40-3b79-45ed-97cb-623410b33c27",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最后这行 ",
+            "text": {
+              "content": "最后这行 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[2,4,6,8]"
+            },
+            "href": null,
+            "plain_text": "[2,4,6,8]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，才是接下来要交给 LayerNorm 的向量。数字是为了演示选的，不是从真实模型里读出来的，也不代表 4 个预先规定的语义属性。",
+            "text": {
+              "content": "，才是接下来要交给 LayerNorm 的向量。数字是为了演示选的，不是从真实模型里读出来的，也不代表 4 个预先规定的语义属性。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "520252ed-bb97-43de-8aa9-72e726428ddb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "假设整句话相加以后的结果是下面这样，每一行都是“原来的表示 + attention 读到的结果”",
+            "text": {
+              "content": "假设整句话相加以后的结果是下面这样，每一行都是“原来的表示 + attention 读到的结果”",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-11-02T08:25:00.000Z",
+          "has_children": false,
+          "id": "4b5f2d50-1113-4817-a0d3-b0020c127f3b",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-11-02T08:25:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "17e4fb90-57e7-4c49-ae68-430b9c187aa0",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "token（示意）",
+                  "text": {
+                    "content": "token（示意）",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 1 维",
+                  "text": {
+                    "content": "第 1 维",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 2 维",
+                  "text": {
+                    "content": "第 2 维",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 3 维",
+                  "text": {
+                    "content": "第 3 维",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "第 4 维",
+                  "text": {
+                    "content": "第 4 维",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-11-02T09:11:00.000Z",
+          "has_children": false,
+          "id": "f45b4673-10fe-494d-a0e0-fcaf38b896da",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-11-02T09:11:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "17e4fb90-57e7-4c49-ae68-430b9c187aa0",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "我",
+                  "text": {
+                    "content": "我",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "8",
+                  "text": {
+                    "content": "8",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2",
+                  "text": {
+                    "content": "2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-11-02T08:25:00.000Z",
+          "has_children": false,
+          "id": "3e300953-78af-4421-9365-ea4e41b2776a",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-11-02T08:25:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "17e4fb90-57e7-4c49-ae68-430b9c187aa0",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "吃",
+                  "text": {
+                    "content": "吃",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "20",
+                  "text": {
+                    "content": "20",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "40",
+                  "text": {
+                    "content": "40",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "60",
+                  "text": {
+                    "content": "60",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "80",
+                  "text": {
+                    "content": "80",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        },
+        {
+          "archived": false,
+          "children": [],
+          "created_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "created_time": "2026-11-02T09:11:00.000Z",
+          "has_children": false,
+          "id": "39615e6a-8fb6-486f-a7e8-54c4f80dc4da",
+          "in_trash": false,
+          "last_edited_by": {
+            "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+            "object": "user"
+          },
+          "last_edited_time": "2026-11-02T09:11:00.000Z",
+          "object": "block",
+          "parent": {
+            "block_id": "17e4fb90-57e7-4c49-ae68-430b9c187aa0",
+            "type": "block_id"
+          },
+          "table_row": {
+            "cells": [
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "苹果",
+                  "text": {
+                    "content": "苹果",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "2",
+                  "text": {
+                    "content": "2",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "4",
+                  "text": {
+                    "content": "4",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "6",
+                  "text": {
+                    "content": "6",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ],
+              [
+                {
+                  "annotations": {
+                    "bold": false,
+                    "code": false,
+                    "color": "default",
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false
+                  },
+                  "href": null,
+                  "plain_text": "8",
+                  "text": {
+                    "content": "8",
+                    "link": null
+                  },
+                  "type": "text"
+                }
+              ]
+            ]
+          },
+          "type": "table_row"
+        }
+      ],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": true,
+      "id": "17e4fb90-57e7-4c49-ae68-430b9c187aa0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "table": {
+        "has_column_header": true,
+        "has_row_header": false,
+        "table_width": 5
+      },
+      "type": "table"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81a5-a412-c818e93e21fc",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这里就能看到接下来的问题：“吃”这一行的数值整体比“苹果”大 10 倍。如果直接交给同一套矩阵乘法，算出来的结果也会差 10 倍。向量经过一层层计算，整体尺度和偏移都可能变化，给后续计算和训练带来影响。",
+            "text": {
+              "content": "这里就能看到接下来的问题：“吃”这一行的数值整体比“苹果”大 10 倍。如果直接交给同一套矩阵乘法，算出来的结果也会差 10 倍。向量经过一层层计算，整体尺度和偏移都可能变化，给后续计算和训练带来影响。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8143-8aae-e3b697ec1c77",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这组数恰好相差 10 倍，只是为了方便比较，不表示“吃”和“苹果”的真实表示应该成比例，更不表示“吃”的含义更强。",
+            "text": {
+              "content": "这组数恰好相差 10 倍，只是为了方便比较，不表示“吃”和“苹果”的真实表示应该成比例，更不表示“吃”的含义更强。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "dbfb81f8-de23-4146-b7f7-4da5ff1bab7a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "LayerNorm 就接在这里：分别根据每一行自己的均值和标准差，调整整体偏移和尺度，再用可学习参数调整各个维度。下面就从“苹果”这一行开始算。",
+            "text": {
+              "content": "LayerNorm 就接在这里：分别根据每一行自己的均值和标准差，调整整体偏移和尺度，再用可学习参数调整各个维度。下面就从“苹果”这一行开始算。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "先分清：到底对哪些数做归一化",
+            "text": {
+              "content": "先分清：到底对哪些数做归一化",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "80885f61-ab31-493d-8293-73a647a25d0f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "fab8c905-c09b-4414-bf0a-c9a22f8df4f0",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "看上面的表，LayerNorm 是横着一行一行处理的：“我”用自己的 4 个数算一次，“吃”用自己的 4 个数算一次，“苹果”也一样。每个 token 都有自己的均值和标准差。",
+            "text": {
+              "content": "看上面的表，LayerNorm 是横着一行一行处理的：“我”用自己的 4 个数算一次，“吃”用自己的 4 个数算一次，“苹果”也一样。每个 token 都有自己的均值和标准差。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T09:11:00.000Z",
+      "has_children": false,
+      "id": "2c54641e-486f-443e-bb0d-e09037f2e9c5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "它不会把整张表凑起来算，也不会把三个 token 的第 1 维拿到一起算。输入仍然是 ",
+            "text": {
+              "content": "它不会把整张表凑起来算，也不会把三个 token 的第 1 维拿到一起算。输入仍然是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "n\\times d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "n\\times d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，输出大小不变；这一步只整理每一行，读取其他 token 信息的工作已经由前面的 attention 做过了。",
+            "text": {
+              "content": "，输出大小不变；这一步只整理每一行，读取其他 token 信息的工作已经由前面的 attention 做过了。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "手算一遍",
+            "text": {
+              "content": "手算一遍",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-8106-a4c0-c8f01f7087a3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "54dc1d22-6a9d-493f-92e6-1ca521450108",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "先看“苹果”这一行 ",
+            "text": {
+              "content": "先看“苹果”这一行 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\mathbf{x}=[2,4,6,8]"
+            },
+            "href": null,
+            "plain_text": "\\mathbf{x}=[2,4,6,8]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。",
+            "text": {
+              "content": "。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(一) 减去平均值",
+            "text": {
+              "content": "(一) 减去平均值",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-81f9-a8dd-cb7947f03711",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-813d-8e1d-ef25efa7f4d6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "平均值是",
+            "text": {
+              "content": "平均值是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "equation": {
+        "expression": "\\mu=\\frac{2+4+6+8}{4}=5"
+      },
+      "has_children": false,
+      "id": "407c5387-4c4e-8102-83be-c53a16852223",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81d7-92e0-f8267322428b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "每个数减去 5，得到 ",
+            "text": {
+              "content": "每个数减去 5，得到 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[-3,-1,1,3]"
+            },
+            "href": null,
+            "plain_text": "[-3,-1,1,3]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。原来整组数围绕 5，现在围绕 0。哪个数高于平均值、哪个低于平均值，都能直接看出来。",
+            "text": {
+              "content": "。原来整组数围绕 5，现在围绕 0。哪个数高于平均值、哪个低于平均值，都能直接看出来。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "82f7544d-238f-4158-8f65-d60f2bd7b7eb",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "但只减均值还不够。“吃”这一行减去自己的均值 50，得到 ",
+            "text": {
+              "content": "但只减均值还不够。“吃”这一行减去自己的均值 50，得到 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[-30,-10,10,30]"
+            },
+            "href": null,
+            "plain_text": "[-30,-10,10,30]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，仍然比“苹果”这一行大 10 倍。还需要把波动的大小也调整一下。",
+            "text": {
+              "content": "，仍然比“苹果”这一行大 10 倍。还需要把波动的大小也调整一下。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(二) 除以标准差",
+            "text": {
+              "content": "(二) 除以标准差",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-8168-9633-f49f1a0905a5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "aa3f9e10-7daa-43af-9170-5c1c025c7e2b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "先算各个数离平均值有多远，平方以后求平均，得到方差",
+            "text": {
+              "content": "先算各个数离平均值有多远，平方以后求平均，得到方差",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\sigma^2=\\frac{(-3)^2+(-1)^2+1^2+3^2}{4}=5"
+      },
+      "has_children": false,
+      "id": "d8f23969-4466-4412-8f09-125731e75afa",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-812e-979e-c63d5b539e51",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "再开平方，得到标准差 ",
+            "text": {
+              "content": "再开平方，得到标准差 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\sigma=\\sqrt{5}\\approx2.236"
+            },
+            "href": null,
+            "plain_text": "\\sigma=\\sqrt{5}\\approx2.236",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。标准差可以粗略理解成这组数偏离平均值的程度：波动越大，它就越大。",
+            "text": {
+              "content": "。标准差可以粗略理解成这组数偏离平均值的程度：波动越大，它就越大。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8157-86e9-f123c17d22b6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "把刚才每个数都除以标准差，得到",
+            "text": {
+              "content": "把刚才每个数都除以标准差，得到",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\hat{\\mathbf{x}}=\\frac{[-3,-1,1,3]}{\\sqrt{5}}\n\\approx[-1.342,-0.447,0.447,1.342]"
+      },
+      "has_children": false,
+      "id": "6923f0e2-6418-42c1-8fc1-b6b4d8fc6578",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8170-b1d0-c99b6521db09",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "现在 −1.342 表示低于平均值约 1.342 个标准差，0.447 表示高于平均值约 0.447 个标准差。相当于换成了一套共同的计量方式。",
+            "text": {
+              "content": "现在 −1.342 表示低于平均值约 1.342 个标准差，0.447 表示高于平均值约 0.447 个标准差。相当于换成了一套共同的计量方式。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8103-961b-ee0dca984d81",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "再算“吃”这一行。它减均值后是 ",
+            "text": {
+              "content": "再算“吃”这一行。它减均值后是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[-30,-10,10,30]"
+            },
+            "href": null,
+            "plain_text": "[-30,-10,10,30]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，标准差是 ",
+            "text": {
+              "content": "，标准差是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "10\\sqrt{5}"
+            },
+            "href": null,
+            "plain_text": "10\\sqrt{5}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，除完以后，恰好得到与“苹果”这一行相同的结果。",
+            "text": {
+              "content": "，除完以后，恰好得到与“苹果”这一行相同的结果。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "(三) 加一个很小的 ε",
+            "text": {
+              "content": "(三) 加一个很小的 ε",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-8102-b531-deab8aba8f7d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "8a91aca3-f581-44e9-baa5-23aca388807e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "实际计算用的是",
+            "text": {
+              "content": "实际计算用的是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\hat{x}_j=\\frac{x_j-\\mu}{\\sqrt{\\sigma^2+\\epsilon}}"
+      },
+      "has_children": false,
+      "id": "aedcd70c-7496-4d20-9b81-5b27f3d14e84",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-819c-803c-fba13add4a3b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\epsilon"
+            },
+            "href": null,
+            "plain_text": "\\epsilon",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 是事先设定的一个很小的正数，用来避免方差为 0 时除以 0，也能缓和方差特别小时的数值问题。前面的手算为了清楚，暂时忽略了它。",
+            "text": {
+              "content": " 是事先设定的一个很小的正数，用来避免方差为 0 时除以 0，也能缓和方差特别小时的数值问题。前面的手算为了清楚，暂时忽略了它。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81a4-ab3d-c12b86ea8558",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "比如输入是 ",
+            "text": {
+              "content": "比如输入是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[2,2,2,2]"
+            },
+            "href": null,
+            "plain_text": "[2,2,2,2]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，减均值以后全是 0，方差也是 0。有了 ",
+            "text": {
+              "content": "，减均值以后全是 0，方差也是 0。有了 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\epsilon"
+            },
+            "href": null,
+            "plain_text": "\\epsilon",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，就能正常得到全零向量。",
+            "text": {
+              "content": "，就能正常得到全零向量。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8125-a3af-e1916633907b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "忽略 ",
+            "text": {
+              "content": "忽略 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\epsilon"
+            },
+            "href": null,
+            "plain_text": "\\epsilon",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 时，这一步结果的均值为 0、方差为 1；加上它以后，方差通常接近 1，而不是严格等于 1。",
+            "text": {
+              "content": " 时，这一步结果的均值为 0、方差为 1；加上它以后，方差通常接近 1，而不是严格等于 1。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "都归一化了，不同 token 会不会变成一样",
+            "text": {
+              "content": "都归一化了，不同 token 会不会变成一样",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "bcb1fece-ac2a-4a78-bf54-89fea68ce59a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8193-8733-e52379fa85f8",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不一定。上面“苹果”和“吃”的示意向量得到同样的结果，是因为它们恰好只差一个整体缩放。如果把“苹果”向量的中间两维交换一下，变成 ",
+            "text": {
+              "content": "不一定。上面“苹果”和“吃”的示意向量得到同样的结果，是因为它们恰好只差一个整体缩放。如果把“苹果”向量的中间两维交换一下，变成 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[2,6,4,8]"
+            },
+            "href": null,
+            "plain_text": "[2,6,4,8]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，归一化以后就是",
+            "text": {
+              "content": "，归一化以后就是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "plain text",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "原来：[2, 4, 6, 8] → [-1.342, -0.447,  0.447, 1.342]\n交换：[2, 6, 4, 8] → [-1.342,  0.447, -0.447, 1.342]",
+            "text": {
+              "content": "原来：[2, 4, 6, 8] → [-1.342, -0.447,  0.447, 1.342]\n交换：[2, 6, 4, 8] → [-1.342,  0.447, -0.447, 1.342]",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "840618e7-7002-404a-a1e7-e9871a1d66e9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8180-88f4-d01e6bf7d24a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "哪些维度高、哪些维度低，仍然不同。LayerNorm 没有把每个数都变成同一个数，也没有把不同维度重新排序。",
+            "text": {
+              "content": "哪些维度高、哪些维度低，仍然不同。LayerNorm 没有把每个数都变成同一个数，也没有把不同维度重新排序。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-813f-80e7-fd16c87094a3",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "不过它确实会丢掉整体均值和尺度的信息，不能说“所有信息都保留了”。上面的两个示意向量就是例子：只看归一化结果，已经分不清原来是 ",
+            "text": {
+              "content": "不过它确实会丢掉整体均值和尺度的信息，不能说“所有信息都保留了”。上面的两个示意向量就是例子：只看归一化结果，已经分不清原来是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[2,4,6,8]"
+            },
+            "href": null,
+            "plain_text": "[2,4,6,8]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 还是 ",
+            "text": {
+              "content": " 还是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "[20,40,60,80]"
+            },
+            "href": null,
+            "plain_text": "[20,40,60,80]",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。模型是在包含这一步的结构里一起训练的，需要把有用的区别学到归一化后仍能区分的表示里。",
+            "text": {
+              "content": "。模型是在包含这一步的结构里一起训练的，需要把有用的区别学到归一化后仍能区分的表示里。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "heading_3": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "那为什么还需要 γ 和 β",
+            "text": {
+              "content": "那为什么还需要 γ 和 β",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "35ac3e88-c713-4e99-b106-6b7b873c628c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_3"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8143-843e-ebeb4fe513c7",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "归一化以后，各维度都按同一套规则处理。但模型可能希望某一维放大一点，另一维整体偏高一点，所以还有一步",
+            "text": {
+              "content": "归一化以后，各维度都按同一套规则处理。但模型可能希望某一维放大一点，另一维整体偏高一点，所以还有一步",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "y_j=\\gamma_j\\hat{x}_j+\\beta_j"
+      },
+      "has_children": false,
+      "id": "0b114e51-b48a-4571-854e-158776dd3b43",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81b8-879f-cc62fc7d4949",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 和 ",
+            "text": {
+              "content": " 和 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 各是一个 ",
+            "text": {
+              "content": " 各是一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维向量，每一维都有自己的缩放和偏移。比如第 1 维的 ",
+            "text": {
+              "content": " 维向量，每一维都有自己的缩放和偏移。比如第 1 维的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma_1=2"
+            },
+            "href": null,
+            "plain_text": "\\gamma_1=2",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "、",
+            "text": {
+              "content": "、",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta_1=1"
+            },
+            "href": null,
+            "plain_text": "\\beta_1=1",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，刚才的 −1.342 就会变成",
+            "text": {
+              "content": "，刚才的 −1.342 就会变成",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "y_1=2\\times(-1.342)+1=-1.684"
+      },
+      "has_children": false,
+      "id": "28621632-8f7c-4502-ae97-ba07986a8d08",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-810c-a57f-fe1829e2b44f",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "其他维度按各自的参数来算。",
+            "text": {
+              "content": "其他维度按各自的参数来算。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 通常初始化成全 1，",
+            "text": {
+              "content": " 通常初始化成全 1，",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 初始化成全 0，之后跟模型一起训练。",
+            "text": {
+              "content": " 初始化成全 0，之后跟模型一起训练。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81bd-bd20-f1a8d9be7fe1",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这里还要分清：均值、方差是每个 token 临时算出来的；同一个 LayerNorm 模块的 ",
+            "text": {
+              "content": "这里还要分清：均值、方差是每个 token 临时算出来的；同一个 LayerNorm 模块的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "、",
+            "text": {
+              "content": "、",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，则是所有 token 共用的参数，不是每个 token 各学一套。不同模块通常有各自独立的一套。",
+            "text": {
+              "content": "，则是所有 token 共用的参数，不是每个 token 各学一套。不同模块通常有各自独立的一套。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8166-a0b7-cae5ffe908a6",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T09:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "它们也不能把刚才丢掉的信息恢复出来。上面的两个示意向量归一化以后相同，再乘同一组 ",
+            "text": {
+              "content": "它们也不能把刚才丢掉的信息恢复出来。上面的两个示意向量归一化以后相同，再乘同一组 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "、加同一组 ",
+            "text": {
+              "content": "、加同一组 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "，结果仍然相同。它们提供的是可学习的调整能力，不是把原向量还原回来。",
+            "text": {
+              "content": "，结果仍然相同。它们提供的是可学习的调整能力，不是把原向量还原回来。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "合在一起",
+            "text": {
+              "content": "合在一起",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-81ef-93ac-cd25267ae24c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-818a-a743-f47e81a77d5b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "对一个 ",
+            "text": {
+              "content": "对一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 维向量，完整计算就是",
+            "text": {
+              "content": " 维向量，完整计算就是",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\mu=\\frac{1}{d_{\\text{model}}}\\sum_{j=1}^{d_{\\text{model}}}x_j,\\qquad\n\\sigma^2=\\frac{1}{d_{\\text{model}}}\\sum_{j=1}^{d_{\\text{model}}}(x_j-\\mu)^2"
+      },
+      "has_children": false,
+      "id": "082735a0-5b42-46fc-8d7f-6fdfc4363497",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\underbrace{\\mathrm{LayerNorm}(\\mathbf{x})}_{1\\times d_{\\text{model}}}\n=\n\\underbrace{\\gamma}_{1\\times d_{\\text{model}}}\n\\odot\n\\frac{\\mathbf{x}-\\mu}{\\sqrt{\\sigma^2+\\epsilon}}\n+\n\\underbrace{\\beta}_{1\\times d_{\\text{model}}}"
+      },
+      "has_children": false,
+      "id": "828b8f0f-c41a-462b-80c9-35e9b79c7531",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81fb-94cb-c7650980084b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\odot"
+            },
+            "href": null,
+            "plain_text": "\\odot",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 表示对应位置相乘，不是点积。输入一个 ",
+            "text": {
+              "content": " 表示对应位置相乘，不是点积。输入一个 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "n\\times d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "n\\times d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 的矩阵，就对每一行做上面这套计算，输出仍然是 ",
+            "text": {
+              "content": " 的矩阵，就对每一行做上面这套计算，输出仍然是 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "n\\times d_{\\text{model}}"
+            },
+            "href": null,
+            "plain_text": "n\\times d_{\\text{model}}",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。",
+            "text": {
+              "content": "。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-812a-961d-e8cea4ae638d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "还要注意，均值 0、方差约为 1，说的是乘 ",
+            "text": {
+              "content": "还要注意，均值 0、方差约为 1，说的是乘 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "、加 ",
+            "text": {
+              "content": "、加 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": " 之前的结果。完整 LayerNorm 的最终输出，不再保证满足这两个条件。",
+            "text": {
+              "content": " 之前的结果。完整 LayerNorm 的最终输出，不再保证满足这两个条件。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html",
+            "plain_text": "PyTorch LayerNorm 文档",
+            "text": {
+              "content": "PyTorch LayerNorm 文档",
+              "link": {
+                "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html"
+              }
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "为什么不按 batch 来算",
+            "text": {
+              "content": "为什么不按 batch 来算",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-81c0-ba4b-e2401180a9c9",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "01bd2bfc-8f0a-4b4a-87d2-344a2416016c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "BatchNorm 是另一种归一化方式。它通常针对某个特征，把一批样本中的值放到一起算统计量；LayerNorm 则针对一个 token，把它自己的各个特征放到一起算。",
+            "text": {
+              "content": "BatchNorm 是另一种归一化方式。它通常针对某个特征，把一批样本中的值放到一起算统计量；LayerNorm 则针对一个 token，把它自己的各个特征放到一起算。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81b1-bd8e-ee2e8df4336b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "最直接的区别是：用 LayerNorm 处理“苹果”时，不需要知道同一个 batch 里还放了哪些句子。训练时一次处理很多句子，生成时一次只处理一个新 token，都能用同一套计算方式，也不需要维护训练期间的滑动均值和方差。",
+            "text": {
+              "content": "最直接的区别是：用 LayerNorm 处理“苹果”时，不需要知道同一个 batch 里还放了哪些句子。训练时一次处理很多句子，生成时一次只处理一个新 token，都能用同一套计算方式，也不需要维护训练期间的滑动均值和方差。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8177-9fd7-d2c6341e5fc2",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这不表示 BatchNorm 不能处理一条样本，它推理时通常会使用训练中积累的统计量。只是对序列模型来说，LayerNorm 这种不依赖其他样本的方式更方便。",
+            "text": {
+              "content": "这不表示 BatchNorm 不能处理一条样本，它推理时通常会使用训练中积累的统计量。只是对序列模型来说，LayerNorm 这种不依赖其他样本的方式更方便。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "https://arxiv.org/abs/1607.06450",
+            "plain_text": "Layer Normalization 论文",
+            "text": {
+              "content": "Layer Normalization 论文",
+              "link": {
+                "url": "https://arxiv.org/abs/1607.06450"
+              }
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "它在 Transformer 的什么位置",
+            "text": {
+              "content": "它在 Transformer 的什么位置",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "c7aa1a16-e66c-4410-a89b-e1227707e4cd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-810b-b614-f15621245fff",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "原版 Transformer 结构图里写的是 Add & Norm。Add 指把模块的输入加回输出，也就是残差连接；Norm 才是这一篇讲的 LayerNorm。以 attention 这一支为例，忽略 dropout，可以写成",
+            "text": {
+              "content": "原版 Transformer 结构图里写的是 Add & Norm。Add 指把模块的输入加回输出，也就是残差连接；Norm 才是这一篇讲的 LayerNorm。以 attention 这一支为例，忽略 dropout，可以写成",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "equation": {
+        "expression": "\\mathbf{y}=\\mathrm{LayerNorm}\\big(\\mathbf{x}+\\mathrm{MultiHead}(\\mathbf{x})\\big)"
+      },
+      "has_children": false,
+      "id": "75a432a3-2587-411f-b922-7670f3e00b8d",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "equation"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8140-9795-d17b0da9fb9b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "所以原版并不是 attention 算完就直接归一化，中间还加回了输入。前馈网络那一支也有对应的 Add & Norm。后来也有把归一化放在模块前面的设计，看不同结构图时要留意位置，不能都画成同一个顺序。",
+            "text": {
+              "content": "所以原版并不是 attention 算完就直接归一化，中间还加回了输入。前馈网络那一支也有对应的 Add & Norm。后来也有把归一化放在模块前面的设计，看不同结构图时要留意位置，不能都画成同一个顺序。",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": "https://arxiv.org/html/1706.03762v7#S3.SS1",
+            "plain_text": "原版 Transformer 结构",
+            "text": {
+              "content": "原版 Transformer 结构",
+              "link": {
+                "url": "https://arxiv.org/html/1706.03762v7#S3.SS1"
+              }
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-11-02T08:25:00.000Z",
+      "has_children": false,
+      "id": "3fac38a5-f48c-480e-a0c0-827a9ee521ff",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这一篇先弄清 Norm 本身，残差连接和它为什么有用，再单独展开。",
+            "text": {
+              "content": "这一篇先弄清 Norm 本身，残差连接和它为什么有用，再单独展开。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "小结",
+            "text": {
+              "content": "小结",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "407c5387-4c4e-8109-919c-f09d7b99ae9a",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "last_edited_time": "2026-10-28T10:12:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-81fd-88f3-d4e5b743c64e",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "LayerNorm 是对每个 token 的向量单独处理：减去自己的均值，除以自己的标准差，再按维度乘上可学习的 ",
+            "text": {
+              "content": "LayerNorm 是对每个 token 的向量单独处理：减去自己的均值，除以自己的标准差，再按维度乘上可学习的 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\gamma"
+            },
+            "href": null,
+            "plain_text": "\\gamma",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "、加上 ",
+            "text": {
+              "content": "、加上 ",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "equation": {
+              "expression": "\\beta"
+            },
+            "href": null,
+            "plain_text": "\\beta",
+            "type": "equation"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "。它不混合其他 token，也不改变向量长度。",
+            "text": {
+              "content": "。它不混合其他 token，也不改变向量长度。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "407c5387-4c4e-81a2-894a-0027bd194f33",
+        "object": "user"
+      },
+      "created_time": "2026-10-28T10:12:00.000Z",
+      "has_children": false,
+      "id": "407c5387-4c4e-8126-a410-ddbe3a9ebc0b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-11-02T08:25:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "前面 attention 解决的是“从上下文里读到什么”，LayerNorm 调整的是这份表示的整体偏移和尺度。把这两件事分开，再看 Transformer 的结构图就容易一些。",
+            "text": {
+              "content": "前面 attention 解决的是“从上下文里读到什么”，LayerNorm 调整的是这份表示的整体偏移和尺度。把这两件事分开，再看 Transformer 的结构图就容易一些。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "407c5387-4c4e-81d8-bcc5-d8b34850f548",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}

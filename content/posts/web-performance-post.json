@@ -1,0 +1,545 @@
+{
+  "post": {
+    "id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+    "title": "web前端性能优化经验 - 后置优化",
+    "slug": "web-performance-post",
+    "content": null,
+    "excerpt": null,
+    "cover_url": null,
+    "category_id": null,
+    "status": "published",
+    "published_at": "2026-01-17",
+    "created_at": "2026-01-17T14:34:00.000Z",
+    "updated_at": "2026-05-20T10:11:00.000Z",
+    "tags": [
+      {
+        "id": "性能优化",
+        "name": "性能优化",
+        "slug": "",
+        "created_at": ""
+      },
+      {
+        "id": "web",
+        "name": "web",
+        "slug": "web",
+        "created_at": ""
+      }
+    ]
+  },
+  "blocks": [
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T14:51:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-80b2-8e72-c3357a368903",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T14:51:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T14:52:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-803a-bbc9-efde407ac602",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T15:03:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "在项目初期大家追求的往往是快速出业务成果，代码质量和性能的优先级并不高。直到性能成为客户使用的卡点时才会引起足够的关注。但此时已经不太可能大改代码了，因为既没有业务收益又会带来出bug的风险，因此就需要一些可以在不大改代码的前提下提高页面性能的手段。下面总结了一些今年做性能优化积攒下来的经验。",
+            "text": {
+              "content": "在项目初期大家追求的往往是快速出业务成果，代码质量和性能的优先级并不高。直到性能成为客户使用的卡点时才会引起足够的关注。但此时已经不太可能大改代码了，因为既没有业务收益又会带来出bug的风险，因此就需要一些可以在不大改代码的前提下提高页面性能的手段。下面总结了一些今年做性能优化积攒下来的经验。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T14:50:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "建立指标",
+            "text": {
+              "content": "建立指标",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2ebc5387-4c4e-80b1-b473-f4424a2f4cd5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T14:52:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T14:52:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-8015-8577-cb86eb74dbb5",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T15:24:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "在上手开干前，一定要先建立一套指标系统。一是可以量化优化效果，二是有一个明确的指标可以帮助区分事项的轻重缓急。一般集团或者部门都会有自己的一套埋点框架，应用只需要接入对应的SDK就可以，一些基础的埋点（比如）SDK会自动上报，不需要应用方额外做什么。但是这些指标往往参考意义不大，以我们比较关心的指标——页面可用时间（从页面开始加载到用户可以交互的时间）为例，直接使用SDK自动上报的LCP/FCP往往和实际的可用时间有差异。只有业务方结合具体业务场景制定的指标才更能反映真实的产品体验，如果用错了指标，优化的方向也就错了，数据看着不错，但是用户体验并没有提升。比如一个AI coding产品，你需要分别衡量copilot的可用时间，预览区域的可用时间，IDE区域的可用时间，这三个可用时间的优先级也并不一样，这些都是需要结合业务场景具体分析的。",
+            "text": {
+              "content": "在上手开干前，一定要先建立一套指标系统。一是可以量化优化效果，二是有一个明确的指标可以帮助区分事项的轻重缓急。一般集团或者部门都会有自己的一套埋点框架，应用只需要接入对应的SDK就可以，一些基础的埋点（比如）SDK会自动上报，不需要应用方额外做什么。但是这些指标往往参考意义不大，以我们比较关心的指标——页面可用时间（从页面开始加载到用户可以交互的时间）为例，直接使用SDK自动上报的LCP/FCP往往和实际的可用时间有差异。只有业务方结合具体业务场景制定的指标才更能反映真实的产品体验，如果用错了指标，优化的方向也就错了，数据看着不错，但是用户体验并没有提升。比如一个AI coding产品，你需要分别衡量copilot的可用时间，预览区域的可用时间，IDE区域的可用时间，这三个可用时间的优先级也并不一样，这些都是需要结合业务场景具体分析的。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T14:49:00.000Z",
+      "has_children": false,
+      "heading_2": {
+        "color": "default",
+        "is_toggleable": false,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "消除串行",
+            "text": {
+              "content": "消除串行",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "id": "2ebc5387-4c4e-80c3-bf59-fee81d672e17",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T15:16:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "heading_2"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T15:24:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-808f-a655-e148b95c7954",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T15:29:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "在不大改代码的前提下，这是一个非常强有力的手段，也是ROI最高的手段。我一般的经验是先理清楚项目具体是如何加载启动的，每一步都请求了哪些接口，哪些接口之间是串行的，整理出来一个完整的流程图。然后分析这里面哪些接口其实是可以并行的。一般复杂度稍微高一点的项目你都会惊讶的发现有那么多其实可以并行的地方，下面是一个实际项目的启动流程图",
+            "text": {
+              "content": "在不大改代码的前提下，这是一个非常强有力的手段，也是ROI最高的手段。我一般的经验是先理清楚项目具体是如何加载启动的，每一步都请求了哪些接口，哪些接口之间是串行的，整理出来一个完整的流程图。然后分析这里面哪些接口其实是可以并行的。一般复杂度稍微高一点的项目你都会惊讶的发现有那么多其实可以并行的地方，下面是一个实际项目的启动流程图",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "code": {
+        "caption": [],
+        "language": "mermaid",
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "flowchart LR\n  获取CSRF --> fetchUserInfo\n  fetchUserInfo --> FGManage.createFgInstance\n  fetchUserInfo --> StudioFGManage.init\n  FGManage.createFgInstance --> locales\n  StudioFGManage.init --> locales\n  locales --> appService.getAppInfo\n  locales --> appService.getHomeConfig\n  locales --> artifactService.getApp\n  locales --> appService.getAppUserToken\n  appService.getAppInfo --> hasAuthRoles\n  hasAuthRoles --> getAppArtifact\n  hasAuthRoles --> listConversation\n\tgetAppArtifact --> getSpec\n  listConversation --> getSpec \n\tgetAppArtifact --> getHistoryMessages\n  listConversation --> getHistoryMessages \n\tgetAppArtifact --> getArtifacts\n  listConversation --> getArtifacts \n  getArtifacts --> xuanran{渲染copilot}\n  getHistoryMessages --> xuanran\n\tappService.getAppInfo --> renderRightPanel{\"渲染右侧面板\"}\n\tappService.getHomeConfig --> renderRightPanel\n\tartifactService.getApp --> renderRightPanel\n\tappService.getAppUserToken --> renderRightPanel\n  ",
+            "text": {
+              "content": "flowchart LR\n  获取CSRF --> fetchUserInfo\n  fetchUserInfo --> FGManage.createFgInstance\n  fetchUserInfo --> StudioFGManage.init\n  FGManage.createFgInstance --> locales\n  StudioFGManage.init --> locales\n  locales --> appService.getAppInfo\n  locales --> appService.getHomeConfig\n  locales --> artifactService.getApp\n  locales --> appService.getAppUserToken\n  appService.getAppInfo --> hasAuthRoles\n  hasAuthRoles --> getAppArtifact\n  hasAuthRoles --> listConversation\n\tgetAppArtifact --> getSpec\n  listConversation --> getSpec \n\tgetAppArtifact --> getHistoryMessages\n  listConversation --> getHistoryMessages \n\tgetAppArtifact --> getArtifacts\n  listConversation --> getArtifacts \n  getArtifacts --> xuanran{渲染copilot}\n  getHistoryMessages --> xuanran\n\tappService.getAppInfo --> renderRightPanel{\"渲染右侧面板\"}\n\tappService.getHomeConfig --> renderRightPanel\n\tartifactService.getApp --> renderRightPanel\n\tappService.getAppUserToken --> renderRightPanel\n  ",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T15:31:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-802c-8932-f3804922cb1b",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T15:48:00.000Z",
+      "object": "block",
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "code"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T15:48:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-8037-a48e-ed1c90400f95",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T16:10:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "这个项目中绝大部份接口都是可以并行的，之所以做成这样是一方面是赶着出业务，没有关注接口串行的问题，一方面也是组件的客观划分导致的。那么怎么在不大改代码结构的前提下使这些接口可以大面积并行呢？答案是借助service worker进行预请求！在service worker中我们可以拦截到对页面的第一个请求（页面HTML的请求）。此时就可以提前将一些请求都发出去，并记录fetch的promise，等HTML请求返回，开始加载并执行JS，并运行到了真的需要拿数据的时候，在service worker中拦截到对应的请求，直接返回记录的promise即可，如果此时请求已经完成，就会立即返回结果给页面，从页面的视角看就是这个接口变得超级快。这样就实现了在不改代码结构的前提下，将可以并行的接口全部并行化的效果。",
+            "text": {
+              "content": "这个项目中绝大部份接口都是可以并行的，之所以做成这样是一方面是赶着出业务，没有关注接口串行的问题，一方面也是组件的客观划分导致的。那么怎么在不大改代码结构的前提下使这些接口可以大面积并行呢？答案是借助service worker进行预请求！在service worker中我们可以拦截到对页面的第一个请求（页面HTML的请求）。此时就可以提前将一些请求都发出去，并记录fetch的promise，等HTML请求返回，开始加载并执行JS，并运行到了真的需要拿数据的时候，在service worker中拦截到对应的请求，直接返回记录的promise即可，如果此时请求已经完成，就会立即返回结果给页面，从页面的视角看就是这个接口变得超级快。这样就实现了在不改代码结构的前提下，将可以并行的接口全部并行化的效果。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T16:01:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-80a4-9fa7-dc60e4b402bd",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T16:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": [
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "同时还可以在service worker中缓存页面的html，每次访问页面时优先返回上次缓存的html，并立即更新缓存（",
+            "text": {
+              "content": "同时还可以在service worker中缓存页面的html，每次访问页面时优先返回上次缓存的html，并立即更新缓存（",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": true,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "Stale-While-Revalidate",
+            "text": {
+              "content": "Stale-While-Revalidate",
+              "link": null
+            },
+            "type": "text"
+          },
+          {
+            "annotations": {
+              "bold": false,
+              "code": false,
+              "color": "default",
+              "italic": false,
+              "strikethrough": false,
+              "underline": false
+            },
+            "href": null,
+            "plain_text": "）。这样大大降低了页面的加载时间，只是会牺牲一定的实时性。在此基础上每次更新缓存时，如果发现拉到了新版本的HTML，还可以提前加载HTML中的静态资源（JS，css等），在高频持续交付的场景下可以避免版本更新后用户首次访问时下载新版本静态资源导致的加载慢的问题。",
+            "text": {
+              "content": "）。这样大大降低了页面的加载时间，只是会牺牲一定的实时性。在此基础上每次更新缓存时，如果发现拉到了新版本的HTML，还可以提前加载HTML中的静态资源（JS，css等），在高频持续交付的场景下可以避免版本更新后用户首次访问时下载新版本静态资源导致的加载慢的问题。",
+              "link": null
+            },
+            "type": "text"
+          }
+        ]
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T16:11:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-8076-ac14-fb96bbd71668",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T16:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T16:11:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-80ee-8f60-d4035b2cd48c",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T16:11:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    },
+    {
+      "archived": false,
+      "children": [],
+      "created_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "created_time": "2026-01-17T16:01:00.000Z",
+      "has_children": false,
+      "id": "2ebc5387-4c4e-80ae-b415-f8b7d8958c64",
+      "in_trash": false,
+      "last_edited_by": {
+        "id": "1d0cf703-9b01-4349-9b66-89451f4f9f43",
+        "object": "user"
+      },
+      "last_edited_time": "2026-01-17T16:01:00.000Z",
+      "object": "block",
+      "paragraph": {
+        "color": "default",
+        "icon": null,
+        "rich_text": []
+      },
+      "parent": {
+        "page_id": "2ebc5387-4c4e-801c-a6f1-ee865e08e195",
+        "type": "page_id"
+      },
+      "type": "paragraph"
+    }
+  ]
+}
