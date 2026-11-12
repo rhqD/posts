@@ -172,7 +172,7 @@
 
     const $ = selector => document.querySelector(selector);
     const models = {
-      light: { url: 'https://www.renhanquan.com/models/yard-web.glb', report: 'https://www.renhanquan.com/models/yard-web.report.json', label: '纯色轻量版' },
+      light: { url: '/models/yard-web.glb', report: '/models/yard-web.report.json', label: '纯色轻量版' },
 
     };
     // glTF is Y-up: Blender (X,Y,Z) becomes (X,Z,-Y). North is +Z here.
@@ -427,7 +427,7 @@
       document.querySelectorAll('[data-light-group], [data-light-focus]').forEach(button => { button.disabled = true; });
       const reportPromise = fetch(descriptor.report, { cache:'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
       try {
-        const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url + '?t=' + Date.now(), resolve, e => {
+        const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url, resolve, e => {
           if (id !== loadId) return;
           if (e.lengthComputable) { const progress = Math.round(e.loaded/e.total*100); $('#progress-fill').style.width = progress+'%'; $('#load-message').textContent = progress === 100 ? '模型已下载，正在解码…' : `正在读取 ${progress}%`; }
         }, reject));
