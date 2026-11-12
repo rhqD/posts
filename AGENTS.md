@@ -46,6 +46,8 @@ OSS bucket renhanquan-site (cn-hangzhou)
 | `content/` | 构建期内容快照，**要提交进 git** |
 | `scripts/images.mjs` | 图片管线 |
 | `scripts/deploy.sh` | 构建产物上传 OSS |
+| `src/app/home` | `/home` 3D 页面，全屏 iframe 指向 `public/yard/` |
+| `public/yard` | 院子 3D 查看器（原样内置的 three.js demo，依赖已 vendor） |
 | `docs/` | 架构、部署、内容管线的细节 |
 
 ## 常用命令
@@ -109,6 +111,13 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - `/posts` 不带斜杠时靠 OSS 的 `SupportSubDir` 302 到 `/posts/`，改 bucket 网站配置时别丢这个字段。
 - 文章里可能残留指向旧域名的死链图片，`make images` 会报 `fetch failed`，属正常，需在 Notion 里换图。
 - 中文标题如果没有填 slug，会被 slugify 成空串再回退成 page id；中文分类同理。
+
+## 3D 页面（/home）
+
+- 查看器是 `public/yard/index.html`，一个自包含的 three.js 页面，**不参与 Next 构建**。
+- three.js 及 addons 已 vendor 到 `public/yard/vendor/`，不要改成 CDN 引用（国内访问不稳）。
+- 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，由 demo 通过绝对 URL 加载。
+- 修改 Blender 模型后需要重新导出并上传该对象；文件名不变，CDN 对 `glb` 走 1 年 immutable 缓存，必要时刷新。
 
 ## 不要做的事
 

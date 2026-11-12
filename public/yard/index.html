@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#eeede7">
+  <title>院子 · 3D 预览</title>
+  <style>
+    :root { color-scheme: light; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #30382e; --muted: #7e8479; --line: #d9ddd2; --green: #65794e; }
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; overflow: hidden; background: radial-gradient(ellipse at 55% 40%, #f7f7f1, #e4e7dd); }
+    button, select, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
+    #stage { position: fixed; inset: 0; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    .glass { background: #fafbf6eb; border: 1px solid #fff; box-shadow: 0 6px 24px #33412b09; backdrop-filter: blur(16px); }
+    header { position: fixed; top: 22px; left: 26px; right: 26px; display: flex; justify-content: space-between; align-items: center; gap: 16px; pointer-events: none; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark { width: 43px; height: 43px; border-radius: 13px; display: grid; place-items: center; color: var(--green); }
+    .brand h1 { margin: 0 0 3px; font-size: 18px; font-weight: 600; letter-spacing: .08em; }
+    .brand p { margin: 0; color: var(--muted); font-size: 10px; letter-spacing: .19em; }
+    body.night .brand h1 { color: #e8eddc; }
+    body.night .brand p, body.night .hint, body.night .north-caption { color: #b6c2ac; }
+    .model-picker { display: flex; gap: 9px; align-items: center; padding: 11px 14px; border-radius: 12px; pointer-events: auto; }
+    .model-picker label { font-size: 11px; color: var(--muted); }
+    select { background: transparent; border: 0; color: #384333; font-size: 12px; padding: 2px 18px 2px 0; max-width: 190px; cursor: pointer; }
+    .viewbar { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); display: flex; align-items: center; padding: 5px; gap: 4px; border-radius: 15px; }
+    .viewbar button { min-width: 65px; padding: 11px 17px; border: 0; border-radius: 10px; color: #7a8274; background: transparent; font-size: 12px; white-space: nowrap; transition: background .18s, color .18s; }
+    .viewbar button:hover { background: #e8ecdf; }
+    .viewbar button[aria-pressed="true"] { background: #65794e; color: #fff; }
+    .divider { height: 20px; width: 1px; background: var(--line); margin: 0 3px; }
+    #reset { font-size: 16px; min-width: 38px; padding: 8px; }
+    .details { position: fixed; bottom: 28px; left: 26px; width: 216px; padding: 17px 18px; border-radius: 14px; }
+    .eyebrow { font-size: 10px; letter-spacing: .1em; color: var(--muted); margin-bottom: 12px; display: flex; gap: 7px; align-items: center; }
+    .dot { width: 6px; height: 6px; background: #7e9a5d; border-radius: 100%; }
+    .details dl { display: flex; margin: 0; justify-content: space-between; }
+    .details dt { font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+    .details dd { margin: 0; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .details small { display: block; font-size: 10px; margin-top: 13px; color: #959b8c; }
+    .tools { position: fixed; top: 98px; right: 26px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+    .compass { width: 61px; height: 61px; border-radius: 50%; display: grid; place-items: center; }
+    #north-arrow { width: 40px; height: 40px; }
+    .north-caption { font-size: 9px; color: var(--muted); letter-spacing: .08em; margin-top: -7px; }
+    .toggles { display: flex; flex-direction: column; gap: 5px; padding: 5px; border-radius: 12px; }
+    .toggles button { border: 0; background: transparent; color: #737e68; border-radius: 8px; font-size: 11px; padding: 10px 9px; }
+    .toggles button:hover, .toggles button[aria-pressed="true"] { background: #e5eadc; color: #3d542e; }
+    .sun-panel { position: fixed; left: 26px; top: 98px; width: 240px; padding: 16px; border-radius: 14px; max-height: calc(100dvh - 285px); overflow-y: auto; overscroll-behavior: contain; }
+    .sun-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .sun-heading label { font-size: 12px; font-weight: 500; }
+    #sun-time-label { font-size: 19px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    #sun-time { width: 100%; margin: 14px 0 3px; accent-color: var(--green); cursor: ew-resize; }
+    .sun-ticks { display: flex; justify-content: space-between; color: var(--muted); font-size: 9px; }
+    #sun-direction { font-size: 11px; color: #657254; margin: 12px 0 8px; }
+    .sun-actions { display: flex; gap: 4px; }
+    .sun-actions button { flex: 1; padding: 7px 3px; border: 0; border-radius: 7px; background: #e9eddf; color: #536443; font-size: 10px; white-space: nowrap; }
+    .sun-actions button[aria-pressed="true"] { background: var(--green); color: white; }
+    .sun-panel small { display: block; color: var(--muted); font-size: 9px; line-height: 1.5; margin-top: 9px; }
+    .sun-location { color: var(--muted); font-size: 10px; margin: 0 0 10px; }
+    .sun-date-row { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; }
+    .sun-date-row label { font-size: 10px; color: var(--muted); }
+    #sun-date { width: 132px; min-width: 0; flex: 1; padding: 5px; border: 1px solid var(--line); border-radius: 6px; background: #fff8; color: #384333; font-size: 11px; }
+    #sun-today { border: 0; background: transparent; color: var(--green); font-size: 10px; padding: 5px 0; }
+    #sun-events { font-size: 10px; color: #657254; line-height: 1.7; margin: 9px 0 0; }
+    .lamp-control { border-top: 1px solid var(--line); margin-top: 13px; padding-top: 11px; }
+    .lamp-heading { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 9px; }
+    #focus-light { border: 0; padding: 0; color: var(--green); background: transparent; font-size: 10px; }
+    .lamp-switch { width: 100%; display: flex; align-items: center; gap: 8px; padding: 10px 8px; border: 1px solid #dbe1d2; border-radius: 9px; color: #56624b; background: #f1f3e9; font-size: 11px; }
+    .lamp-switch[aria-checked="true"] { border-color: #aaba83; background: #e9efd8; }
+    .lamp-state { margin-left: auto; color: var(--muted); font-size: 10px; }
+    .switch-track { position: relative; width: 28px; height: 16px; border-radius: 10px; background: #bdc5b3; flex-shrink: 0; }
+    .switch-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: white; transition: transform .15s; }
+    .lamp-row { display: flex; gap: 6px; margin-top: 7px; }
+    .lamp-row .lamp-switch { min-width: 0; flex: 1; }
+    .lamp-locate { border: 0; padding: 0 5px; background: transparent; color: var(--green); font-size: 13px; }
+    .lamp-switch[aria-checked="true"] .switch-track { background: var(--green); }
+    .lamp-switch[aria-checked="true"] .switch-track::after { transform: translateX(12px); }
+    button:disabled { cursor: default; opacity: .5; }
+    .hint { position: fixed; right: 27px; bottom: 32px; color: #89917e; font-size: 10px; line-height: 1.9; text-align: right; pointer-events: none; }
+    .hint span { display: block; }
+    .overlay { position: fixed; inset: 0; display: grid; place-items: center; background: #eeefe7b3; z-index: 5; backdrop-filter: blur(7px); }
+    .loading-card { width: min(340px, 88vw); text-align: center; padding: 30px; border-radius: 20px; }
+    .loading-card h2 { font-size: 17px; font-weight: 500; margin: 17px 0 8px; }
+    .loading-card p { color: var(--muted); font-size: 12px; line-height: 1.7; margin: 0; }
+    .spinner { width: 28px; height: 28px; border: 2px solid #dbe2d2; border-top-color: #788e61; border-radius: 50%; animation: spin 1s linear infinite; margin: auto; }
+    .progress { height: 3px; background: #e3e8dc; border-radius: 5px; overflow: hidden; margin-top: 23px; }
+    #progress-fill { height: 100%; width: 0; background: #7d9362; transition: width .2s; }
+    #retry { background: var(--green); color: #fff; border: 0; border-radius: 9px; padding: 10px 20px; margin-top: 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (max-width: 950px) { .details { bottom: 95px; } .hint { bottom: 101px; } }
+    @media (max-width: 580px) {
+      header { top: 16px; left: 16px; right: 16px; align-items: flex-start; }
+      .brand { gap: 8px; } .brand h1 { font-size: 15px; } .brand p { font-size: 8px; }
+      .mark { width: 35px; height: 35px; border-radius: 10px; } .mark svg { width: 21px; }
+      .model-picker { padding: 9px; gap: 0; } .model-picker label { display: none; } select { font-size: 11px; max-width: 145px; }
+      .tools { right: 16px; top: 88px; } .compass { width: 50px; height: 50px; }
+      .sun-panel { left: 16px; top: 80px; width: 208px; padding: 12px; }
+      .details { left: 16px; bottom: 92px; width: 198px; padding: 13px 15px; }
+      .details small { margin-top: 9px; } .details dd { font-size: 13px; }
+      .hint { display: none; } .viewbar { bottom: 20px; width: calc(100% - 32px); justify-content: space-between; gap: 0; }
+      .viewbar button { min-width: 0; padding: 11px 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before { animation-duration: 0s !important; transition: none !important; } }
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}
+  </script>
+</head>
+<body>
+  <main id="stage" aria-label="可旋转和缩放的院子三维模型"></main>
+  <header>
+    <div class="brand">
+      <div class="mark glass" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 22V10l9-6 9 6v12H4Z" stroke="currentColor" stroke-width="1.4"/><path d="M4 13h18M10 22v-6h6v6M13 4v9" stroke="currentColor" stroke-width="1.2"/></svg></div>
+      <div><h1>院子 · 3D 预览</h1><p>YABAI HOME / COURTYARD</p></div>
+    </div>
+    <div class="model-picker glass" style="display:none"><label for="model">模型</label><select id="model" disabled><option value="light">轻量版 · 3.94 MB</option></select></div>
+  </header>
+  <aside class="tools" aria-label="预览设置">
+    <div class="compass glass" title="箭头指向北侧大门"><svg id="north-arrow" viewBox="0 0 40 40" aria-label="北方向"><text x="20" y="10" text-anchor="middle" fill="#63764e" font-size="8" font-family="sans-serif">N</text><path d="m20 13-5 15 5-3 5 3-5-15Z" fill="#73865d"/><path d="m20 25 5 3-5-15v12Z" fill="#aab69a"/></svg></div>
+    <span class="north-caption">北 · 大门方向</span>
+    <div class="toggles glass"><button id="rotate" aria-pressed="false">自动旋转</button><button id="wireframe" aria-pressed="false">显示线框</button></div>
+  </aside>
+  <section class="sun-panel glass" aria-label="日照时间设置">
+    <p class="sun-location">108.09°E · 34.18°N</p>
+    <div class="sun-date-row"><label for="sun-date">日期</label><input id="sun-date" type="date" min="1900-01-01" max="2100-12-31" required><button id="sun-today">今天</button></div>
+    <div class="sun-heading"><label for="sun-time">北京时间</label><output id="sun-time-label" for="sun-time">14:00</output></div>
+    <input id="sun-time" type="range" min="0" max="24" step="0.25" value="14" aria-valuetext="14:00">
+    <div class="sun-ticks" aria-hidden="true"><span>0</span><span>6</span><span>12</span><span>18</span><span>24 时</span></div>
+    <p id="sun-direction">正在计算太阳位置…</p>
+    <div class="sun-actions"><button data-sun-event="morning">早晨</button><button data-sun-event="noon">太阳正午</button><button data-sun-event="evening">傍晚</button><button id="sun-play" aria-pressed="false">播放日照</button></div>
+    <p id="sun-events"></p>
+    <small>北京时间 UTC+8 · 按经纬度计算太阳位置<br>晴空效果示意，不含实时天气及周边地形遮挡</small>
+    <section class="lamp-control" aria-label="房屋灯光">
+      <div class="lamp-heading"><span>灯光 · 网页模拟</span><button id="focus-light" aria-label="查看西墙投光灯" disabled>查看灯具 ↗</button></div>
+      <button id="floodlight" class="lamp-switch" role="switch" aria-label="西墙投光灯开关" aria-checked="false" disabled><span>西墙投光灯</span><span id="floodlight-state" class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button>
+      <div class="lamp-row"><button id="light-entry" class="lamp-switch" data-light-group="entry" role="switch" aria-label="一楼门口吸顶灯开关" aria-checked="false" disabled><span>一楼门口吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="entry" aria-label="查看一楼门口吸顶灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-gate" class="lamp-switch" data-light-group="gate" role="switch" aria-label="院门双球灯开关" aria-checked="false" disabled><span>院门双球灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="gate" aria-label="查看院门双球灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-terrace" class="lamp-switch" data-light-group="terrace" role="switch" aria-label="三楼露台门灯开关" aria-checked="false" disabled><span>三楼露台门灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="terrace" aria-label="查看三楼露台门灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-atticDesk" class="lamp-switch" data-light-group="atticDesk" role="switch" aria-label="阁楼台灯开关" aria-checked="false" disabled><span>阁楼台灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="atticDesk" aria-label="查看阁楼台灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-atticFloor" class="lamp-switch" data-light-group="atticFloor" role="switch" aria-label="阁楼落地灯开关" aria-checked="false" disabled><span>阁楼落地灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="atticFloor" aria-label="查看阁楼落地灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-balcony" class="lamp-switch" data-light-group="balcony" role="switch" aria-label="二楼阳台吸顶灯开关" aria-checked="false" disabled><span>二楼阳台吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="balcony" aria-label="查看二楼阳台吸顶灯" disabled>↗</button></div>
+      <div class="lamp-row"><button id="light-rearDoor" class="lamp-switch" data-light-group="rearDoor" role="switch" aria-label="一楼后门吸顶灯开关" aria-checked="false" disabled><span>一楼后门吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="rearDoor" aria-label="查看一楼后门吸顶灯" disabled>↗</button></div>
+      <small>院门两盏球灯、二楼阳台两盏吸顶灯各自同步开关</small>
+      <small id="floodlight-hint">也可点击模型中的灯具切换</small>
+    </section>
+  </section>
+  <aside class="details glass" aria-label="模型信息" aria-live="polite">
+    <div class="eyebrow"><span class="dot"></span><span id="model-label">纯色轻量版</span></div>
+    <dl><div><dt>文件</dt><dd id="file-size">—</dd></div><div><dt>三角面</dt><dd id="triangles">—</dd></div><div><dt>加载</dt><dd id="load-time">—</dd></div></dl>
+    <small>坐南朝北 · 原始 Blender 工程未改动</small>
+  </aside>
+  <nav class="viewbar glass" aria-label="预设视角"><button data-view="yard" aria-pressed="true">前院</button><button data-view="pond" aria-pressed="false">池塘</button><button data-view="garden" aria-pressed="false">花园</button><button data-view="top" aria-pressed="false">俯视</button><button data-view="attic" aria-pressed="false">三楼阁楼</button><button data-view="all" aria-pressed="false">全景</button><span class="divider"></span><button id="reset" title="重置当前视角" aria-label="重置当前视角">↺</button></nav>
+  <div class="hint"><span>拖动旋转 · 滚轮缩放</span><span>右键平移 · 触屏双指缩放</span></div>
+  <section id="loading" class="overlay" aria-live="polite"><div class="loading-card glass"><div id="spinner" class="spinner"></div><h2 id="load-title">正在打开院子</h2><p id="load-message">读取模型与几何数据…</p><div id="progress" class="progress"><div id="progress-fill"></div></div><button id="retry" hidden>重新加载</button></div></section>
+  <noscript>请启用 JavaScript 以查看三维模型。</noscript>
+  <script>
+    if (location.protocol === 'file:') {
+      document.querySelector('#spinner').hidden = true;
+      document.querySelector('#progress').hidden = true;
+      document.querySelector('#load-title').textContent = '请通过本地服务器打开';
+      document.querySelector('#load-message').textContent = '在项目目录运行 python3 tools/serve_web_preview.py，然后访问终端中的预览地址。';
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+    import { SITE, solarPosition, solarDay, beijingDate, clockTime } from './solar.js';
+
+    const $ = selector => document.querySelector(selector);
+    const models = {
+      light: { url: 'https://www.renhanquan.com/models/yard-web.glb', report: 'https://www.renhanquan.com/models/yard-web.report.json', label: '纯色轻量版' },
+
+    };
+    // glTF is Y-up: Blender (X,Y,Z) becomes (X,Z,-Y). North is +Z here.
+    const b = (x, y, z) => new THREE.Vector3(x, z, -y);
+    let renderer, scene, camera, controls, model, fullBounds;
+    let activeView = 'yard', transition = null, loadId = 0, dirty = true, wireframe = false;
+    let sun, hemisphere, sunHour = 14, sunPlaying = false;
+    let sunDate = beijingDate(), sunDay = solarDay(sunDate);
+    let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
+    const lampRaycaster = new THREE.Raycaster();
+    const extraLights = {
+      entry: { root: 'Entry_Ceiling_Light', prefix: 'Entry_Ceiling_', meshes: ['Entry_Ceiling_Diffuser'], type: 'spot', intensity: 60, range: 9, offset: new THREE.Vector3(0,-.05,0) },
+      gate: { root: 'Gate_Globe_Lights', meshes: ['____04','____04_(1)'], type: 'point', intensity: 28, range: 7, offset: new THREE.Vector3() },
+      terrace: { root: 'Terrace_Door_LED', prefix: 'Terrace_Door_LED_', meshes: ['Terrace_Door_LED_Bulb'], type: 'point', intensity: 22, range: 7, offset: new THREE.Vector3(0,0,.015) },
+      atticDesk: { root: 'DeskLamp_Base', prefix: 'DeskLamp_', meshes: ['DeskLamp_LED'], type: 'spot', panel: true, intensity: 18, range: 4.5, offset: new THREE.Vector3(0,-.025,0) },
+      atticFloor: { root: 'FloorLamp_Body', prefix: 'FloorLamp_', meshes: ['FloorLamp_LED'], type: 'spot', panel: true, intensity: 45, range: 7, offset: new THREE.Vector3(0,-.025,0) },
+      balcony: { prefix: 'Balcony2F_Ceiling_', meshes: ['Balcony2F_Ceiling_Diffuser_East','Balcony2F_Ceiling_Diffuser_West'], type: 'spot', intensity: 45, range: 8, offset: new THREE.Vector3(0,-.05,0) },
+      rearDoor: { prefix: 'RearDoor_Ceiling_', meshes: ['RearDoor_Ceiling_Diffuser'], type: 'spot', intensity: 45, range: 8, offset: new THREE.Vector3(0,-.05,0) }
+    };
+    Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const presets = {
+      yard: { position: b(14,-8,14), target: b(4.5,4.8,1.3) },
+      pond: { position: b(4.5,2.4,3.6), target: b(1.45,6.3,.03) },
+      garden: { position: b(2,-1.5,6.2), target: b(7.45,4.6,1.6) },
+      top: { position: b(4.5,3.8,21), target: b(4.5,4.5,0) },
+      attic: { position: b(3.5,22.3,9.5), target: b(1,24.7,8.85), fov: 65, interior: true },
+      lamp: { position: b(6.4,9.8,3.3), target: b(8.85,7.95,2.05) },
+      entry: { position: b(7.5,8.3,3.1), target: b(4.5,13.12,2.35) },
+      gate: { position: b(4.5,8.5,4.7), target: b(5.2,-.06,2.2) },
+      terrace: { position: b(8,13.8,11.2), target: b(4.5,18,9.1) },
+      atticDesk: { position: b(3.5,19.8,9.45), target: b(2.27,21.3,9.0), fov: 65, interior: true },
+      atticFloor: { position: b(3.5,22.3,9.45), target: b(2.88,24.9,9.2), fov: 60, interior: true },
+      balcony: { position: b(0.6,12.25,5.75), target: b(4.3,12.75,7.5), fov: 68, interior: true },
+      rearDoor: { position: b(4.5,28.6,1.9), target: b(4.5,25.6,3.7), fov: 55 }
+    };
+    function fail(error) {
+      console.error(error);
+      $('#loading').hidden = false; $('#spinner').hidden = true; $('#progress').hidden = true;
+      $('#load-title').textContent = '模型暂时无法打开';
+      $('#load-message').textContent = `请确认已执行导出命令，并通过本地 HTTP 地址访问。${error.message || error}`;
+      $('#retry').hidden = false; $('#model').disabled = false;
+    }
+    function materialsOf(object) { return Array.isArray(object.material) ? object.material : object.material ? [object.material] : []; }
+    function dispose(root) {
+      const geometries = new Set(), materials = new Set();
+      root.traverse(o => { if (o.geometry) geometries.add(o.geometry); materialsOf(o).forEach(m => materials.add(m)); });
+      geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose());
+    }
+    function selectView(name, immediate = false) {
+      activeView = name;
+      document.querySelectorAll('[data-view]').forEach(el => el.setAttribute('aria-pressed', String(el.dataset.view === name)));
+      let preset = presets[name];
+      if (name === 'all' && fullBounds) {
+        const size = fullBounds.getSize(new THREE.Vector3()), center = fullBounds.getCenter(new THREE.Vector3());
+        const radius = Math.max(size.x, size.y, size.z) * 1.25;
+        preset = { target: center, position: center.clone().add(new THREE.Vector3(.7,.7,1).normalize().multiplyScalar(radius)) };
+      }
+      if (!preset) return;
+      const target = preset.target.clone();
+      const position = preset.position.clone().sub(target).multiplyScalar(!preset.interior && camera.aspect < .9 ? 1.35 : 1).add(target);
+      camera.fov = preset.fov || 40; camera.updateProjectionMatrix();
+      controls.minDistance = preset.interior ? .2 : 1;
+      if (immediate || reducedMotion || preset.interior) { camera.position.copy(position); controls.target.copy(target); controls.update(); transition = null; }
+      else transition = { from: camera.position.clone(), to: position, fromTarget: controls.target.clone(), toTarget: target, start: performance.now() };
+      dirty = true;
+    }
+    function resize() {
+      camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight); dirty = true;
+    }
+    function compass() {
+      const c = controls.target.clone().project(camera);
+      const n = controls.target.clone().add(new THREE.Vector3(0,0,1)).project(camera);
+      const angle = Math.atan2(n.x-c.x, n.y-c.y) * 180 / Math.PI;
+      $('#north-arrow').style.transform = `rotate(${angle}deg)`;
+    }
+    function toggleWireframe() {
+      wireframe = !wireframe;
+      $('#wireframe').setAttribute('aria-pressed', String(wireframe));
+      if (model) model.traverse(o => materialsOf(o).forEach(m => { m.wireframe = wireframe; }));
+      dirty = true;
+    }
+    function updateFloodlight(on) {
+      floodlightOn = on;
+      $('#floodlight').setAttribute('aria-checked', String(on));
+      $('#floodlight-state').textContent = on ? '已开启' : '已关闭';
+      if (floodlight) { floodlight.visible = on; floodlight.intensity = on ? 145 : 0; }
+      if (floodlightLens) materialsOf(floodlightLens).forEach(m => {
+        m.color.set(on ? 0xffedc9 : 0xc1c7c7);
+        m.emissive.set(on ? 0xffe2ab : 0x000000); m.emissiveIntensity = on ? 3 : 0;
+      });
+      dirty = true;
+    }
+    function rectangularLightProfile() {
+      // Continuous rectangular falloff with a dim, broad spill component.
+      // No flat bright plateau or sharp rectangle-to-black transition.
+      const size = 256, pixels = new Uint8Array(size * size * 4);
+      for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+        const horizontal = Math.abs((x + .5) / size * 2 - 1);
+        const vertical = Math.abs((y + .5) / size * 2 - 1);
+        const core = Math.exp(-.5 * ((horizontal / .45) ** 4 + (vertical / .26) ** 4));
+        const spill = .10 * Math.exp(-.5 * ((horizontal / .72) ** 2 + (vertical / .48) ** 2));
+        const coneFade = 1 - THREE.MathUtils.smoothstep(Math.hypot(horizontal, vertical), .8, 1);
+        const mask = (core + spill) / 1.10 * coneFade;
+        const i = (y * size + x) * 4;
+        pixels[i] = pixels[i + 1] = pixels[i + 2] = Math.round(mask * 255); pixels[i + 3] = 255;
+      }
+      const texture = new THREE.DataTexture(pixels, size, size);
+      texture.minFilter = texture.magFilter = THREE.LinearFilter;
+      texture.needsUpdate = true;
+      return texture;
+    }
+    function bindFloodlight() {
+      if (floodlight) { scene.remove(floodlight, floodlight.target); floodlight.dispose(); floodlight = null; }
+      floodlightLens = model.getObjectByName('Yard_West_Floodlight_Lens');
+      const housing = model.getObjectByName('Yard_West_Floodlight_Housing');
+      const available = Boolean(floodlightLens && housing);
+      $('#floodlight').disabled = !available; $('#focus-light').disabled = !available;
+      $('#floodlight-hint').textContent = available ? '也可点击模型中的灯具切换' : '当前模型未找到西墙投光灯，请重新导出';
+      if (!available) return;
+      // Clone only the lens so changing emission never affects shared materials.
+      floodlightLens.material = Array.isArray(floodlightLens.material) ? floodlightLens.material.map(m => m.clone()) : floodlightLens.material.clone();
+      model.updateMatrixWorld(true);
+      const lensPosition = floodlightLens.getWorldPosition(new THREE.Vector3());
+      const direction = lensPosition.clone().sub(housing.getWorldPosition(new THREE.Vector3())).normalize();
+      // Derive direction from exported fixture positions; no duplicated wall coordinates.
+      // The cone encloses a wider rectangular profile; the map defines its edges.
+      floodlight = new THREE.SpotLight(0xffe1ae, 0, 12, THREE.MathUtils.degToRad(45), 0, 2);
+      floodlightProfile ||= rectangularLightProfile();
+      floodlight.map = floodlightProfile;
+      floodlight.position.copy(lensPosition).addScaledVector(direction, .015);
+      floodlight.target.position.copy(floodlight.position).addScaledVector(direction, 12);
+      floodlight.castShadow = true; floodlight.shadow.mapSize.set(1024, 1024);
+      floodlight.shadow.camera.near = .025; floodlight.shadow.camera.far = 12;
+      floodlight.shadow.bias = -.0001; floodlight.shadow.normalBias = .015;
+      scene.add(floodlight, floodlight.target);
+      updateFloodlight(floodlightOn);
+    }
+    function updateExtraLight(key, on) {
+      const group = extraLights[key]; group.on = on;
+      const button = $(`[data-light-group="${key}"]`);
+      button.setAttribute('aria-checked', String(on));
+      button.querySelector('.lamp-state').textContent = on ? '已开启' : '已关闭';
+      group.lights.forEach(light => { light.visible = on; light.intensity = on ? light.userData.baseIntensity : 0; });
+      group.emitters.forEach(mesh => materialsOf(mesh).forEach(m => {
+        m.color.set(on ? 0xffedcf : 0xc9cece);
+        m.emissive.set(on ? 0xffe2b7 : 0x000000); m.emissiveIntensity = on ? 2.3 : 0;
+      }));
+      dirty = true;
+    }
+    function bindExtraLights() {
+      model.updateMatrixWorld(true);
+      for (const [key, group] of Object.entries(extraLights)) {
+        group.lights.forEach(light => { scene.remove(light); if (light.target) scene.remove(light.target); light.dispose(); });
+        group.lights = [];
+        group.emitters = group.meshes.map(name => model.getObjectByName(name)).filter(Boolean);
+        const available = group.emitters.length === group.meshes.length;
+        $(`[data-light-group="${key}"]`).disabled = !available;
+        $(`[data-light-focus="${key}"]`).disabled = !available;
+        $(`[data-light-group="${key}"]`).title = available ? '' : '当前模型缺少灯具，请重新导出';
+        if (!available) continue;
+        for (const mesh of group.emitters) {
+          mesh.material = Array.isArray(mesh.material) ? mesh.material.map(m => m.clone()) : mesh.material.clone();
+          // Diffusers transmit their own lamp light instead of occluding it.
+          mesh.castShadow = false;
+          const bounds = new THREE.Box3().setFromObject(mesh);
+          const center = bounds.getCenter(new THREE.Vector3()).add(group.offset);
+          // Two samples along a broad LED panel approximate distributed emission
+          // and keep the emitter outside the central opaque lamp stem.
+          const positions = group.panel ? [-1,1].map(side => center.clone().add(new THREE.Vector3(bounds.getSize(new THREE.Vector3()).x * .3 * side,0,0))) : [center];
+          for (const position of positions) {
+            const light = group.type === 'spot'
+              ? new THREE.SpotLight(0xffe6bf,0,group.range,THREE.MathUtils.degToRad(80),.85,2)
+              : new THREE.PointLight(0xffe6bf,0,group.range,2);
+            light.position.copy(position);
+            light.userData.baseIntensity = group.intensity / positions.length;
+            // Gate globe lights use diffuse fill; avoid two six-face shadow maps.
+            light.castShadow = key !== 'gate';
+            light.shadow.mapSize.set(key === 'entry' ? 1024 : 512, key === 'entry' ? 1024 : 512);
+            light.shadow.camera.near = .02; light.shadow.camera.far = group.range;
+            light.shadow.bias = -.0001; light.shadow.normalBias = .015;
+            if (light.target) { light.target.position.copy(position).add(new THREE.Vector3(0,-4,0)); scene.add(light.target); }
+            scene.add(light); group.lights.push(light);
+          }
+        }
+        updateExtraLight(key, group.on);
+      }
+    }
+    function clickLamp(event) {
+      const start = pointerDown; pointerDown = null;
+      if (!start || start.dragged || start.id !== event.pointerId || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 5 || !model) return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      const pointer = new THREE.Vector2((event.clientX - rect.left) / rect.width * 2 - 1, -(event.clientY - rect.top) / rect.height * 2 + 1);
+      lampRaycaster.setFromCamera(pointer, camera);
+      const hit = lampRaycaster.intersectObject(model, true)[0];
+      // Use nearest visible surface: walls and other objects can occlude the lamp.
+      if (!hit) return;
+      if (hit.object.name.startsWith('Yard_West_Floodlight')) { updateFloodlight(!floodlightOn); return; }
+      for (const [key, group] of Object.entries(extraLights)) {
+        let object = hit.object;
+        while (object && object !== model) {
+          if (object.name === group.root || group.meshes.includes(object.name) || (group.prefix && object.name.startsWith(group.prefix))) {
+            updateExtraLight(key, !group.on); return;
+          }
+          object = object.parent;
+        }
+      }
+    }
+    function setSunPlaying(playing) {
+      sunPlaying = playing;
+      $('#sun-play').setAttribute('aria-pressed', String(playing));
+      $('#sun-play').textContent = playing ? '暂停' : '播放日照';
+    }
+    function updateSun(hour) {
+      sunHour = hour;
+      const position = solarPosition(sunDate, hour);
+      const { elevation, azimuth } = position;
+      const direction = b(...position.direction);
+      const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .35);
+      const warmth = THREE.MathUtils.smoothstep(direction.y, 0, .65);
+      sun.position.copy(sun.target.position).addScaledVector(direction, 55);
+      sun.intensity = 3.1 * daylight;
+      sun.color.set(0xffa563).lerp(new THREE.Color(0xfff1d9), warmth);
+      hemisphere.intensity = .18 + daylight * .97;
+      hemisphere.color.set(0x35445e).lerp(new THREE.Color(0xe4ebef), daylight);
+      scene.environmentIntensity = .06 + daylight * .39;
+      scene.background.set(0x172332).lerp(new THREE.Color(0xe9ebe2), daylight);
+      document.body.classList.toggle('night', daylight < .2);
+      const time = clockTime(hour);
+      $('#sun-time').value = String(hour);
+      $('#sun-time').setAttribute('aria-valuetext', time);
+      $('#sun-time-label').value = time;
+      const cardinal = ['北','东北','东','东南','南','西南','西','西北'][Math.round(azimuth / 45) % 8];
+      $('#sun-direction').textContent = elevation > 0 ? `${cardinal} ${azimuth.toFixed(1)}° · 高度 ${elevation.toFixed(1)}°` : '夜间 · 太阳在地平线下';
+      // Read-only diagnostics, useful for verifying orientation without accessing renderer internals.
+      window.yardSunState = { date: sunDate, site: SITE, hour, elevation, azimuth, cardinal, intensity: sun.intensity, direction: direction.toArray(), playing: sunPlaying, ...sunDay };
+      dirty = true;
+    }
+    function setSunDate(date) {
+      sunDay = solarDay(date); sunDate = date;
+      $('#sun-date').value = date;
+      $('#sun-events').textContent = `日出 ${clockTime(sunDay.sunrise)} · 日落 ${clockTime(sunDay.sunset)}`;
+      setSunPlaying(false); updateSun(sunHour);
+    }
+    async function loadModel(key) {
+      const id = ++loadId, descriptor = models[key], start = performance.now();
+      $('#loading').hidden = false; $('#spinner').hidden = false; $('#progress').hidden = false; $('#retry').hidden = true;
+      $('#load-title').textContent = '正在打开院子'; $('#load-message').textContent = '读取模型与几何数据…';
+      $('#progress-fill').style.width = '0%'; $('#model').disabled = true;
+      $('#floodlight').disabled = true; $('#focus-light').disabled = true;
+      document.querySelectorAll('[data-light-group], [data-light-focus]').forEach(button => { button.disabled = true; });
+      const reportPromise = fetch(descriptor.report, { cache:'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+      try {
+        const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url + '?t=' + Date.now(), resolve, e => {
+          if (id !== loadId) return;
+          if (e.lengthComputable) { const progress = Math.round(e.loaded/e.total*100); $('#progress-fill').style.width = progress+'%'; $('#load-message').textContent = progress === 100 ? '模型已下载，正在解码…' : `正在读取 ${progress}%`; }
+        }, reject));
+        if (id !== loadId) { dispose(gltf.scene); return; }
+        if (model) { scene.remove(model); dispose(model); }
+        model = gltf.scene;
+        model.traverse(o => {
+          if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
+          materialsOf(o).forEach(m => { m.wireframe = wireframe; });
+        });
+        scene.add(model);
+        bindFloodlight();
+        bindExtraLights();
+        // Frame the building rather than any outlying interior prop.
+        const building = model.getObjectByName('____15') || model;
+        fullBounds = new THREE.Box3().setFromObject(building);
+        const report = await reportPromise;
+        if (id !== loadId) return;
+        let triangles = report?.glb?.triangles;
+        if (!triangles) { triangles = 0; model.traverse(o => { if (o.isMesh) triangles += (o.geometry.index?.count || o.geometry.attributes.position.count)/3; }); }
+        $('#model-label').textContent = descriptor.label;
+        $('#file-size').textContent = report ? (report.glb.bytes/1e6).toFixed(2)+' MB' : '已加载';
+        $('#triangles').textContent = (triangles/1e4).toFixed(1)+' 万';
+        $('#load-time').textContent = ((performance.now()-start)/1000).toFixed(2)+' s';
+        $('#loading').hidden = true; $('#model').disabled = false; selectView(activeView, true);
+        window.yardPreviewState = { loaded: true, model: key, triangles, images: report?.glb?.images, error: null };
+      } catch (error) { if (id === loadId) { window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
+    }
+    let loader;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
+      renderer.setPixelRatio(Math.min(devicePixelRatio,1.7)); renderer.setSize(innerWidth,innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+      renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+      $('#stage').appendChild(renderer.domElement);
+      renderer.domElement.addEventListener('pointerdown', e => { pointerDown = e.button === 0 && e.isPrimary ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null; });
+      renderer.domElement.addEventListener('pointermove', e => { if (pointerDown && Math.hypot(e.clientX - pointerDown.x, e.clientY - pointerDown.y) > 5) pointerDown.dragged = true; });
+      renderer.domElement.addEventListener('pointerup', clickLamp);
+      renderer.domElement.addEventListener('pointercancel', () => { pointerDown = null; });
+      scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(40,innerWidth/innerHeight,.05,250);
+      controls = new OrbitControls(camera,renderer.domElement); controls.enableDamping = true; controls.dampingFactor = .075;
+      controls.minDistance = 1; controls.maxDistance = 100; controls.maxPolarAngle = Math.PI*.495; controls.autoRotateSpeed = .45;
+      controls.addEventListener('change', () => { dirty = true; });
+      controls.addEventListener('start', () => { transition = null; });
+      hemisphere = new THREE.HemisphereLight(0xe4ebef,0xafa48a,1.15); scene.add(hemisphere);
+      const environment = new RoomEnvironment(); const pmrem = new THREE.PMREMGenerator(renderer);
+      scene.environment = pmrem.fromScene(environment,.04).texture;
+      environment.dispose(); pmrem.dispose(); scene.environmentIntensity = .45;
+      sun = new THREE.DirectionalLight(0xfff1d9,3.1); sun.target.position.copy(b(4.5,4.5,0)); sun.castShadow = true;
+      sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:90});
+      sun.shadow.bias = -.00015; sun.shadow.normalBias = .025; scene.add(sun,sun.target);
+      scene.background = new THREE.Color(); setSunDate(sunDate);
+      const floor = new THREE.Mesh(new THREE.PlaneGeometry(150,150),new THREE.ShadowMaterial({opacity:.12}));
+      floor.rotation.x = -Math.PI/2; floor.position.set(4.5,-1.02,-12); floor.receiveShadow = true; scene.add(floor);
+      const draco = new DRACOLoader(); draco.setDecoderPath('./vendor/addons/libs/draco/gltf/'); draco.setWorkerLimit(2);
+      loader = new GLTFLoader(); loader.setDRACOLoader(draco);
+      let previous = performance.now();
+      renderer.setAnimationLoop(now => {
+        const delta = Math.min((now-previous)/1000,.1); previous = now;
+        if (sunPlaying && !document.hidden) {
+          // One actual sunrise-to-sunset interval per 30 seconds, for this date.
+          updateSun(sunHour >= sunDay.sunset ? sunDay.sunrise : Math.min(sunDay.sunset, sunHour + delta * (sunDay.sunset - sunDay.sunrise) / 30));
+        }
+        if (transition) {
+          const t = Math.min(1,(now-transition.start)/650), e = t*t*(3-2*t);
+          camera.position.lerpVectors(transition.from,transition.to,e); controls.target.lerpVectors(transition.fromTarget,transition.toTarget,e);
+          dirty = true; if (t === 1) transition = null;
+        }
+        const changed = controls.update(delta);
+        if (dirty || changed || controls.autoRotate) { renderer.render(scene,camera); compass(); dirty = false; }
+      });
+      addEventListener('resize',resize);
+      document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click',()=>selectView(button.dataset.view)));
+      $('#reset').addEventListener('click',()=>selectView(activeView));
+      $('#rotate').addEventListener('click',()=> { controls.autoRotate = !controls.autoRotate; $('#rotate').setAttribute('aria-pressed',String(controls.autoRotate)); dirty = true; });
+      $('#wireframe').addEventListener('click',toggleWireframe);
+      $('#floodlight').addEventListener('click', () => updateFloodlight(!floodlightOn));
+      $('#focus-light').addEventListener('click', () => selectView('lamp'));
+      document.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
+        const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);
+      }));
+      document.querySelectorAll('[data-light-focus]').forEach(button => button.addEventListener('click', () => selectView(button.dataset.lightFocus)));
+      $('#sun-time').addEventListener('input', e => { setSunPlaying(false); updateSun(Number(e.target.value)); });
+      $('#sun-date').addEventListener('change', e => {
+        if (!e.target.value || !e.target.validity.valid) { e.target.value = sunDate; return; }
+        setSunDate(e.target.value);
+      });
+      $('#sun-today').addEventListener('click', () => setSunDate(beijingDate()));
+      document.querySelectorAll('[data-sun-event]').forEach(button => button.addEventListener('click', () => {
+        const hours = { morning: sunDay.sunrise + 1, noon: sunDay.noon, evening: sunDay.sunset - 1 };
+        setSunPlaying(false); updateSun(hours[button.dataset.sunEvent]);
+      }));
+      $('#sun-play').addEventListener('click', () => {
+        setSunPlaying(!sunPlaying);
+        updateSun(sunPlaying && (sunHour < sunDay.sunrise || sunHour >= sunDay.sunset) ? sunDay.sunrise : sunHour);
+      });
+      $('#model').addEventListener('change',()=>loadModel($('#model').value));
+      $('#retry').addEventListener('click',()=>loadModel($('#model').value));
+      selectView('yard',true); loadModel('light');
+    } catch (error) { fail(error); }
+  </script>
+</body>
+</html>
