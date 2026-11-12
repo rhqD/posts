@@ -5,7 +5,7 @@ export default function Footer() {
         <span>© {new Date().getFullYear()} Ren Hanquan</span>
         <div className="flex items-center gap-4">
           <a href="https://github.com/rhqD" target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">GitHub</a>
-          <span>Built with Next.js & Supabase</span>
+          <span>Built with Next.js · Notion · Aliyun OSS</span>
         </div>
       </div>
     </footer>
