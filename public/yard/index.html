@@ -427,7 +427,7 @@
       $('#progress-fill').style.width = '0%'; $('#model').disabled = true;
       $('#floodlight').disabled = true; $('#focus-light').disabled = true;
       document.querySelectorAll('[data-light-group], [data-light-focus]').forEach(button => { button.disabled = true; });
-      const reportPromise = fetch(descriptor.report, { cache:'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+      const reportPromise = fetch(descriptor.report).then(r => r.ok ? r.json() : null).catch(() => null);
       try {
         const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url, resolve, e => {
           if (id !== loadId) return;
