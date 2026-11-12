@@ -102,12 +102,17 @@
       .viewbar button { min-width: 0; padding: 11px 9px; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before { animation-duration: 0s !important; transition: none !important; } }
+      /* Embedded in /home: the site header sits on top, so hide the demo chrome that would duplicate it and push the panels below it. */
+    body.embed header .brand, body.embed header .model-picker { display: none; }
+    body.embed .sun-panel { top: 150px; }
+    body.embed .tools { top: 150px; }
+    @media (max-width: 580px) { body.embed .sun-panel { top: 132px; } body.embed .tools { top: 132px; } }
   </style>
   <script type="importmap">
     {"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}
   </script>
 </head>
-<body>
+<body><script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');<\/script>
   <main id="stage" aria-label="可旋转和缩放的院子三维模型"></main>
   <header>
     <div class="brand">
