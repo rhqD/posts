@@ -114,11 +114,19 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 ## 3D 页面（/home）
 
+**同步边界：只同步「模型 + 灯具配置」，页面本身归本仓库所有。**
+
+- `make sync-yard`（`scripts/sync-yard.mjs`）是唯一入口，它做三件事：
+  1. 从 `../yabai_home/web/preview.html` 解析 `extraLights` 与开关文案，生成 `public/yard/lights.json`
+  2. 把 `../yabai_home/exports/yard-web.glb` 上传到 OSS `models/`
+  3. 上传精简后的 `report.json`（只保留 glb 统计，避免泄露本机路径）
+- **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
+- 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
 - 查看器是 `public/yard/index.html`，一个自包含的 three.js 页面，**不参与 Next 构建**。
 - three.js 及 addons 已 vendor 到 `public/yard/vendor/`，不要改成 CDN 引用（国内访问不稳）。
 - **必须同时存在 `three.module.js` 和 `three.core.js`**：新版 three 把核心拆成两个文件，
   只拷前者会在运行时报 404、页面卡在“读取模型”。
-- 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，由 demo 通过绝对 URL 加载。
+- 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，页面用相对路径 `/models/yard-web.glb` 加载（同源，避免 CORS）。
 - 修改 Blender 模型后需要重新导出并上传该对象；文件名不变，CDN 对 `glb` 走 1 年 immutable 缓存，必要时刷新。
 
 ## 不要做的事

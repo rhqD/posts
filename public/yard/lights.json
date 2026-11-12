@@ -1,0 +1,126 @@
+{
+  "floodlight": {
+    "label": "西墙投光灯",
+    "lens": "Yard_West_Floodlight_Lens",
+    "housing": "Yard_West_Floodlight_Housing",
+    "intensity": 145
+  },
+  "groups": [
+    {
+      "key": "entry",
+      "label": "一楼门口吸顶灯",
+      "root": "Entry_Ceiling_Light",
+      "prefix": "Entry_Ceiling_",
+      "meshes": [
+        "Entry_Ceiling_Diffuser"
+      ],
+      "type": "spot",
+      "intensity": 60,
+      "range": 9,
+      "offset": [
+        0,
+        -0.05,
+        0
+      ]
+    },
+    {
+      "key": "gate",
+      "label": "院门双球灯",
+      "root": "Gate_Globe_Lights",
+      "meshes": [
+        "____04",
+        "____04_(1)"
+      ],
+      "type": "point",
+      "intensity": 28,
+      "range": 7,
+      "offset": []
+    },
+    {
+      "key": "terrace",
+      "label": "三楼露台门灯",
+      "root": "Terrace_Door_LED",
+      "prefix": "Terrace_Door_LED_",
+      "meshes": [
+        "Terrace_Door_LED_Bulb"
+      ],
+      "type": "point",
+      "intensity": 22,
+      "range": 7,
+      "offset": [
+        0,
+        0,
+        0.015
+      ]
+    },
+    {
+      "key": "atticDesk",
+      "label": "阁楼台灯",
+      "root": "DeskLamp_Base",
+      "prefix": "DeskLamp_",
+      "meshes": [
+        "DeskLamp_LED"
+      ],
+      "type": "spot",
+      "panel": true,
+      "intensity": 18,
+      "range": 4.5,
+      "offset": [
+        0,
+        -0.025,
+        0
+      ]
+    },
+    {
+      "key": "atticFloor",
+      "label": "阁楼落地灯",
+      "root": "FloorLamp_Body",
+      "prefix": "FloorLamp_",
+      "meshes": [
+        "FloorLamp_LED"
+      ],
+      "type": "spot",
+      "panel": true,
+      "intensity": 45,
+      "range": 7,
+      "offset": [
+        0,
+        -0.025,
+        0
+      ]
+    },
+    {
+      "key": "balcony",
+      "label": "二楼阳台吸顶灯",
+      "prefix": "Balcony2F_Ceiling_",
+      "meshes": [
+        "Balcony2F_Ceiling_Diffuser_East",
+        "Balcony2F_Ceiling_Diffuser_West"
+      ],
+      "type": "spot",
+      "intensity": 45,
+      "range": 8,
+      "offset": [
+        0,
+        -0.05,
+        0
+      ]
+    },
+    {
+      "key": "rearDoor",
+      "label": "一楼后门吸顶灯",
+      "prefix": "RearDoor_Ceiling_",
+      "meshes": [
+        "RearDoor_Ceiling_Diffuser"
+      ],
+      "type": "spot",
+      "intensity": 45,
+      "range": 8,
+      "offset": [
+        0,
+        -0.05,
+        0
+      ]
+    }
+  ]
+}

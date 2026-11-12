@@ -24,6 +24,10 @@ sync-force:
 images:
 	node scripts/images.mjs
 
+# Pull the latest 3D model + lamp config from ../yabai_home (viewer UI is ours)
+sync-yard:
+	node scripts/sync-yard.mjs
+
 # One-shot publish: Notion -> content -> images -> build -> OSS
 publish: sync images deploy
 

@@ -136,13 +136,7 @@
     <section class="lamp-control" aria-label="房屋灯光">
       <div class="lamp-heading"><span>灯光 · 网页模拟</span><button id="focus-light" aria-label="查看西墙投光灯" disabled>查看灯具 ↗</button></div>
       <button id="floodlight" class="lamp-switch" role="switch" aria-label="西墙投光灯开关" aria-checked="false" disabled><span>西墙投光灯</span><span id="floodlight-state" class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button>
-      <div class="lamp-row"><button id="light-entry" class="lamp-switch" data-light-group="entry" role="switch" aria-label="一楼门口吸顶灯开关" aria-checked="false" disabled><span>一楼门口吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="entry" aria-label="查看一楼门口吸顶灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-gate" class="lamp-switch" data-light-group="gate" role="switch" aria-label="院门双球灯开关" aria-checked="false" disabled><span>院门双球灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="gate" aria-label="查看院门双球灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-terrace" class="lamp-switch" data-light-group="terrace" role="switch" aria-label="三楼露台门灯开关" aria-checked="false" disabled><span>三楼露台门灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="terrace" aria-label="查看三楼露台门灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-atticDesk" class="lamp-switch" data-light-group="atticDesk" role="switch" aria-label="阁楼台灯开关" aria-checked="false" disabled><span>阁楼台灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="atticDesk" aria-label="查看阁楼台灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-atticFloor" class="lamp-switch" data-light-group="atticFloor" role="switch" aria-label="阁楼落地灯开关" aria-checked="false" disabled><span>阁楼落地灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="atticFloor" aria-label="查看阁楼落地灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-balcony" class="lamp-switch" data-light-group="balcony" role="switch" aria-label="二楼阳台吸顶灯开关" aria-checked="false" disabled><span>二楼阳台吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="balcony" aria-label="查看二楼阳台吸顶灯" disabled>↗</button></div>
-      <div class="lamp-row"><button id="light-rearDoor" class="lamp-switch" data-light-group="rearDoor" role="switch" aria-label="一楼后门吸顶灯开关" aria-checked="false" disabled><span>一楼后门吸顶灯</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="rearDoor" aria-label="查看一楼后门吸顶灯" disabled>↗</button></div>
+      <div id="lamp-list"></div>
       <small>院门两盏球灯、二楼阳台两盏吸顶灯各自同步开关</small>
       <small id="floodlight-hint">也可点击模型中的灯具切换</small>
     </section>
@@ -185,15 +179,12 @@
     let sunDate = beijingDate(), sunDay = solarDay(sunDate);
     let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
     const lampRaycaster = new THREE.Raycaster();
-    const extraLights = {
-      entry: { root: 'Entry_Ceiling_Light', prefix: 'Entry_Ceiling_', meshes: ['Entry_Ceiling_Diffuser'], type: 'spot', intensity: 60, range: 9, offset: new THREE.Vector3(0,-.05,0) },
-      gate: { root: 'Gate_Globe_Lights', meshes: ['____04','____04_(1)'], type: 'point', intensity: 28, range: 7, offset: new THREE.Vector3() },
-      terrace: { root: 'Terrace_Door_LED', prefix: 'Terrace_Door_LED_', meshes: ['Terrace_Door_LED_Bulb'], type: 'point', intensity: 22, range: 7, offset: new THREE.Vector3(0,0,.015) },
-      atticDesk: { root: 'DeskLamp_Base', prefix: 'DeskLamp_', meshes: ['DeskLamp_LED'], type: 'spot', panel: true, intensity: 18, range: 4.5, offset: new THREE.Vector3(0,-.025,0) },
-      atticFloor: { root: 'FloorLamp_Body', prefix: 'FloorLamp_', meshes: ['FloorLamp_LED'], type: 'spot', panel: true, intensity: 45, range: 7, offset: new THREE.Vector3(0,-.025,0) },
-      balcony: { prefix: 'Balcony2F_Ceiling_', meshes: ['Balcony2F_Ceiling_Diffuser_East','Balcony2F_Ceiling_Diffuser_West'], type: 'spot', intensity: 45, range: 8, offset: new THREE.Vector3(0,-.05,0) },
-      rearDoor: { prefix: 'RearDoor_Ceiling_', meshes: ['RearDoor_Ceiling_Diffuser'], type: 'spot', intensity: 45, range: 8, offset: new THREE.Vector3(0,-.05,0) }
-    };
+    const LIGHTS = await fetch(new URL('./lights.json', import.meta.url)).then(r => r.json());
+    const extraLights = Object.fromEntries(LIGHTS.groups.map(({ key, label, ...g }) => [key, { ...g, offset: new THREE.Vector3(...(g.offset ?? [])) }]));
+    const lampList = document.getElementById('lamp-list');
+    lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
+      '<div class="lamp-row"><button id="light-' + key + '" class="lamp-switch" data-light-group="' + key + '" role="switch" aria-label="' + label + '开关" aria-checked="false" disabled><span>' + label + '</span><span class="lamp-state">已关闭</span><span class="switch-track" aria-hidden="true"></span></button><button class="lamp-locate" data-light-focus="' + key + '" aria-label="查看' + label + '" disabled>↗</button></div>'
+    ).join('');
     Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const presets = {
@@ -262,7 +253,7 @@
       floodlightOn = on;
       $('#floodlight').setAttribute('aria-checked', String(on));
       $('#floodlight-state').textContent = on ? '已开启' : '已关闭';
-      if (floodlight) { floodlight.visible = on; floodlight.intensity = on ? 145 : 0; }
+      if (floodlight) { floodlight.visible = on; floodlight.intensity = on ? LIGHTS.floodlight.intensity : 0; }
       if (floodlightLens) materialsOf(floodlightLens).forEach(m => {
         m.color.set(on ? 0xffedc9 : 0xc1c7c7);
         m.emissive.set(on ? 0xffe2ab : 0x000000); m.emissiveIntensity = on ? 3 : 0;
@@ -290,8 +281,8 @@
     }
     function bindFloodlight() {
       if (floodlight) { scene.remove(floodlight, floodlight.target); floodlight.dispose(); floodlight = null; }
-      floodlightLens = model.getObjectByName('Yard_West_Floodlight_Lens');
-      const housing = model.getObjectByName('Yard_West_Floodlight_Housing');
+      floodlightLens = model.getObjectByName(LIGHTS.floodlight.lens);
+      const housing = model.getObjectByName(LIGHTS.floodlight.housing);
       const available = Boolean(floodlightLens && housing);
       $('#floodlight').disabled = !available; $('#focus-light').disabled = !available;
       $('#floodlight-hint').textContent = available ? '也可点击模型中的灯具切换' : '当前模型未找到西墙投光灯，请重新导出';
