@@ -116,6 +116,8 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 - 查看器是 `public/yard/index.html`，一个自包含的 three.js 页面，**不参与 Next 构建**。
 - three.js 及 addons 已 vendor 到 `public/yard/vendor/`，不要改成 CDN 引用（国内访问不稳）。
+- **必须同时存在 `three.module.js` 和 `three.core.js`**：新版 three 把核心拆成两个文件，
+  只拷前者会在运行时报 404、页面卡在“读取模型”。
 - 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，由 demo 通过绝对 URL 加载。
 - 修改 Blender 模型后需要重新导出并上传该对象；文件名不变，CDN 对 `glb` 走 1 年 immutable 缓存，必要时刷新。
 
