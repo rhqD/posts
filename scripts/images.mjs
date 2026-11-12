@@ -23,6 +23,10 @@ const TIMEOUT_MS = 25000;
 const MAX_WIDTH = 1600;
 const QUALITY = 80;
 const RASTER = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/avif', 'image/tiff'];
+// Notion's built-in page covers are served from its own CDN and are tiny
+// gradients; re-hosting them adds nothing.
+const SKIP_COVER_HOSTS = ['app.notion.com'];
+const INDEX = path.join(path.dirname(DIR), 'posts.index.json');
 
 const hash = (buf) => crypto.createHash('sha256').update(buf).digest('hex').slice(0, 16);
 
@@ -104,6 +108,12 @@ async function main() {
       const url = b.image?.file?.url ?? b.image?.external?.url;
       if (typeof url === 'string' && url.startsWith('http')) jobs.push({ url });
     });
+
+    const cover = doc.post?.cover_url;
+    if (typeof cover === 'string' && cover.startsWith('http')
+        && !SKIP_COVER_HOSTS.some((h) => cover.includes(h))) {
+      jobs.push({ url: cover });
+    }
   }
 
   console.log(jobs.length + ' remote images found');
@@ -127,6 +137,8 @@ async function main() {
   await Promise.all(Array.from({ length: LIMIT }, worker));
 
   let rewritten = 0;
+  const coverBySlug = new Map();
+
   for (const [full, doc] of parsed) {
     walk(doc.blocks, (b) => {
       if (b.type !== 'image') return;
@@ -136,8 +148,26 @@ async function main() {
       b.image = { caption: b.image?.caption ?? [], type: 'external', external: { url: '/' + PREFIX + r.key } };
       rewritten++;
     });
+
+    const cover = doc.post?.cover_url;
+    const rc = typeof cover === 'string' ? results.get(cover) : null;
+    if (rc) {
+      doc.post.cover_url = '/' + PREFIX + rc.key;
+      rewritten++;
+    }
+    if (doc.post?.slug) coverBySlug.set(doc.post.slug, doc.post.cover_url ?? null);
+
     await fs.writeFile(full, JSON.stringify(doc, null, 2) + String.fromCharCode(10));
   }
+
+  // Keep the list index in sync so PostCard/OG images use the rewritten covers.
+  try {
+    const index = JSON.parse(await fs.readFile(INDEX, 'utf8'));
+    for (const post of index) {
+      if (coverBySlug.has(post.slug)) post.cover_url = coverBySlug.get(post.slug);
+    }
+    await fs.writeFile(INDEX, JSON.stringify(index, null, 2) + String.fromCharCode(10));
+  } catch {}
 
   upload();
   const total = [...results.values()].filter(Boolean);

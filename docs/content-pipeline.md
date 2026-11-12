@@ -43,11 +43,11 @@ node scripts/images.mjs --probe https://example.com/a.jpg   # 单张测试
 
 做什么：
 
-1. 扫 `content/posts/*.json` 里所有 `type: "image"` 且 URL 是 http 的块
+1. 扫 `content/posts/*.json` 里所有 `type: "image"` 且 URL 是 http 的块，以及每篇文章的 `cover_url`（Notion 内置封面 `app.notion.com` 跳过）
 2. 并发 4 下载（25s 超时），失败只警告不中断
 3. `sharp`：按 EXIF 旋转 → 宽度 ≤1600 → WebP q80
 4. 内容 hash 命名 → `.images-tmp/<hash>.webp` → 一次 `ossutil cp -r` 上传
-5. 把块改写成 `/images/<hash>.webp`
+5. 把块和 `cover_url` 改写成 `/images/<hash>.webp`，并同步 `posts.index.json`
 
 特性：
 
