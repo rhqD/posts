@@ -4,6 +4,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 export const metadata: Metadata = {
   title: "Privacy Policy | Renhanquan",
   description: "Privacy policy for renhanquan.com and personal tools built by Renhanquan.",
+  alternates: { canonical: "/privacy/" },
 };
 
 const updated = "October 30, 2026";

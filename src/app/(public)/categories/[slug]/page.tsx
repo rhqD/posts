@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const posts = await getPostsByCategory(slug);
   const name = posts[0]?.category?.name || slug;
-  return { title: `Category: ${name}` };
+  return { title: `Category: ${name}`, alternates: { canonical: `/categories/${slug}/` } };
 }
 
 export default async function CategoryPage({ params }: { params: Promise<{ slug: string }> }) {

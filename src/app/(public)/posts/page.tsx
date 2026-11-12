@@ -3,6 +3,10 @@ import PostCard from "@/components/post/PostCard";
 import PageWrapper from "@/components/layout/PageWrapper";
 
 
+export const metadata = {
+  alternates: { canonical: "/posts/" },
+};
+
 export default async function PostsArchivePage() {
   const posts = await getPublishedPosts();
 

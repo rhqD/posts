@@ -20,6 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
+    alternates: { canonical: `/posts/${slug}/` },
     openGraph: post.cover_url ? { images: [post.cover_url] } : undefined,
   };
 }

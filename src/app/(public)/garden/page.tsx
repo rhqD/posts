@@ -1,5 +1,9 @@
 import PageWrapper from "@/components/layout/PageWrapper";
 
+export const metadata = {
+  alternates: { canonical: "/garden/" },
+};
+
 export default function GardenPage() {
   return (
     <PageWrapper>

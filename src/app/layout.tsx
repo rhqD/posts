@@ -3,9 +3,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.renhanquan.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: { default: "Ren Hanquan", template: "%s | Ren Hanquan" },
   description: "Senior Frontend Engineer — Frontend Performance, Low-Code Platforms, and Gardening",
+  alternates: { canonical: "/" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
