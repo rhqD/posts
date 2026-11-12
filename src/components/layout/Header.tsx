@@ -13,7 +13,7 @@ const navLinks = [
   { href: "/posts", label: "Blog" },
 ];
 
-export default function Header({ solid = false }: { solid?: boolean }) {
+export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -32,24 +32,21 @@ export default function Header({ solid = false }: { solid?: boolean }) {
     };
   }, []);
 
-  const opaque = solid || scrolled;
-  const headerBg = solid
-    ? "rgba(250,251,246,0.92)"
-    : scrolled
-      ? isDark ? "rgba(10,10,15,0.8)" : "rgba(255,255,255,0.7)"
-      : "transparent";
-  const headerBorder = opaque
-    ? isDark && !solid ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)"
+  const headerBg = scrolled
+    ? isDark ? "rgba(10,10,15,0.8)" : "rgba(255,255,255,0.7)"
+    : "transparent";
+  const headerBorder = scrolled
+    ? isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)"
     : "1px solid transparent";
-  const textColor = solid ? "#1a2e1a" : isDark ? "#fff" : "#1a2e1a";
-  const textMuted = solid ? "rgba(0,0,0,0.5)" : isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
+  const textColor = isDark ? "#fff" : "#1a2e1a";
+  const textMuted = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
 
   return (
     <header
       className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       style={{
         background: headerBg,
-        backdropFilter: opaque ? "blur(20px) saturate(150%)" : "none",
+        backdropFilter: scrolled ? "blur(20px) saturate(150%)" : "none",
         borderBottom: headerBorder,
       }}
     >
