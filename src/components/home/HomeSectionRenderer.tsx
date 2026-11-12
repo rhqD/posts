@@ -1,40 +1,27 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import HeroSection from "./HeroSection";
 import AboutSection from "./AboutSection";
 import SkillsSection from "./SkillsSection";
 import TimelineSection from "./TimelineSection";
 import PostsSection from "./PostsSection";
 import ContactSection from "./ContactSection";
-import type { HomepageData } from "@/lib/supabase/types";
+import type { Profile, Skill, Experience, Post } from "@/lib/types";
 
-const emptyData: HomepageData = {
-  profile: null,
-  skills: [],
-  experiences: [],
-  featuredPosts: [],
+type Props = {
+  profile: Profile | null;
+  skills: Skill[];
+  experiences: Experience[];
+  posts: Post[];
 };
 
-export default function HomeSectionRenderer({ data }: { data: HomepageData | null }) {
-  const [liveData, setLiveData] = useState<HomepageData>(data ?? emptyData);
-
-  useEffect(() => {
-    if (data) return;
-    fetch("/api/bio/all")
-      .then((r) => r.json())
-      .then((d) => setLiveData(d))
-      .catch(() => {});
-  }, [data]);
-
+export default function HomeSectionRenderer({ profile, skills, experiences, posts }: Props) {
   return (
     <>
-      <HeroSection profile={liveData.profile} />
-      <AboutSection profile={liveData.profile} />
-      <SkillsSection skills={liveData.skills} />
-      <TimelineSection experiences={liveData.experiences} />
-      <PostsSection posts={liveData.featuredPosts} />
-      <ContactSection profile={liveData.profile} />
+      <HeroSection profile={profile} />
+      <AboutSection profile={profile} />
+      <SkillsSection skills={skills} />
+      <TimelineSection experiences={experiences} />
+      <PostsSection posts={posts} />
+      <ContactSection profile={profile} />
     </>
   );
 }

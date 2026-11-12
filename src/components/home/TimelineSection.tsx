@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Calendar, MapPin, Sprout } from "lucide-react";
-import type { Experience } from "@/lib/supabase/types";
+import type { Experience } from "@/lib/types";
 
 function formatDateStr(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-US", { month: "short", year: "numeric" });

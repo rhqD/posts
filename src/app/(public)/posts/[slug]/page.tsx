@@ -7,7 +7,6 @@ import Link from "next/link";
 import Image from "next/image";
 import PageWrapper from "@/components/layout/PageWrapper";
 
-export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const posts = await getPublishedPosts();
@@ -32,7 +31,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) notFound();
 
   // Fetch full content blocks
-  const blocks = await getPostBlocks(post.id);
+  const blocks = await getPostBlocks(post);
   const plainText = blocks.map(b => {
     const rt = b[b.type]?.rich_text;
     return rt?.map((t: { plain_text?: string }) => t.plain_text || '').join(' ') || '';

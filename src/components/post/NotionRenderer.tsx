@@ -7,15 +7,23 @@ import "prismjs/themes/prism-tomorrow.css";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type NotionBlock = any;
 
+// Only Notion-hosted URLs need the proxy; anything else (CDN, relative path)
+// is served as-is. Host matching instead of substring so that a URL which merely
+// *contains* an encoded Notion URL is not re-wrapped.
+const NOTION_IMAGE_HOST = /(^|\.)(amazonaws\.com|notion-static\.com|notion\.so)$/i;
+
 function resolveImageUrl(url: string, blockId?: string): string {
   if (!url) return "";
-  if (url.includes("amazonaws.com") || url.includes("notion-static") || url.includes("secure.notion")) {
-    const params = new URLSearchParams();
-    params.set("url", url);
-    if (blockId) params.set("block_id", blockId);
-    return `/api/notion-image?${params.toString()}`;
+  try {
+    const { hostname } = new URL(url, "https://placeholder.invalid");
+    if (!NOTION_IMAGE_HOST.test(hostname)) return url;
+  } catch {
+    return url;
   }
-  return url;
+  const params = new URLSearchParams();
+  params.set("url", url);
+  if (blockId) params.set("block_id", blockId);
+  return `/api/notion-image?${params.toString()}`;
 }
 
 // Inline KaTeX renderer

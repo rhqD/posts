@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useTypewriter } from "@/hooks/useTypewriter";
-import type { Profile } from "@/lib/supabase/types";
+import type { Profile } from "@/lib/types";
 
 // --- Floating canvas for leaves + fireflies ---
 function GardenCanvas() {

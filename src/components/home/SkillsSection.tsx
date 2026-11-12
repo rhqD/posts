@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useMemo } from "react";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
-import type { Skill } from "@/lib/supabase/types";
+import type { Skill } from "@/lib/types";
 
 const categoryIcons: Record<string, string> = {
   Frontend: "🌐",

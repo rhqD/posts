@@ -2,7 +2,6 @@ import { getPublishedPosts } from "@/lib/notion";
 import PostCard from "@/components/post/PostCard";
 import PageWrapper from "@/components/layout/PageWrapper";
 
-export const revalidate = 3600;
 
 export default async function PostsArchivePage() {
   const posts = await getPublishedPosts();

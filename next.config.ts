@@ -1,30 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Static export: the build produces a plain out/ directory that can be
+  // uploaded to OSS and served from CDN with no Node runtime.
+  output: "export",
+  // Directory-style output (posts/index.html) so OSS serves /posts/ without a
+  // server-side rewrite.
+  trailingSlash: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "*.supabase.co",
-        pathname: "/storage/v1/object/public/**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.aliyuncs.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.notion.so",
-      },
-      {
-        protocol: "https",
-        hostname: "*.amazonaws.com",
-      },
-      {
-        protocol: "https",
-        hostname: "*.notion-static.com",
-      },
-    ],
+    // No Next image optimizer in a static export; images are plain <img>.
+    unoptimized: true,
   },
 };
 

@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation";
-import { getPostsByCategory } from "@/lib/notion";
+import { getPostsByCategory, getAllCategories } from "@/lib/notion";
 import PostCard from "@/components/post/PostCard";
 import PageWrapper from "@/components/layout/PageWrapper";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const categories = await getAllCategories();
+  return categories.map((category) => ({ slug: category.slug }));
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;

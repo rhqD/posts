@@ -39,4 +39,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# go
+/apps/api/.gocache
+/apps/api/.gotmp
+/apps/api/sync
+/apps/api/server
+
+# build output uploaded to OSS
+/apps/web/dist
+
+# pnpm store created by local runs
+/.pnpm-store
+
+# image pipeline scratch dirs
+/.images-tmp
+/.images-cache
 .kiro/settings/mcp.json

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatDate, readingTime } from "@/lib/utils";
-import type { Post } from "@/lib/supabase/types";
+import type { Post } from "@/lib/types";
 
 export default function PostCard({ post, featured = false }: { post: Post; featured?: boolean }) {
   if (featured) {

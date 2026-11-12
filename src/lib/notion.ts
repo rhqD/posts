@@ -1,14 +1,47 @@
-import type { Post, Category, Tag } from "@/lib/supabase/types";
+import fs from "node:fs";
+import path from "node:path";
+import type { Post, Category, Tag } from "@/lib/types";
 
-const NOTION_DATABASE_ID = "21fc53874c4e8071b064ff3db3afdf6c";
-const NOTION_API_KEY = process.env.NOTION_API_KEY!;
+// Blog content is produced at build time by the sync tool (apps/api/cmd/sync) and
+// written to content/. If that snapshot exists we never touch the network; the
+// Notion API fallback only exists so the repo can still be built without a sync.
+
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID ?? "21fc53874c4e8071b064ff3db3afdf6c";
+const NOTION_API_KEY = process.env.NOTION_API_KEY;
+const CONTENT_DIR = path.join(process.cwd(), "content");
+const INDEX_FILE = path.join(CONTENT_DIR, "posts.index.json");
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type NotionBlock = any;
+export type NotionBlock = any;
 
-// Use REST API directly since SDK v5 dropped databases.query
-async function notionApi(path: string, body?: Record<string, unknown>) {
-  const res = await fetch(`https://api.notion.com/v1/${path}`, {
+type LocalPostFile = { post: Post; blocks: NotionBlock[] };
+
+let indexCache: Post[] | null | undefined;
+
+function readLocalIndex(): Post[] | null {
+  try {
+    return JSON.parse(fs.readFileSync(INDEX_FILE, "utf8")) as Post[];
+  } catch {
+    return null;
+  }
+}
+
+function readLocalPost(slug: string): LocalPostFile | null {
+  try {
+    const raw = fs.readFileSync(path.join(CONTENT_DIR, "posts", `${slug}.json`), "utf8");
+    return JSON.parse(raw) as LocalPostFile;
+  } catch {
+    return null;
+  }
+}
+
+function localIndex(): Post[] | null {
+  if (indexCache === undefined) indexCache = readLocalIndex();
+  return indexCache;
+}
+
+async function notionApi(pathname: string, body?: Record<string, unknown>) {
+  const res = await fetch(`https://api.notion.com/v1/${pathname}`, {
     method: body ? "POST" : "GET",
     headers: {
       Authorization: `Bearer ${NOTION_API_KEY}`,
@@ -50,27 +83,54 @@ function mapToPost(page: any): Post {
     published_at: publishedDate,
     created_at: page.created_time,
     updated_at: page.last_edited_time,
-    category: categoryName ? { id: categoryName, name: categoryName, slug: categoryName.toLowerCase().replace(/\s+/g, "-"), created_at: "" } : undefined,
+    category: categoryName
+      ? { id: categoryName, name: categoryName, slug: categoryName.toLowerCase().replace(/\s+/g, "-"), created_at: "" }
+      : undefined,
     tags: tagNames.map((t) => ({ id: t, name: t, slug: t.toLowerCase().replace(/\s+/g, "-"), created_at: "" })),
   };
 }
 
 export async function getPublishedPosts(): Promise<Post[]> {
-  const data = await notionApi(`databases/${NOTION_DATABASE_ID}/query`, {
-    filter: {
-      and: [
-        { property: "status", select: { equals: "Published" } },
-        { property: "type", select: { equals: "Post" } },
-      ],
-    },
-    sorts: [{ property: "date", direction: "descending" }],
-  });
+  const local = localIndex();
+  if (local) return local;
 
-  return (data.results || []).map(mapToPost);
+  if (!NOTION_API_KEY) {
+    console.warn(
+      "[notion] content/posts.index.json is missing and NOTION_API_KEY is not set — building with an empty post list",
+    );
+    return [];
+  }
+
+  // Paginate: the Notion API returns at most 100 results per request.
+  const results: unknown[] = [];
+  let cursor: string | undefined;
+  do {
+    const data = await notionApi(`databases/${NOTION_DATABASE_ID}/query`, {
+      page_size: 100,
+      ...(cursor ? { start_cursor: cursor } : {}),
+      filter: {
+        and: [
+          { property: "status", select: { equals: "Published" } },
+          { property: "type", select: { equals: "Post" } },
+        ],
+      },
+      sorts: [{ property: "date", direction: "descending" }],
+    });
+    results.push(...(data.results || []));
+    cursor = data.has_more ? data.next_cursor : undefined;
+  } while (cursor);
+
+  const posts = results.map(mapToPost);
+  indexCache = posts;
+  return posts;
 }
 
-export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
-  // Build slug lookup from page ID -> slug for internal link rewriting
+export async function getPostBlocks(post: Post): Promise<NotionBlock[]> {
+  const local = readLocalPost(post.slug);
+  if (local) return local.blocks;
+
+  if (!NOTION_API_KEY) return [];
+
   const posts = await getPublishedPosts();
   const idToSlug: Record<string, string> = {};
   for (const p of posts) {
@@ -84,11 +144,9 @@ export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
       for (const t of richTexts) {
         const url = t.text?.link?.url || t.href;
         if (!url) continue;
-        // Match Notion page references: /{32hex}, notion.so/{slug}-{32hex}, or bare UUID
         const match = url.match(/([0-9a-f]{32})/i);
         if (match) {
-          const pageId = match[1];
-          const targetSlug = idToSlug[pageId];
+          const targetSlug = idToSlug[match[1]];
           if (targetSlug) {
             if (t.text?.link) t.text.link.url = `/posts/${targetSlug}`;
             else t.href = `/posts/${targetSlug}`;
@@ -96,11 +154,8 @@ export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
         }
       }
     }
-    // Recurse into children
     if (block.children) {
-      for (const child of block.children) {
-        rewriteLinks(child);
-      }
+      for (const child of block.children) rewriteLinks(child);
     }
   }
 
@@ -125,7 +180,7 @@ export async function getPostBlocks(pageId: string): Promise<NotionBlock[]> {
     return blocks;
   }
 
-  return fetchChildren(pageId);
+  return fetchChildren(post.id);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {

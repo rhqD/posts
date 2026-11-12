@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Github, Linkedin, Twitter, Globe, Mail, Download, Copy, Check, Flower2, MessageCircle } from "lucide-react";
 import { staggerContainer, scaleIn } from "@/lib/animations";
-import type { Profile } from "@/lib/supabase/types";
+import type { Profile } from "@/lib/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const socials: { key: string; label: string; icon: any; color: string; hoverGlow: string }[] = [

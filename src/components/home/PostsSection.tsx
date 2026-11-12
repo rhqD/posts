@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, PenLine } from "lucide-react";
 import PostCard from "@/components/post/PostCard";
 import { staggerContainer, fadeInUp } from "@/lib/animations";
-import type { Post } from "@/lib/supabase/types";
+import type { Post } from "@/lib/types";
 
 export default function PostsSection({ posts }: { posts: Post[] }) {
   return (

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { MapPin, Building2, GraduationCap, Sprout, Leaf } from "lucide-react";
-import type { Profile } from "@/lib/supabase/types";
+import type { Profile } from "@/lib/types";
 
 const highlights = [
   { icon: MapPin, label: "Xi'an → Beijing → Hangzhou", color: "#f472b6" },

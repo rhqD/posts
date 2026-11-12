@@ -1,3 +1,6 @@
+// Content types shared by pages and components.
+// Blog posts come from Notion (via the build-time sync), bio data lives in src/content/bio.ts.
+
 export type Category = {
   id: string;
   name: string;
@@ -27,8 +30,6 @@ export type Post = {
   category?: Category;
   tags?: Tag[];
 };
-
-// === Bio / Resume Types ===
 
 export type SocialLinks = {
   github?: string;
@@ -71,11 +72,4 @@ export type Experience = {
   company_url: string | null;
   logo_url: string | null;
   sort_order: number;
-};
-
-export type HomepageData = {
-  profile: Profile | null;
-  skills: Skill[];
-  experiences: Experience[];
-  featuredPosts: Post[];
 };
