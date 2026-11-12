@@ -189,10 +189,10 @@
       "id": "220c5387-4c4e-80a1-82f2-e20b39d0d4da",
       "image": {
         "caption": [],
+        "type": "external",
         "external": {
-          "url": "http://resources.renhanquan.com/20250712165626.png"
-        },
-        "type": "external"
+          "url": "/images/a0270dcd3347e4b0.webp"
+        }
       },
       "in_trash": false,
       "last_edited_by": {
