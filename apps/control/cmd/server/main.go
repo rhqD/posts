@@ -26,6 +26,7 @@ import (
 	"renhanquan/control/internal/device"
 	"renhanquan/control/internal/device/mock"
 	"renhanquan/control/internal/device/sonoff"
+	"renhanquan/control/internal/device/unavailable"
 	"renhanquan/control/internal/sms"
 	"renhanquan/control/internal/store"
 	"renhanquan/control/internal/store/filestore"
@@ -75,7 +76,11 @@ func main() {
 
 	prov, err := newDeviceProvider(ctx)
 	if err != nil {
-		log.Fatalf("device provider: %v", err)
+		// Degrade instead of dying: authentication is the service's main job and
+		// must keep working even when a vendor credential is broken. The reason
+		// is visible in /admin/status.
+		log.Printf("device provider unavailable: %v", err)
+		prov = unavailable.Provider{Err: err}
 	}
 	log.Printf("device provider: %s", prov.Name())
 	if err := syncDevices(ctx, st, prov); err != nil {
