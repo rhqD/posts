@@ -118,6 +118,9 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 ## 已知的坑
 
+- **阿里云的「用户 / 角色 / 策略」是三层，授权不通用。** 挂到用户 `blogs_manager` 上的策略，对以**角色**身份运行的服务无效；反过来也一样。排查 403 时先确认报错里的 `AuthPrincipalDisplayName` 是哪个身份（形如 `home-server:vm-ram-v1-...` 就是角色）。这一点上我们为 PassRole、OOS、KMS 反复折腾过很多轮。
+- **RAM 策略里的资源 ARN 光看文档不够，要实测。** `ram:PassRole` 写成 `acs:ram::<uid>:role/<name>` 会被拒，改成 `*` 才通；KMS 的 `secret/...` ARN 在控制台里会被判成"无匹配操作"。遇到这种先简化再逐步收窄，别一开始追精确 ARN。
+
 - OSS 默认域名访问 HTML 会强制下载，所以不能直接用 OSS 域名预览站点。
 - bucket 必须是 public-read：CDN 的「私有 Bucket 回源」需要在控制台做一次一键授权，
   API 无法完成；`BlockPublicAccess` 会禁止设置公共 ACL。
@@ -142,6 +145,9 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - 溪流水面由 `yard-river.ts` 着色器按河道弧长生成流纹（`uv.y` 是**世界米数**，不是 0..1，频率按米给），白色浪花是沿流向拉长的丝状噪声而不是正弦横纹。山间源头由 `yard-waterfall.ts` 生成瀑布：水幕**逐顶点贴合崖面**（独立曲线会埋进岩体），落水点是卡通水花（圆球气泡 + 抛物线水珠 + 泡沫池 + 扩散环），可用「瀑布」视角查看；画面不可见、室内预设或减少动态效果开启时不更新。动物已移除。灯具关闭时仅将强度归零，保持灯光布局稳定；加载阶段异步预编译并预热静态阴影，太阳变化时只刷新太阳阴影。
 - 全站 `viewport-fit: cover`，Header 与 `/home` 按 safe-area inset 布局；Safari theme-color 随页面主题与天空更新。只在 3D 查看器禁用触控文字选取/长按菜单，日期时间输入仍可编辑。
 - 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
+- ⚠️ **`yard-scene.ts` 第一行是 `@ts-nocheck`**（当初从 yabai_home 的 preview.html 搬进来时加的，因为 imperative 的 three.js 代码补类型收益低）。**类型检查对这个文件完全失效**，`tsc` 通过不代表它是对的：模块级初始化顺序错误（比如往一个后面才声明的 `const` 里写入）属于运行时 TDZ，TypeScript 看不见。
+  改这个文件之后必须**用浏览器跑一遍**：起静态服务打开 `/home/`，确认加载遮罩消失、没有 JS 异常。不要再靠「构建通过」判断。
+- 想正经加类型，方向不是逐行补 `any`（实测 195 个错误里 159 个是隐式 any 噪音），而是把纯逻辑抽到单独的模块，渲染部分继续不检查。
 - `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。
 - 不要再引入 importmap 或 vendor 版 three：场景已走 npm 依赖，旧 `public/yard/index.html` 已删除。
 - 模型在 OSS：`oss://renhanquan-site/models/yard-web.<hash>.glb`。页面**不硬编码文件名**，从 `lights.json` 的 `model.url` 读（同源，避免 CORS）。
