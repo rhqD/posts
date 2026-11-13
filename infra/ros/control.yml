@@ -1,0 +1,54 @@
+ROSTemplateFormatVersion: '2015-09-01'
+Description: 接管已购买的控制面节点（不创建、不替换、不删除实例）
+
+# 这台机器是手工按活动价买的，ROS 只负责接管之后的管理。
+# 导入前务必确认下面的默认值与实例详情一致：任一项不符，第一次
+# UpdateStack 就会试图"纠正"它，而镜像/可用区这类属性一变就是替换实例。
+
+Parameters:
+  InstanceId:
+    Type: String
+    Description: 已购买的 ECS 实例 ID（导入时指定）
+  ImageId:
+    Type: String
+    Default: ubuntu_26_04_x64_20G_alibase_20261023.vhd
+  InstanceType:
+    Type: String
+    Default: ecs.e-c1m1.large
+  ZoneId:
+    Type: String
+    Default: cn-beijing-g
+  VpcId:
+    Type: String
+    Default: vpc-2zeh0at3rkwf8o927k9k9
+  VSwitchId:
+    Type: String
+    Default: vsw-2zevo0cd5nylyj0n8rzg8
+  SecurityGroupId:
+    Type: String
+    Default: sg-2ze64hj3nxpp8zgup3aj
+
+Resources:
+  ControlInstance:
+    Type: ALIYUN::ECS::Instance
+    # 删栈不删机；需要替换时保留旧机，避免一次手滑把节点带走
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      ImageId: {Ref: ImageId}
+      InstanceType: {Ref: InstanceType}
+      ZoneId: {Ref: ZoneId}
+      VpcId: {Ref: VpcId}
+      VSwitchId: {Ref: VSwitchId}
+      SecurityGroupId: {Ref: SecurityGroupId}
+      # 与实例现状保持一致，避免后续更新误改计费方式
+      InstanceChargeType: PrePaid
+      InternetChargeType: PayByBandwidth
+      InternetMaxBandwidthOut: 3
+
+Outputs:
+  InstanceIdOut:
+    Value: {Ref: InstanceId}
+  PublicNote:
+    Description: 公网地址在实例详情页查看，模板不接管
+    Value: 39.97.233.107
