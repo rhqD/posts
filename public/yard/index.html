@@ -317,9 +317,8 @@
         group.lights = [];
         group.emitters = group.meshes.map(name => model.getObjectByName(name)).filter(Boolean);
         const available = group.emitters.length === group.meshes.length;
-        $(`[data-light-group="${key}"]`).disabled = !available;
-        $(`[data-light-focus="${key}"]`).disabled = !available;
-        $(`[data-light-group="${key}"]`).title = available ? '' : '当前模型缺少灯具，请重新导出';
+        const groupButton = document.querySelector('[data-light-group="' + key + '"]');
+        if (groupButton) { groupButton.disabled = !available; groupButton.title = available ? '' : '当前模型缺少灯具，请重新导出'; }
         if (!available) continue;
         for (const mesh of group.emitters) {
           mesh.material = Array.isArray(mesh.material) ? mesh.material.map(m => m.clone()) : mesh.material.clone();
@@ -393,7 +392,6 @@
       $('#load-title').textContent = '正在打开院子'; $('#load-message').textContent = '读取模型与几何数据…';
       $('#progress-fill').style.width = '0%'; $('#model').disabled = true;
       $('#floodlight').disabled = true;
-      document.querySelectorAll('[data-light-group], [data-light-focus]').forEach(button => { button.disabled = true; });
       const reportPromise = fetch(descriptor.report).then(r => r.ok ? r.json() : null).catch(() => null);
       try {
         const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url, resolve, e => {
@@ -468,7 +466,6 @@
       document.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
         const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);
       }));
-      document.querySelectorAll('[data-light-focus]').forEach(button => button.addEventListener('click', () => selectView(button.dataset.lightFocus)));
       $('#model').addEventListener('change',()=>loadModel($('#model').value));
       $('#retry').addEventListener('click',()=>loadModel($('#model').value));
       selectView('yard',true); loadModel('light');
