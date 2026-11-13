@@ -72,7 +72,10 @@ make publish      # sync + images + deploy
    `/images/<hash>.webp`，由 `make images` 生成。绝不把 S3 签名 URL 写进内容。
 3. **HTML 不能缓存，资源必须长缓存。** `scripts/deploy.sh` 用不同的 Cache-Control 分两次上传，
    顺序是「先资源、后 HTML」，否则会出现新 HTML 指向未上传 JS 的 404 窗口。
-4. **不要删除 OSS 上的旧 hash 文件。** 用户浏览器可能还开着旧页面。deploy 脚本从不用 --delete。
+4. **不要随手删除 OSS 上的旧文件。** 用户浏览器可能还开着旧页面，deploy 脚本从不用 --delete。
+   需要清理时跑 `node scripts/prune-oss.mjs`（默认 dry-run，加 `--delete` 才删）：
+   它把 `out/` 的全部文件 **加上页面里引用的 `/images`、`/models`、`/yard` 路径** 作为保留清单。
+   ⚠️ 图片不由 Next 构建产出（`make images` 直接传 OSS），只看 `out/` 会把整站配图当垃圾删掉。
 5. **`trailingSlash: true` 不能关。** OSS 静态托管靠目录 index，关了会导致 /posts 404。
 6. **bio 数据在 `src/content/bio.ts` 里手写**，不要重新引入数据库或后台。
 
