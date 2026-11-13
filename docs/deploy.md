@@ -31,6 +31,23 @@ make deploy         # build + upload
 3. 先传 `_next/static` 和媒体（immutable），再传 html/txt/xml（no-cache）
 4. 全程 `--update`，**从不删除远端文件**
 
+## 3D 资产（/home）
+
+模型和灯具配置不走 Notion，单独同步：
+
+```bash
+make sync-yard
+```
+
+它会从 `../yabai_home` 解析灯具配置写到 `public/yard/lights.json`，并把
+`yard-web.glb` 与精简后的 `report.json` 传到 `oss://renhanquan-site/models/`。
+
+注意：对象名固定，而 CDN 对 `glb` 是 1 年 immutable 缓存，换模型后要刷新：
+
+```bash
+aliyun cdn RefreshObjectCaches --ObjectPath "https://www.renhanquan.com/models/yard-web.glb" --ObjectType File
+```
+
 ## 依赖的本地凭证
 
 | 凭证 | 位置 | 检查命令 |
@@ -62,7 +79,7 @@ aliyun cdn AddCdnDomain --DomainName www.renhanquan.com --CdnType web --Scope do
 aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
   --Functions '[{"functionArgs":[{"argName":"path","argValue":"/_next/static/"},{"argName":"ttl","argValue":"31536000"},{"argName":"weight","argValue":"90"}],"functionName":"path_based_ttl_set"}]'
 aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
-  --Functions '[{"functionArgs":[{"argName":"file_type","argValue":"jpg,jpeg,png,webp,gif,svg,ico,mp3,woff,woff2"},{"argName":"ttl","argValue":"31536000"},{"argName":"weight","argValue":"80"}],"functionName":"filetype_based_ttl_set"}]'
+  --Functions '[{"functionArgs":[{"argName":"file_type","argValue":"jpg,jpeg,png,webp,gif,svg,ico,mp3,woff,woff2,glb,gltf,bin,ktx2"},{"argName":"ttl","argValue":"31536000"},{"argName":"weight","argValue":"80"}],"functionName":"filetype_based_ttl_set"}]'
 aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
   --Functions '[{"functionArgs":[{"argName":"path","argValue":"/"},{"argName":"ttl","argValue":"0"},{"argName":"weight","argValue":"10"}],"functionName":"path_based_ttl_set"}]'
 

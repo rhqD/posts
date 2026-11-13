@@ -65,6 +65,15 @@ node scripts/images.mjs --probe https://example.com/a.jpg   # 单张测试
 - 文件名必须等于 `post.slug`
 - `blocks` 保持 Notion 原始块结构（渲染器依赖），内部链接已改写
 
+## 3D 资产（另一条管线）
+
+院子模型与灯具配置不来自 Notion，走 `make sync-yard`：
+
+- 解析 `../yabai_home/web/preview.html` 的灯具定义 → `public/yard/lights.json`
+- 上传 `exports/yard-web.glb` 与精简 report → OSS `models/`
+
+细节见 [AGENTS.md](../AGENTS.md)。
+
 ## 常见问题
 
 **图片 fetch failed**

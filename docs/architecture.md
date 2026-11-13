@@ -39,11 +39,23 @@ Notion DB ──(make sync, Go)──> content/posts.index.json
 | `/posts/<slug>/` | `out/posts/<slug>/index.html` |
 | `/categories/<slug>/` | 构建时由 `generateStaticParams` 枚举 |
 | `/tags/<slug>/` | 同上 |
+| `/home/` | 3D 查看器（React 组件 + three.js，见下节） |
 | `/garden/`、`/privacy/` | 静态页 |
 | `/sitemap.xml` | 构建时生成 |
 
 `trailingSlash: true` 让每个路由输出成目录 + index.html，
 这样 OSS 静态网站托管才能正确处理 `/posts/`。
+
+## 3D 查看器（/home）
+
+- 页面在 `(bare)` 路由组：有站点 Header，没有 Footer，画布从顶栏下方开始。
+- 场景是 `src/components/yard/yard-scene.ts`（命令式 three.js），由 `YardViewer.tsx` 在
+  `useEffect` 里用 `import('./yard-scene')` 动态加载，three.js 因此不进主 bundle。
+- 灯具配置来自 `public/yard/lights.json`（由 `make sync-yard` 从 yabai_home 解析生成），
+  开关按钮由场景按这份 JSON 注入，增删灯具不需要改页面代码。
+- 模型在 OSS `models/yard-web.glb`，页面用相对路径 `/models/yard-web.glb` 加载；
+  draco 解码器在 `public/yard/draco/`。
+- 光照是固定的下午角度（不再做日照模拟），切主题不影响画布。
 
 ## 数据来源
 

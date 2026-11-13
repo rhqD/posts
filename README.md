@@ -11,6 +11,7 @@
 - **HTML 不缓存**：每次请求回源 OSS（同地域 2～5ms），保证发布即生效。
 - **资源永久缓存**：带 hash 的 JS/CSS 与图片 `max-age=31536000, immutable`。
 - **图片构建期处理**：Notion 原图（几十 MB）压缩成 1600px WebP，体积降一个数量级。
+- **/home 是一个 3D 院子**：three.js 场景内置在应用里，灯具开关和视角都由数据驱动。
 
 ## 快速开始
 
@@ -33,6 +34,7 @@ make publish        # 上面两步 + 构建 + 部署
 
 ```
 src/               前端（Next.js App Router）
+  └── components/yard/   院子 3D 查看器（three.js）
 apps/api/          Go 写的 Notion 同步工具
 content/           构建期内容快照（提交进 git）
 scripts/           图片管线、部署脚本
@@ -45,6 +47,7 @@ docs/              架构与运维文档
 - [docs/architecture.md](docs/architecture.md) —— 渲染模式、数据流、缓存策略
 - [docs/deploy.md](docs/deploy.md) —— 部署与运维 runbook
 - [docs/content-pipeline.md](docs/content-pipeline.md) —— Notion 同步与图片管线
+- [AGENTS.md](AGENTS.md) —— 3D 页面的同步边界（模型 + 灯具配置）
 
 ## 许可
 
