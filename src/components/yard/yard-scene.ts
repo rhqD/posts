@@ -9,7 +9,7 @@ import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onLampChange?: (key: string, on: boolean) => void } = {}) {
 
 
 
@@ -27,7 +27,7 @@ const b = (x, y, z) => new THREE.Vector3(x, z, -y);
 let renderer, scene, camera, controls, model, fullBounds;
 let onResize: (() => void) | undefined;
 let preparingLights = false;
-let activeView = 'all', transition = null, loadId = 0, dirty = true, wireframe = false;
+let activeView = 'all', transition = null, loadId = 0, dirty = true;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
 const sunEvents = new AbortController();
@@ -39,6 +39,9 @@ const MODEL = LIGHTS.model ?? { url: '/models/yard-web.glb', report: '/models/ya
 models.light.url = MODEL.url;
 models.light.report = MODEL.report;
 const extraLights = Object.fromEntries(LIGHTS.groups.map(({ key, label, ...g }) => [key, { ...g, offset: new THREE.Vector3(...(g.offset ?? [])) }]));
+// Lamps listed here are backed by a real device. Everything else stays a pure
+// scene animation and never touches the network.
+const liveLamps = new Set<string>();
 const lampList = document.getElementById('lamp-list');
 lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
   `<div class="${opts.lampClass || ''}" role="group" aria-label="${label}"><button class="${opts.pillClass || 'pill'} lamp" data-light-group="${key}" role="switch" aria-checked="false" aria-label="${label}开关" disabled>${label}</button><button class="${opts.locateClass || ''}" data-lamp-view="${key}" aria-label="查看灯具：${label}" title="定位到${label}" disabled><span aria-hidden="true">↗</span></button></div>`
@@ -311,7 +314,7 @@ async function loadModel(key) {
     model = gltf.scene;
     model.traverse(o => {
       if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; }
-      materialsOf(o).forEach(m => { m.wireframe = wireframe; });
+      materialsOf(o).forEach(m => { m.wireframe = false; });
     });
     scene.add(model);
     bindFloodlight();
@@ -412,12 +415,36 @@ try {
   }));
   $('#floodlight').addEventListener('click', () => updateFloodlight(!floodlightOn));
   root.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
-    const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);
+    const key = button.dataset.lightGroup;
+    const next = !extraLights[key].on;
+    // Optimistic: the 3D lamp reacts immediately, then the caller either
+    // confirms with the device or reverts us.
+    updateExtraLight(key, next);
+    if (liveLamps.has(key)) opts.onLampChange?.(key, next);
   }));
     $('#retry').addEventListener('click',()=>loadModel('light'));
   selectView('all',true); loadModel('light');
 } catch (error) { fail(error); }
   return {
+    // States reported by the control service. Listed keys become live lamps;
+    // absent keys stay virtual, which is exactly the fallback we want when the
+    // visitor is anonymous or the mapping does not cover a lamp.
+    applyLampStates(states: Record<string, boolean>) {
+      liveLamps.clear();
+      for (const [key, on] of Object.entries(states)) {
+        if (!extraLights[key]) {
+          // A binding that does not match a lamp in lights.json would otherwise
+          // fail silently, which reads as "the lamp does nothing".
+          console.warn('[yard] device binding points at an unknown lamp:', key);
+          continue;
+        }
+        liveLamps.add(key);
+        updateExtraLight(key, on);
+      }
+    },
+    setLamp(key: string, on: boolean) {
+      if (extraLights[key]) updateExtraLight(key, on);
+    },
     destroy() {
       ++loadId;
       window.clearInterval(sunTimer);

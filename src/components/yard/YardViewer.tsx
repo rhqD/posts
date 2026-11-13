@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./yard.module.css";
 import { YARD_SITE } from "./yard-solar";
+import { fetchDevices, isOn, sendCommand } from "./yard-api";
+import { DEVICE_MAP } from "./device-map";
 
 const VIEWS = [
   { key: "all", label: "全景" },
@@ -44,18 +46,66 @@ export default function YardViewer() {
   useEffect(() => {
     let destroy: (() => void) | undefined;
     let cancelled = false;
+    const controller = new AbortController();
+    let sceneApi: { setLamp(key: string, on: boolean): void } | undefined;
+    // Filled once the device list arrives; the scene callback is created
+    // earlier, so it reads through this ref instead of closing over it.
+    const bindings: Record<string, { device: string; action: string }> = {};
+    let detachAuth: () => void = () => {};
 
     import("./yard-scene")
       .then(async (mod) => {
         if (cancelled || !rootRef.current) return;
-        const scene = await mod.createYardScene(rootRef.current, { pillClass: styles.pill, lampClass: styles.lampControl, locateClass: styles.locate });
+        const scene = await mod.createYardScene(rootRef.current, {
+          pillClass: styles.pill,
+          lampClass: styles.lampControl,
+          locateClass: styles.locate,
+          onLampChange: (key, on) => {
+            const binding = bindings[key];
+            if (!binding) {
+              sceneApi?.setLamp(key, !on);
+              return;
+            }
+            sendCommand(binding.device, binding.action, on).catch((error) => {
+              console.warn("[yard] command failed", error);
+              sceneApi?.setLamp(key, !on); // revert the optimistic toggle
+            });
+          },
+        });
+        sceneApi = scene;
         if (cancelled) { scene?.destroy(); return; }
         destroy = () => scene?.destroy();
+        // A lamp becomes live only when it is bound *and* this visitor may
+        // control the device *and* the device actually offers that action.
+        // Everything else keeps its pure-animation behaviour.
+        const sync = () => {
+          if (cancelled) return;
+          fetchDevices(controller.signal).then((devices) => {
+            if (cancelled) return;
+            for (const key of Object.keys(bindings)) delete bindings[key];
+            const live: Record<string, boolean> = {};
+            for (const [lamp, binding] of Object.entries(DEVICE_MAP)) {
+              const device = devices[binding.device];
+              if (!device?.permissions.control) continue;
+              const action = binding.action ?? "set_switch";
+              if (!(action in device.actions)) continue;
+              bindings[lamp] = { device: binding.device, action };
+              live[lamp] = isOn(device.state);
+            }
+            scene.applyLampStates(live);
+          });
+        };
+        sync();
+        // Logging in from the header must light up the scene without a reload.
+        window.addEventListener("auth-change", sync);
+        detachAuth = () => window.removeEventListener("auth-change", sync);
       })
       .catch((err) => console.error("[yard] failed to start", err));
 
     return () => {
       cancelled = true;
+      controller.abort();
+      detachAuth();
       destroy?.();
     };
   }, []);
