@@ -155,14 +155,22 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		at := os.Getenv("SONOFF_ACCESS_TOKEN")
 		rt := os.Getenv("SONOFF_REFRESH_TOKEN")
 
-		// KMS keeps the credential off the box entirely: the secret is read at
-		// startup with the instance role, so nothing is written to the env file.
-		if name := os.Getenv("SONOFF_SECRET_NAME"); name != "" {
+		// The credential can live in Aliyun's parameter store instead of the env
+		// file: read once at startup with the instance role, never written down.
+		// OOS encrypted parameters are free (legacy KMS, up to 200 per region);
+		// KMS Secrets Manager needs a paid instance, kept as a fallback.
+		if name := firstNonEmpty(os.Getenv("SONOFF_SECRET_PARAM"), os.Getenv("SONOFF_SECRET_NAME")); name != "" {
 			creds, err := aliyunCredentials()
 			if err != nil {
 				return nil, err
 			}
-			raw, err := aliyun.GetSecret(ctx, nil, env("ALIYUN_REGION", "cn-beijing"), creds, name)
+			regionName := env("ALIYUN_REGION", "cn-beijing")
+			var raw string
+			if os.Getenv("SONOFF_SECRET_PARAM") != "" {
+				raw, err = aliyun.GetSecretParameter(ctx, nil, regionName, creds, name)
+			} else {
+				raw, err = aliyun.GetSecret(ctx, nil, regionName, creds, name)
+			}
 			if err != nil {
 				return nil, fmt.Errorf("sonoff secret %q: %w", name, err)
 			}
@@ -404,6 +412,15 @@ func logRequests(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 		log.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
 	})
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 func env(k, def string) string {
