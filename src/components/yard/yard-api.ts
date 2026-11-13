@@ -67,41 +67,35 @@ export function isOn(state: Record<string, unknown> | undefined): boolean {
   return state.power === true;
 }
 
-// What the viewer needs to render a device. `type` picks the renderer; the
-// remaining fields are free-form and only the ones the device reports are set,
-// so a new capability never needs a new type here.
+// Device state is an open bag. `type` picks the renderer; every other field is
+// whatever the device happens to report. No capability is enumerated here on
+// purpose — we cannot know what a future fixture exposes, and the renderer is
+// the only thing that needs to understand a field.
 export type DeviceState = {
   type: string;
-  on?: boolean;
-  brightness?: number;
-  colorTemperature?: number;
-  color?: string;
   [field: string]: unknown;
 };
 
-/** Translate a vendor state into the viewer's device state. */
+/**
+ * Hands the vendor state to the viewer unchanged, with two exceptions:
+ * type is stamped from the binding, and the on/off flag is normalised because
+ * vendors spell it differently (switch / power). This adapter is the only place
+ * that knows a vendor field name.
+ */
 export function toDeviceState(
   state: Record<string, unknown> | undefined,
   type = "light",
 ): DeviceState {
-  const out: DeviceState = { type, on: isOn(state) };
-  if (state) {
-    if (typeof state.brightness === "number") out.brightness = state.brightness;
-    if (typeof state.colorTemperature === "number") out.colorTemperature = state.colorTemperature;
-    if (typeof state.color === "string") out.color = state.color;
-  }
+  const out: DeviceState = { ...(state ?? {}), type };
+  delete out.switch;
+  delete out.power;
+  out.on = isOn(state);
   return out;
 }
 
-// One command per changed field. The API takes a single action, so a patch with
-// brightness and colour becomes two calls — rare, and fine at this scale.
-const ACTION_FOR: Record<string, string> = {
-  on: "set_switch",
-  brightness: "set_brightness",
-  colorTemperature: "set_color_temperature",
-  color: "set_color",
-};
-
+// One command per changed field; the API takes a single action. Field names are
+// not mapped through a table: the provider builds its actions as set_<param>,
+// so set_<field> is the general case and only on/off needs the binding's action.
 export async function sendDevicePatch(
   device: string,
   baseAction: string,
@@ -109,8 +103,8 @@ export async function sendDevicePatch(
   outlet?: number,
 ): Promise<void> {
   for (const [field, value] of Object.entries(patch)) {
-    if (value === undefined) continue;
-    const action = field === "on" ? baseAction || "set_switch" : ACTION_FOR[field] ?? "set_" + field;
+    if (field === "type" || value === undefined) continue;
+    const action = field === "on" ? baseAction || "set_switch" : "set_" + field;
     await sendCommand(device, action, value, outlet);
   }
 }
