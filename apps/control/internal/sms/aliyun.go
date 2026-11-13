@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -24,31 +25,59 @@ import (
 // once real credentials exist. Everything else (signing, error handling) is
 // standard RPC style.
 type Aliyun struct {
-	AK       string
-	Secret   string
+	// Creds supplies the signing key. On ECS use ECSRoleCreds so nothing is
+	// stored on disk; AK/Secret are the development fallback.
+	Creds  Credentials
+	AK     string
+	Secret string
+	// 短信认证只能用平台赠送的签名与模板，两者必须配套，且都要显式传参。
+	SignName      string
+	TemplateCode  string
+	TemplateParam string // 默认 {"code":"##code##","min":"5"}，由平台生成验证码
+	CodeLength    int
+
 	Endpoint string
 	HTTP     *http.Client
 }
 
 func NewAliyun(ak, secret string) *Aliyun {
 	return &Aliyun{
-		AK:       ak,
-		Secret:   secret,
-		Endpoint: "https://dypnsapi.aliyuncs.com/",
-		HTTP:     &http.Client{Timeout: 10 * time.Second},
+		Creds:         StaticCreds{AccessKeyID: ak, AccessKeySecret: secret},
+		AK:            ak,
+		Secret:        secret,
+		TemplateParam: `{"code":"##code##","min":"5"}`,
+		CodeLength:    6,
+		Endpoint:      "https://dypnsapi.aliyuncs.com/",
+		HTTP:          &http.Client{Timeout: 10 * time.Second},
 	}
+}
+
+func (a *Aliyun) validate() error {
+	if a.SignName == "" || a.TemplateCode == "" {
+		return fmt.Errorf("sonoff: sign name and template code are required (see dypns console)")
+	}
+	return nil
 }
 
 func (a *Aliyun) Name() string { return "aliyun" }
 
 func (a *Aliyun) Send(ctx context.Context, phone string) error {
+	if err := a.validate(); err != nil {
+		return err
+	}
+	n := a.CodeLength
+	if n < 4 || n > 8 {
+		n = 6
+	}
 	_, err := a.call(ctx, map[string]string{
-		"Action":          "SendSmsVerifyCode",
-		"PhoneNumber":     phone,
-		"CountryCode":     "86",
-		"CodeLength":      "6",
-		"ValidTime":       "300",
-		"DuplicatePolicy": "1",
+		"Action":        "SendSmsVerifyCode",
+		"PhoneNumber":   phone,
+		"CountryCode":   "86",
+		"SignName":      a.SignName,
+		"TemplateCode":  a.TemplateCode,
+		"TemplateParam": a.TemplateParam,
+		"CodeLength":    strconv.Itoa(n),
+		"ValidTime":     "300",
 	})
 	return err
 }
@@ -75,19 +104,28 @@ func (a *Aliyun) Check(ctx context.Context, phone, code string) (bool, error) {
 }
 
 func (a *Aliyun) call(ctx context.Context, params map[string]string) ([]byte, error) {
+	cred, err := a.credentials(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	p := map[string]string{
 		"Format":           "JSON",
 		"Version":          "2017-05-25",
-		"AccessKeyId":      a.AK,
+		"AccessKeyId":      cred.AccessKeyID,
 		"SignatureMethod":  "HMAC-SHA1",
 		"SignatureVersion": "1.0",
 		"SignatureNonce":   fmt.Sprintf("%d", time.Now().UnixNano()),
 		"Timestamp":        time.Now().UTC().Format("2006-01-02T15:04:05Z"),
 	}
+	if cred.SecurityToken != "" {
+		p["SecurityToken"] = cred.SecurityToken
+	}
 	for k, v := range params {
 		p[k] = v
 	}
-	p["Signature"] = a.sign(p)
+	secret := cred.AccessKeySecret
+	p["Signature"] = signV1(secret, p)
 
 	keys := make([]string, 0, len(p))
 	for k := range p {
@@ -130,7 +168,18 @@ func (a *Aliyun) call(ctx context.Context, params map[string]string) ([]byte, er
 	return body, nil
 }
 
-func (a *Aliyun) sign(params map[string]string) string {
+// credentials resolves the key pair used for this call.
+func (a *Aliyun) credentials(ctx context.Context) (Cred, error) {
+	if a.Creds != nil {
+		return a.Creds.Fetch(ctx)
+	}
+	if a.AK == "" {
+		return Cred{}, fmt.Errorf("dypns: no credentials configured")
+	}
+	return Cred{AccessKeyID: a.AK, AccessKeySecret: a.Secret}, nil
+}
+
+func signV1(secret string, params map[string]string) string {
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		if k == "Signature" {
@@ -151,7 +200,7 @@ func (a *Aliyun) sign(params map[string]string) string {
 	}
 
 	toSign := "GET" + "&" + percentEncode("/") + "&" + percentEncode(canonical.String())
-	mac := hmac.New(sha1.New, []byte(a.Secret+"&"))
+	mac := hmac.New(sha1.New, []byte(secret+"&"))
 	mac.Write([]byte(toSign))
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }

@@ -253,6 +253,19 @@ DATA_DIR=./data ./control verify     # 断链返回 1
 登录/登出后派发 `window` 事件 `auth-change`，`/home` 收到后重新拉 `/devices` 并刷新灯具，
 不用刷新页面。
 
+### 生产环境的短信凭证
+
+服务器上**不放 AccessKey**。实例挂 RAM 角色 `home-server`，凭据从
+`100.100.100.200` 的元数据服务取，一小时一换，到期前 5 分钟自动刷新。
+
+```
+GET /latest/meta-data/ram/security-credentials/home-server
+→ {AccessKeyId, AccessKeySecret, SecurityToken, Expiration}
+```
+
+签名时把 `SecurityToken` 一并带上（STS 凭证必需）。角色没了、元数据取不到时，
+短信发送直接失败并写审计，不会静默降级。
+
 ## API
 
 ```
@@ -290,7 +303,12 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 | `ADDR` | `:8080` | 监听地址 |
 | `DATA_DIR` | `./data` | 数据目录 |
 | `SMS_MODE` | `fake` | `fake` 打印验证码；`aliyun` 走 dypnsapi |
-| `ALIYUN_ACCESS_KEY_ID/SECRET` | — | `SMS_MODE=aliyun` 必填，用 RAM 子账号 |
+| `SMS_CREDENTIALS` | `env` | `ecs-role` 从实例元数据取临时凭证；`env` 读静态 AK |
+| `SMS_ROLE_NAME` | — | `SMS_CREDENTIALS=ecs-role` 时必填，如 `home-server` |
+| `SMS_SIGN_NAME` | — | 平台赠送签名，如 `恒创联众`；与模板必须配套 |
+| `SMS_TEMPLATE_CODE` | — | 平台赠送模板，如 `100001` |
+| `SMS_TEMPLATE_PARAM` | `{"code":"##code##","min":"5"}` | 由平台生成验证码 |
+| `ALIYUN_ACCESS_KEY_ID/SECRET` | — | 仅 `SMS_CREDENTIALS=env` 时需要 |
 | `ALLOWED_PHONES` | — | 必填，空则启动失败 |
 | `ADMIN_PHONE` | — | 首次启动建管理员 |
 | `SESSION_TTL` | `720h` | 会话有效期 |

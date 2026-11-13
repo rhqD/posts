@@ -176,12 +176,38 @@ func newSMSProvider() (sms.Provider, error) {
 	case "fake":
 		return sms.NewFake(func(s string) { log.Print(s) }), nil
 	case "aliyun":
-		ak := os.Getenv("ALIYUN_ACCESS_KEY_ID")
-		sk := os.Getenv("ALIYUN_ACCESS_KEY_SECRET")
-		if ak == "" || sk == "" {
-			return nil, errors.New("ALIYUN_ACCESS_KEY_ID / ALIYUN_ACCESS_KEY_SECRET required")
+		sign := os.Getenv("SMS_SIGN_NAME")
+		tpl := os.Getenv("SMS_TEMPLATE_CODE")
+		if sign == "" || tpl == "" {
+			return nil, errors.New("SMS_SIGN_NAME / SMS_TEMPLATE_CODE required: the platform's gifted sign and template must be passed explicitly")
 		}
-		return sms.NewAliyun(ak, sk), nil
+
+		var p *sms.Aliyun
+		switch env("SMS_CREDENTIALS", "env") {
+		case "ecs-role":
+			role := os.Getenv("SMS_ROLE_NAME")
+			if role == "" {
+				return nil, errors.New("SMS_ROLE_NAME required when SMS_CREDENTIALS=ecs-role")
+			}
+			p = sms.NewAliyun("", "")
+			p.Creds = &sms.ECSRoleCreds{Role: role}
+		case "env":
+			ak := os.Getenv("ALIYUN_ACCESS_KEY_ID")
+			sk := os.Getenv("ALIYUN_ACCESS_KEY_SECRET")
+			if ak == "" || sk == "" {
+				return nil, errors.New("ALIYUN_ACCESS_KEY_ID / ALIYUN_ACCESS_KEY_SECRET required")
+			}
+			p = sms.NewAliyun(ak, sk)
+		default:
+			return nil, fmt.Errorf("unknown SMS_CREDENTIALS %q", os.Getenv("SMS_CREDENTIALS"))
+		}
+
+		p.SignName = sign
+		p.TemplateCode = tpl
+		if v := os.Getenv("SMS_TEMPLATE_PARAM"); v != "" {
+			p.TemplateParam = v
+		}
+		return p, nil
 	default:
 		return nil, fmt.Errorf("unknown SMS_MODE %q", os.Getenv("SMS_MODE"))
 	}
