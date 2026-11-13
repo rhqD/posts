@@ -2,19 +2,16 @@ package sms
 
 import (
 	"context"
-	"crypto/hmac"
-	"crypto/sha1"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"renhanquan/control/internal/aliyun"
 )
 
 // Aliyun talks to the 号码认证 service (dypnsapi) "短信认证", which individual
@@ -124,25 +121,9 @@ func (a *Aliyun) call(ctx context.Context, params map[string]string) ([]byte, er
 	for k, v := range params {
 		p[k] = v
 	}
-	secret := cred.AccessKeySecret
-	p["Signature"] = signV1(secret, p)
+	p["Signature"] = aliyun.SignV1(cred.AccessKeySecret, p)
 
-	keys := make([]string, 0, len(p))
-	for k := range p {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	var q strings.Builder
-	for i, k := range keys {
-		if i > 0 {
-			q.WriteByte('&')
-		}
-		q.WriteString(percentEncode(k))
-		q.WriteByte('=')
-		q.WriteString(percentEncode(p[k]))
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Endpoint+"?"+q.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, a.Endpoint+"?"+aliyun.CanonicalQuery(p), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -177,38 +158,4 @@ func (a *Aliyun) credentials(ctx context.Context) (Cred, error) {
 		return Cred{}, fmt.Errorf("dypns: no credentials configured")
 	}
 	return Cred{AccessKeyID: a.AK, AccessKeySecret: a.Secret}, nil
-}
-
-func signV1(secret string, params map[string]string) string {
-	keys := make([]string, 0, len(params))
-	for k := range params {
-		if k == "Signature" {
-			continue
-		}
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	var canonical strings.Builder
-	for i, k := range keys {
-		if i > 0 {
-			canonical.WriteByte('&')
-		}
-		canonical.WriteString(percentEncode(k))
-		canonical.WriteByte('=')
-		canonical.WriteString(percentEncode(params[k]))
-	}
-
-	toSign := "GET" + "&" + percentEncode("/") + "&" + percentEncode(canonical.String())
-	mac := hmac.New(sha1.New, []byte(secret+"&"))
-	mac.Write([]byte(toSign))
-	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
-}
-
-func percentEncode(s string) string {
-	e := url.QueryEscape(s)
-	e = strings.ReplaceAll(e, "+", "%20")
-	e = strings.ReplaceAll(e, "*", "%2A")
-	e = strings.ReplaceAll(e, "%7E", "~")
-	return e
 }

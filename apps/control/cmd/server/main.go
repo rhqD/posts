@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"renhanquan/control/internal/acl"
+	"renhanquan/control/internal/aliyun"
 	"renhanquan/control/internal/api"
 	"renhanquan/control/internal/audit"
 	"renhanquan/control/internal/auth"
@@ -151,10 +152,34 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 	case "mock":
 		return mock.New(), nil
 	case "sonoff":
-		tok := os.Getenv("SONOFF_ACCESS_TOKEN")
-		if tok == "" {
-			return nil, errors.New("SONOFF_ACCESS_TOKEN required for DEVICE_PROVIDER=sonoff")
+		at := os.Getenv("SONOFF_ACCESS_TOKEN")
+		rt := os.Getenv("SONOFF_REFRESH_TOKEN")
+
+		// KMS keeps the credential off the box entirely: the secret is read at
+		// startup with the instance role, so nothing is written to the env file.
+		if name := os.Getenv("SONOFF_SECRET_NAME"); name != "" {
+			creds, err := aliyunCredentials()
+			if err != nil {
+				return nil, err
+			}
+			raw, err := aliyun.GetSecret(ctx, nil, env("ALIYUN_REGION", "cn-beijing"), creds, name)
+			if err != nil {
+				return nil, fmt.Errorf("sonoff secret %q: %w", name, err)
+			}
+			var secret struct {
+				At string `json:"at"`
+				Rt string `json:"rt"`
+			}
+			if err := json.Unmarshal([]byte(raw), &secret); err != nil {
+				return nil, fmt.Errorf("sonoff secret %q must be json with at/rt fields: %w", name, err)
+			}
+			at, rt = secret.At, secret.Rt
+			log.Printf("sonoff credentials loaded from KMS secret %q", name)
 		}
+		if at == "" {
+			return nil, errors.New("SONOFF_ACCESS_TOKEN or SONOFF_SECRET_NAME required for DEVICE_PROVIDER=sonoff")
+		}
+		tok := at
 		region := env("SONOFF_REGION", "cn")
 		base := env("SONOFF_BASE_URL", sonoff.BaseURL(region))
 
@@ -166,7 +191,7 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		// With a refresh token the credential survives restarts and renews
 		// itself; without one it dies after ~30 days.
 		var source sonoff.TokenSource
-		if rt := os.Getenv("SONOFF_REFRESH_TOKEN"); rt != "" {
+		if rt != "" {
 			source = sonoff.NewRefreshToken(base, tok, rt)
 		} else {
 			source = sonoff.NewStaticToken(tok)
@@ -182,6 +207,27 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 	default:
 		return nil, fmt.Errorf("unknown DEVICE_PROVIDER %q", os.Getenv("DEVICE_PROVIDER"))
 	}
+}
+
+// aliyunCredentials picks the signing identity for Aliyun API calls: the ECS
+// instance role when available, a static key otherwise.
+func aliyunCredentials() (aliyun.Credentials, error) {
+	if env("SMS_CREDENTIALS", "env") == "ecs-role" {
+		role := os.Getenv("ALIYUN_ROLE_NAME")
+		if role == "" {
+			role = os.Getenv("SMS_ROLE_NAME")
+		}
+		if role == "" {
+			return nil, errors.New("ALIYUN_ROLE_NAME (or SMS_ROLE_NAME) required for ecs-role credentials")
+		}
+		return &aliyun.ECSRoleCreds{Role: role}, nil
+	}
+	ak := os.Getenv("ALIYUN_ACCESS_KEY_ID")
+	sk := os.Getenv("ALIYUN_ACCESS_KEY_SECRET")
+	if ak == "" || sk == "" {
+		return nil, errors.New("ALIYUN_ACCESS_KEY_ID / ALIYUN_ACCESS_KEY_SECRET required")
+	}
+	return aliyun.StaticCreds{AccessKeyID: ak, AccessKeySecret: sk}, nil
 }
 
 func newSMSProvider() (sms.Provider, error) {

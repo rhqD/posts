@@ -123,6 +123,12 @@ POST /v2/device/thing/status   {type, id, params}
 
 外呼串行 + 最小间隔 200ms：厂商没公布限流策略，就按克制的方式调用。
 
+**密钥存放**：CoolKit 的 `at`/`rt` 放在 KMS **凭据管家**里，服务启动时用实例角色读一次
+（`SONOFF_SECRET_NAME`）。机器上不落盘，控制台可改、可审计。
+
+⚠️ 读回来的是**快照**：如果服务运行期间 token 被刷新过，KMS 里的 `rt` 会慢慢变旧。
+超过约 60 天没更新凭据，重启后就续不上了——记得定期把新值写回（或以后加写回逻辑）。
+
 **token 续期**：CoolKit 有 `/v2/user/refresh`，只要 `at` 和 `rt` 就能续，
 不需要重新登录（登录要用 App 私有密钥做 HMAC 签名，那一步我们不做）。配上
 `SONOFF_REFRESH_TOKEN` 后，401 时自动刷新一次并重试。
@@ -323,6 +329,8 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 | `DEVICE_PROVIDER` | `mock` | `mock` 假设备；`sonoff` 走 CoolKit |
 | `SONOFF_ACCESS_TOKEN` | — | `DEVICE_PROVIDER=sonoff` 必填，eWeLink 的 `at` |
 | `SONOFF_REFRESH_TOKEN` | — | eWeLink 的 `rt`；配上后 token 会自动续期，不会 30 天到期 |
+| `SONOFF_SECRET_NAME` | — | 改为从 KMS 凭据管家读，值形如 `renhanquan/ewelink`；配上后不再需要上面两个 |
+| `ALIYUN_ROLE_NAME` | 回退 `SMS_ROLE_NAME` | 调 KMS 用的实例角色 |
 | `SONOFF_REGION` | `cn` | `cn` / `as` / `us` / `eu` |
 | `SONOFF_BASE_URL` | 按 region | 覆盖 API 域名，测试或自建代理用 |
 | `ALLOWED_ORIGINS` | 空 | 跨域白名单，如 `https://www.renhanquan.com` |
