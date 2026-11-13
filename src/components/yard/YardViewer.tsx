@@ -4,6 +4,8 @@ import { useEffect, useRef } from "react";
 import styles from "./yard.module.css";
 
 const VIEWS = [
+  { key: "landscape", label: "园景" },
+  { key: "waterside", label: "山水" },
   { key: "yard", label: "前院" },
   { key: "pond", label: "池塘" },
   { key: "garden", label: "花园" },
@@ -23,6 +25,7 @@ export default function YardViewer() {
       .then(async (mod) => {
         if (cancelled || !rootRef.current) return;
         const scene = await mod.createYardScene(rootRef.current, { pillClass: styles.pill });
+        if (cancelled) { scene?.destroy(); return; }
         destroy = () => scene?.destroy();
       })
       .catch((err) => console.error("[yard] failed to start", err));
@@ -42,7 +45,9 @@ export default function YardViewer() {
         <button id="wireframe" className={styles.pill} aria-pressed="false">线框</button>
       </aside>
 
-      <div className={styles.dock} aria-label="灯光控制">
+      <details className={styles.lighting}>
+        <summary className={styles.pill}>灯光设置</summary>
+        <div className={styles.dock} aria-label="灯光控制">
         <button
           id="floodlight"
           className={styles.pill}
@@ -53,7 +58,8 @@ export default function YardViewer() {
           西墙投光灯
         </button>
         <div id="lamp-list" className={styles.lampPills} />
-      </div>
+        </div>
+      </details>
 
       <nav className={styles.viewbar} aria-label="预设视角">
         {VIEWS.map((view, i) => (

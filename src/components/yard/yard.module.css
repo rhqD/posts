@@ -42,24 +42,33 @@
   z-index: 2;
 }
 
+.lighting { position: absolute; top: 108px; right: 20px; z-index: 3; }
+.lighting summary { cursor: pointer; list-style: none; text-align: center; }
+.lighting summary::-webkit-details-marker { display: none; }
+.lighting[open] summary { background: #455e50; color: white; }
 .dock {
   position: absolute;
-  left: 50%;
-  bottom: 76px;
-  transform: translateX(-50%);
+  top: 38px;
+  right: 0;
+  width: min(280px, calc(100vw - 40px));
+  padding: 14px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  justify-content: center;
-  max-width: calc(100% - 40px);
-  z-index: 2;
+  justify-content: flex-start;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 18px;
+  background: rgba(245, 248, 242, .92);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 36px rgba(35, 53, 44, .1);
 }
-.lampPills { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.lampPills { display: contents; }
 
 .viewbar {
   position: absolute;
   left: 50%;
   bottom: 20px;
+  width: max-content;
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
@@ -102,3 +111,19 @@
 .progressFill { height: 100%; width: 0; background: #7d9362; transition: width 0.2s; }
 .retry { background: #65794e; color: #fff; border: 0; border-radius: 9px; padding: 10px 20px; margin-top: 16px; cursor: pointer; }
 .retry[hidden] { display: none; }
+
+@media (max-width: 639px) {
+  .viewbar { width: calc(100% - 32px); }
+
+}
+
+.viewbar {
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 22px;
+  background: rgba(244, 247, 240, .85);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 8px 28px rgba(35, 53, 44, .08);
+}
+.viewbar .pill { box-shadow: none; border-color: transparent; background: transparent; }
+.viewbar .pill[aria-pressed='true'] { background: #455e50; color: #fff; }

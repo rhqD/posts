@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 export async function createYardScene(root: HTMLElement, opts: { pillClass?: string } = {}) {
@@ -24,7 +25,7 @@ const models = {
 const b = (x, y, z) => new THREE.Vector3(x, z, -y);
 let renderer, scene, camera, controls, model, fullBounds;
 let onResize: (() => void) | undefined;
-let activeView = 'yard', transition = null, loadId = 0, dirty = true, wireframe = false;
+let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
 const lampRaycaster = new THREE.Raycaster();
@@ -37,6 +38,8 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
+  waterside: { position: b(18,-48,31), target: b(-17,16,2) },
+  landscape: { position: b(32,-48,23), target: b(-7,16,7.5), fov: 42 },
   yard: { position: b(14,-8,14), target: b(4.5,4.8,1.3) },
   pond: { position: b(4.5,2.4,3.6), target: b(1.45,6.3,.03) },
   garden: { position: b(2,-1.5,6.2), target: b(7.45,4.6,1.6) },
@@ -76,7 +79,7 @@ function selectView(name, immediate = false) {
   if (!preset) return;
   const target = preset.target.clone();
   const position = preset.position.clone().sub(target).multiplyScalar(!preset.interior && camera.aspect < .9 ? 1.35 : 1).add(target);
-  camera.fov = preset.fov || 40; camera.updateProjectionMatrix();
+  camera.fov = ['landscape', 'waterside'].includes(name) ? (camera.aspect < .9 ? 58 : 42) : (preset.fov || 40); camera.updateProjectionMatrix();
   controls.minDistance = preset.interior ? .2 : 1;
   if (immediate || reducedMotion || preset.interior) { camera.position.copy(position); controls.target.copy(target); controls.update(); transition = null; }
   else transition = { from: camera.position.clone(), to: position, fromTarget: controls.target.clone(), toTarget: target, start: performance.now() };
@@ -84,7 +87,7 @@ function selectView(name, immediate = false) {
 }
 function resize() {
   camera.aspect = root.clientWidth / root.clientHeight; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight); dirty = true;
+  renderer.setSize(root.clientWidth, root.clientHeight); dirty = true;
 }
 function compass() {
   const arrow = $('#north-arrow');
@@ -232,9 +235,9 @@ function applySun() {
   const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .35);
   const warmth = THREE.MathUtils.smoothstep(direction.y, 0, .65);
   sun.position.copy(sun.target.position).addScaledVector(direction, 55);
-  sun.intensity = 3.1 * daylight;
+  sun.intensity = 2.4 * daylight;
   sun.color.set(0xffa563).lerp(new THREE.Color(0xfff1d9), warmth);
-  hemisphere.intensity = .18 + daylight * .97;
+  hemisphere.intensity = .18 + daylight * .9;
   hemisphere.color.set(0x35445e).lerp(new THREE.Color(0xe4ebef), daylight);
   scene.environmentIntensity = .06 + daylight * .39;
   scene.background.set(0x172332).lerp(new THREE.Color(0xe9ebe2), daylight);
@@ -273,11 +276,11 @@ async function loadModel(key) {
     window.yardPreviewState = { loaded: true, model: key, triangles, images: report?.glb?.images, error: null };
   } catch (error) { if (id === loadId) { window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
 }
-let loader;
+let loader, landscape;
 try {
   renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.7)); renderer.setSize(root.clientWidth, root.clientHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.15;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.02;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
   $('#stage').appendChild(renderer.domElement);
   renderer.domElement.addEventListener('pointerdown', e => { pointerDown = e.button === 0 && e.isPrimary ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null; });
@@ -297,8 +300,10 @@ try {
   sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:90});
   sun.shadow.bias = -.00015; sun.shadow.normalBias = .025; scene.add(sun,sun.target);
   scene.background = new THREE.Color(); applySun();
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(150,150),new THREE.ShadowMaterial({opacity:.12}));
-  floor.rotation.x = -Math.PI/2; floor.position.set(4.5,-1.02,-12); floor.receiveShadow = true; scene.add(floor);
+  scene.background.set(0xdce5e5);
+  scene.fog = new THREE.FogExp2(0xdce5e5, .0058);
+  landscape = createYardEnvironment();
+  scene.add(landscape.group);
   const draco = new DRACOLoader(); draco.setDecoderPath('/yard/draco/'); draco.setWorkerLimit(2);
   loader = new GLTFLoader(); loader.setDRACOLoader(draco);
   let previous = performance.now();
@@ -323,13 +328,14 @@ try {
     const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);
   }));
     $('#retry').addEventListener('click',()=>loadModel('light'));
-  selectView('yard',true); loadModel('light');
+  selectView('landscape',true); loadModel('light');
 } catch (error) { fail(error); }
   return {
     destroy() {
       renderer?.setAnimationLoop(null);
       window.removeEventListener('resize', onResize);
       controls?.dispose();
+      landscape?.dispose();
       renderer?.dispose();
       root.querySelector('canvas')?.remove();
     },
