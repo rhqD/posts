@@ -59,3 +59,8 @@ next-env.d.ts
 
 # local symlink to the yabai_home export (uploaded by make sync-yard)
 /public/models/
+
+# control service runtime data
+/apps/control/data/
+/apps/control/.gocache/
+/bin/

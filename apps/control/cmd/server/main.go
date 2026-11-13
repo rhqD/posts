@@ -1,0 +1,349 @@
+// Command server runs the household control API.
+//
+// It is deliberately a single binary with a file-backed store: no external
+// services, no ORM, no migrations. Everything it needs is a directory of JSON.
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"path/filepath"
+	"strings"
+	"syscall"
+	"time"
+
+	"renhanquan/control/internal/acl"
+	"renhanquan/control/internal/api"
+	"renhanquan/control/internal/audit"
+	"renhanquan/control/internal/auth"
+	"renhanquan/control/internal/device"
+	"renhanquan/control/internal/device/mock"
+	"renhanquan/control/internal/device/sonoff"
+	"renhanquan/control/internal/sms"
+	"renhanquan/control/internal/store"
+	"renhanquan/control/internal/store/filestore"
+)
+
+func main() {
+	log.SetFlags(log.LstdFlags | log.LUTC)
+
+	if len(os.Args) > 1 && os.Args[1] == "verify" {
+		os.Exit(verifyAudit())
+	}
+
+	addr := env("ADDR", ":8080")
+	dataDir := env("DATA_DIR", "./data")
+	cookieName := env("COOKIE_NAME", "sid")
+	cookieSecure := env("COOKIE_SECURE", "true") == "true"
+	cookieDomain := os.Getenv("COOKIE_DOMAIN")
+	adminPhone := os.Getenv("ADMIN_PHONE")
+	ttl := durationEnv("SESSION_TTL", 720*time.Hour)
+
+	allowed := map[string]bool{}
+	for _, p := range splitList(os.Getenv("ALLOWED_PHONES")) {
+		allowed[p] = true
+	}
+	if len(allowed) == 0 {
+		log.Fatal("ALLOWED_PHONES is empty: nobody would be able to log in")
+	}
+
+	ctx := context.Background()
+
+	st, err := filestore.Open(dataDir)
+	if err != nil {
+		log.Fatalf("open store: %v", err)
+	}
+	defer st.Close()
+
+	az := acl.New()
+	if err := reloadACL(ctx, st, az); err != nil {
+		log.Fatalf("load policies: %v", err)
+	}
+
+	al, err := audit.New(st)
+	if err != nil {
+		log.Fatalf("audit: %v", err)
+	}
+	defer al.Close()
+
+	prov, err := newDeviceProvider(ctx)
+	if err != nil {
+		log.Fatalf("device provider: %v", err)
+	}
+	log.Printf("device provider: %s", prov.Name())
+	if err := syncDevices(ctx, st, prov); err != nil {
+		log.Fatalf("sync devices: %v", err)
+	}
+
+	if err := bootstrap(ctx, st, az, adminPhone, ttl); err != nil {
+		log.Fatalf("bootstrap: %v", err)
+	}
+
+	sp, err := newSMSProvider()
+	if err != nil {
+		log.Fatalf("sms: %v", err)
+	}
+	log.Printf("sms provider: %s", sp.Name())
+
+	sessions := auth.NewSessions(st, ttl)
+	srv := api.New(api.Config{
+		AllowedPhones:  allowed,
+		AllowedOrigins: splitList(os.Getenv("ALLOWED_ORIGINS")),
+		CookieName:     cookieName,
+		CookieSecure:   cookieSecure,
+		CookieDomain:   cookieDomain,
+	}, st, sessions, az, al, sp, prov)
+
+	httpSrv := &http.Server{
+		Addr:              addr,
+		Handler:           logRequests(srv.Handler()),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       60 * time.Second,
+	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	go housekeeping(ctx, st, sessions)
+
+	go func() {
+		log.Printf("listening on %s (data=%s)", addr, dataDir)
+		if err := httpSrv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("listen: %v", err)
+			stop <- syscall.SIGTERM
+		}
+	}()
+
+	<-stop
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	_ = httpSrv.Shutdown(shutdownCtx)
+	log.Printf("stopped (audit entries dropped: %d)", al.Dropped())
+}
+
+// verifyAudit replays the audit trail and exits non-zero when the hash chain
+// is broken. Run it from cron: a silent tamper is worse than a loud one.
+func verifyAudit() int {
+	path := filepath.Join(env("DATA_DIR", "./data"), "audit.jsonl")
+	res, err := audit.Verify(path)
+	if err != nil {
+		log.Printf("verify: %v", err)
+		return 2
+	}
+	out, _ := json.Marshal(res)
+	log.Print(string(out))
+	if !res.OK {
+		return 1
+	}
+	return 0
+}
+
+func newDeviceProvider(ctx context.Context) (device.Provider, error) {
+	switch env("DEVICE_PROVIDER", "mock") {
+	case "mock":
+		return mock.New(), nil
+	case "sonoff":
+		tok := os.Getenv("SONOFF_ACCESS_TOKEN")
+		if tok == "" {
+			return nil, errors.New("SONOFF_ACCESS_TOKEN required for DEVICE_PROVIDER=sonoff")
+		}
+		opts := []sonoff.Option{}
+		if base := os.Getenv("SONOFF_BASE_URL"); base != "" {
+			opts = append(opts, sonoff.WithBaseURL(base))
+		}
+		p := sonoff.New(env("SONOFF_REGION", "cn"), sonoff.NewStaticToken(tok), opts...)
+		// Fail fast: a token that is already dead should stop the boot, not
+		// surface as an empty device list hours later.
+		if _, err := p.Discover(ctx); err != nil {
+			return nil, fmt.Errorf("sonoff discovery failed: %w", err)
+		}
+		return p, nil
+	default:
+		return nil, fmt.Errorf("unknown DEVICE_PROVIDER %q", os.Getenv("DEVICE_PROVIDER"))
+	}
+}
+
+func newSMSProvider() (sms.Provider, error) {
+	switch env("SMS_MODE", "fake") {
+	case "fake":
+		return sms.NewFake(func(s string) { log.Print(s) }), nil
+	case "aliyun":
+		ak := os.Getenv("ALIYUN_ACCESS_KEY_ID")
+		sk := os.Getenv("ALIYUN_ACCESS_KEY_SECRET")
+		if ak == "" || sk == "" {
+			return nil, errors.New("ALIYUN_ACCESS_KEY_ID / ALIYUN_ACCESS_KEY_SECRET required")
+		}
+		return sms.NewAliyun(ak, sk), nil
+	default:
+		return nil, fmt.Errorf("unknown SMS_MODE %q", os.Getenv("SMS_MODE"))
+	}
+}
+
+// syncDevices refreshes descriptors from the provider while keeping local
+// presentation overrides (name, room, hidden).
+func syncDevices(ctx context.Context, st store.Store, p device.Provider) error {
+	found, err := p.Discover(ctx)
+	if err != nil {
+		return err
+	}
+	return st.Tx(ctx, func(tx store.Store) error {
+		for _, d := range found {
+			prev, err := tx.Devices().Get(ctx, d.Key)
+			next := &store.Device{
+				Key:      d.Key,
+				Name:     d.Name,
+				Room:     d.Room,
+				Provider: d.Provider,
+				Kind:     d.Kind,
+				Readings: d.Readings,
+				Actions:  actionsOf(d),
+			}
+			if err == nil {
+				if prev.Name != "" {
+					next.Name = prev.Name
+				}
+				if prev.Room != "" {
+					next.Room = prev.Room
+				}
+				next.Hidden = prev.Hidden
+			}
+			if err := tx.Devices().Upsert(ctx, next); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func actionsOf(d device.Descriptor) map[string]any {
+	if len(d.Actions) == 0 {
+		return nil
+	}
+	out := make(map[string]any, len(d.Actions))
+	for k, v := range d.Actions {
+		out[k] = v
+	}
+	return out
+}
+
+func bootstrap(ctx context.Context, st store.Store, az *acl.Authorizer, adminPhone string, ttl time.Duration) error {
+	if adminPhone == "" {
+		log.Print("ADMIN_PHONE not set: no root policy will be created")
+		return nil
+	}
+	var admin *store.User
+	if err := st.Tx(ctx, func(tx store.Store) error {
+		u, err := tx.Users().GetByPhone(ctx, adminPhone)
+		if err == nil {
+			admin = u
+			return nil
+		}
+		if !errors.Is(err, store.ErrNotFound) {
+			return err
+		}
+		nu := &store.User{ID: store.NewID(), Phone: adminPhone, Role: "admin", CreatedAt: time.Now().UTC()}
+		if err := tx.Users().Create(ctx, nu); err != nil {
+			return err
+		}
+		admin = nu
+		return nil
+	}); err != nil {
+		return err
+	}
+
+	existing, err := st.Policies().ListBySubject(ctx, store.KindUser, admin.ID)
+	if err != nil {
+		return err
+	}
+	for _, p := range existing {
+		if p.Resource == "*" && p.Action == "*" && p.Effect == "allow" {
+			return nil
+		}
+	}
+	root := store.Policy{
+		ID:          store.NewID(),
+		SubjectKind: store.KindUser,
+		SubjectID:   admin.ID,
+		Resource:    "*",
+		Action:      "*",
+		Effect:      "allow",
+		GrantedAt:   time.Now().UTC(),
+	}
+	if err := st.Tx(ctx, func(tx store.Store) error {
+		return tx.Policies().Insert(ctx, &root)
+	}); err != nil {
+		return err
+	}
+	if err := reloadACL(ctx, st, az); err != nil {
+		return err
+	}
+	log.Printf("bootstrapped admin %s with root policy", store.MaskPhone(adminPhone))
+	return nil
+}
+
+func reloadACL(ctx context.Context, st store.Store, az *acl.Authorizer) error {
+	all, err := st.Policies().ListAll(ctx)
+	if err != nil {
+		return err
+	}
+	az.Load(all)
+	return nil
+}
+
+func housekeeping(ctx context.Context, st store.Store, sessions *auth.Sessions) {
+	t := time.NewTicker(10 * time.Minute)
+	defer t.Stop()
+	for {
+		select {
+		case <-t.C:
+			if n := sessions.PurgeExpired(ctx); n > 0 {
+				log.Printf("purged %d expired sessions", n)
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+func logRequests(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		next.ServeHTTP(w, r)
+		log.Printf("%s %s %s", r.Method, r.URL.Path, time.Since(start).Round(time.Millisecond))
+	})
+}
+
+func env(k, def string) string {
+	if v := os.Getenv(k); v != "" {
+		return v
+	}
+	return def
+}
+
+func durationEnv(k string, def time.Duration) time.Duration {
+	if v := os.Getenv(k); v != "" {
+		if d, err := time.ParseDuration(v); err == nil {
+			return d
+		}
+	}
+	return def
+}
+
+func splitList(s string) []string {
+	parts := strings.Split(s, ",")
+	out := make([]string, 0, len(parts))
+	for _, p := range parts {
+		if p = strings.TrimSpace(p); p != "" {
+			out = append(out, p)
+		}
+	}
+	return out
+}
