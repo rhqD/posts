@@ -56,3 +56,6 @@ next-env.d.ts
 /.images-tmp
 /.images-cache
 .kiro/settings/mcp.json
+
+# local symlink to the yabai_home export (uploaded by make sync-yard)
+/public/models/

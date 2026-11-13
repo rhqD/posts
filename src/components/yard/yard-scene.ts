@@ -9,7 +9,7 @@ import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string } = {}) {
 
 
 
@@ -30,7 +30,7 @@ let preparingLights = false;
 let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
-const desktopSun = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+const wideScreen = matchMedia('(min-width: 768px)');
 const sunEvents = new AbortController();
 let displayedInstant = new Date();
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
@@ -39,11 +39,12 @@ const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
 const extraLights = Object.fromEntries(LIGHTS.groups.map(({ key, label, ...g }) => [key, { ...g, offset: new THREE.Vector3(...(g.offset ?? [])) }]));
 const lampList = document.getElementById('lamp-list');
 lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
-  '<button class="' + (opts.pillClass || 'pill') + ' lamp" data-light-group="' + key + '" role="switch" aria-checked="false" aria-label="' + label + '开关" disabled>' + label + '</button>'
+  `<div class="${opts.lampClass || ''}" role="group" aria-label="${label}"><button class="${opts.pillClass || 'pill'} lamp" data-light-group="${key}" role="switch" aria-checked="false" aria-label="${label}开关" disabled>${label}</button><button class="${opts.locateClass || ''}" data-lamp-view="${key}" aria-label="查看灯具：${label}" title="定位到${label}" disabled><span aria-hidden="true">↗</span></button></div>`
 ).join('');
 Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
+  waterfall: { position: new THREE.Vector3(-32, 18, -66), target: new THREE.Vector3(-57, 6, -104), fov: 44 },
   waterside: { position: b(18,-48,31), target: b(-17,16,2) },
   landscape: { position: b(32,-48,23), target: b(-7,16,7.5), fov: 42 },
   yard: { position: b(14,-8,14), target: b(4.5,4.8,1.3) },
@@ -144,6 +145,7 @@ function bindFloodlight() {
   const housing = model.getObjectByName(LIGHTS.floodlight.housing);
   const available = Boolean(floodlightLens && housing);
   $('#floodlight').disabled = !available;
+  $('#floodlight-view').disabled = !available;
   if (!available) return;
   // Clone only the lens so changing emission never affects shared materials.
   floodlightLens.material = Array.isArray(floodlightLens.material) ? floodlightLens.material.map(m => m.clone()) : floodlightLens.material.clone();
@@ -184,6 +186,8 @@ function bindExtraLights() {
     group.emitters = group.meshes.map(name => model.getObjectByName(name)).filter(Boolean);
     const available = group.emitters.length === group.meshes.length;
     const groupButton = document.querySelector('[data-light-group="' + key + '"]');
+    const locateButton = $(`[data-lamp-view="${key}"]`);
+    if (locateButton) locateButton.disabled = !available;
     if (groupButton) { groupButton.disabled = !available; groupButton.title = available ? '' : '当前模型缺少灯具，请重新导出'; }
     if (!available) continue;
     for (const mesh of group.emitters) {
@@ -272,14 +276,14 @@ function bindSunTime() {
   const followNow = () => { followingRealtime = true; applySun(new Date()); };
   for (const selector of ['#sun-datetime', '#sun-time', '#sun-live']) $(selector).disabled = false;
   $('#sun-datetime').addEventListener('change', event => {
-    if (!desktopSun.matches) return;
+    if (!wideScreen.matches) return;
     const input = event.target;
     const instant = input.validity.valid && parseBeijingTime(input.value);
     if (!instant) { input.value = beijingClock(displayedInstant).dateTime; return; }
     followingRealtime = false; applySun(instant);
   }, { signal });
   $('#sun-time').addEventListener('input', event => {
-    if (!desktopSun.matches) return;
+    if (!wideScreen.matches) return;
     const minutes = Number(event.target.value);
     const hour = String(Math.floor(minutes / 60)).padStart(2, '0');
     const minute = String(minutes % 60).padStart(2, '0');
@@ -287,8 +291,8 @@ function bindSunTime() {
     if (instant) { followingRealtime = false; applySun(instant); }
   }, { signal });
   $('#sun-live').addEventListener('click', followNow, { signal });
-  // Hiding the desktop controls also restores realtime on the mobile layout.
-  desktopSun.addEventListener('change', () => { if (!desktopSun.matches) followNow(); }, { signal });
+  // Narrow layouts hide manual controls and always restore realtime.
+  wideScreen.addEventListener('change', () => { if (!wideScreen.matches) followNow(); }, { signal });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && followingRealtime) applySun(new Date());
   }, { signal });
@@ -410,6 +414,9 @@ try {
   $('#reset').addEventListener('click',()=>selectView(activeView));
   $('#rotate').addEventListener('click',()=> { controls.autoRotate = !controls.autoRotate; $('#rotate').setAttribute('aria-pressed',String(controls.autoRotate)); dirty = true; });
   $('#wireframe').addEventListener('click',toggleWireframe);
+  root.querySelectorAll('[data-lamp-view]').forEach(button => button.addEventListener('click', () => {
+    selectView(button.dataset.lampView === 'floodlight' ? 'lamp' : button.dataset.lampView, true);
+  }));
   $('#floodlight').addEventListener('click', () => updateFloodlight(!floodlightOn));
   root.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
     const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);

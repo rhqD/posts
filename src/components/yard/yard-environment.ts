@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createRiverSurface } from './yard-river';
+import { createYardWaterfall } from './yard-waterfall';
 
 /** A quiet mountain garden. All scenery is local, seeded, and shared on the GPU. */
 export function createYardEnvironment() {
@@ -32,7 +33,7 @@ export function createYardEnvironment() {
     [-82, -123, 32, 32, 37], [-41, -151, 43, 32, 35], [5, -166, 49, 34, 41],
     [58, -153, 39, 37, 34], [95, -115, 29, 33, 37], [-111, -79, 24, 27, 37],
   ];
-  const height = (x: number, z: number) => {
+  const naturalHeight = (x: number, z: number) => {
     const away = smooth(Math.hypot((x - 4.5) * 1.3, z + 13), 23, 60);
     const hills = away * (1.2 + Math.sin(x * .043 + z * .021) * 1.4 + Math.cos(z * .057) * .8);
     let mountains = 0;
@@ -46,6 +47,15 @@ export function createYardEnvironment() {
     const channel = (1 - smooth(riverDistance(x, z), .7, 1.9)) * (1 - smooth(mountains, 3, 12));
     return THREE.MathUtils.lerp(land, floor - 1.8, channel);
   };
+  const fallTop = naturalHeight(riverX(-110), -110) + .18;
+  const height = (x: number, z: number) => {
+    const natural = naturalHeight(x, z);
+    if (z < -110 || z > -100) return natural;
+    const t = (z + 110) / 10;
+    const rockBed = fallTop - (fallTop - (floor - .38)) * t * t - .18;
+    const channel = 1 - smooth(riverDistance(x, z), .7, 2.8);
+    return THREE.MathUtils.lerp(natural, rockBed, channel);
+  };
   const terrain = new THREE.PlaneGeometry(420, 420, 320, 320);
   terrain.rotateX(-Math.PI / 2);
   const positions = terrain.attributes.position;
@@ -56,7 +66,9 @@ export function createYardEnvironment() {
     positions.setY(i, y);
     const patch = .5 + .25 * Math.sin(x * .15 + z * .08) + .25 * Math.cos(z * .19 - x * .06);
     const color = meadow.clone().lerp(moss, patch * .6 + (1 - smooth(riverDistance(x, z), 1.5, 5)) * .25);
-    color.lerp(stone, smooth(y, 8, 35)).multiplyScalar(.96 + random() * .08);
+    color.lerp(stone, smooth(y, 8, 35));
+    const cliff = smooth(z, -114, -109) * (1 - smooth(z, -102, -97)) * (1 - smooth(riverDistance(x, z), 1.4, 4));
+    color.lerp(new THREE.Color(0x536b63), cliff * .95).multiplyScalar(.96 + random() * .08);
     colors.push(color.r, color.g, color.b);
   }
   terrain.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -92,6 +104,8 @@ export function createYardEnvironment() {
   const riverMesh = mesh(ribbon([-1.4, 1.4], () => waterY), river.material);
   riverMesh.name = 'Flowing creek';
   riverMesh.geometry.computeBoundingSphere();
+  const waterfall = createYardWaterfall({height, riverX, width, waterY});
+  group.add(waterfall.group);
   const bank = new THREE.MeshStandardMaterial({color: 0x90957c, roughness: 1, side: THREE.DoubleSide});
   for (const side of [-1, 1]) mesh(ribbon([1.18, 1.35, 1.55, 1.75, 1.94], (x, z) => height(x, z) + .025, side, true), bank);
 
@@ -195,7 +209,7 @@ export function createYardEnvironment() {
 
   return {
     group,
-    advanceWater: river.advance,
+    advanceWater(delta: number) { river.advance(delta); waterfall.advance(delta); },
     riverBounds: riverMesh.geometry.boundingSphere!,
     dispose() {
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();

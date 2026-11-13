@@ -23,7 +23,7 @@ export function createRiverSurface() {
       `)
       .replace('#include <color_fragment>', `#include <color_fragment>
         // UV.y is distance along the curved centerline, not a world-axis scroll.
-        float along = vRiverUv.y - uRiverTime * 0.35;
+        float along = vRiverUv.y - uRiverTime * 1.1;
         float noise = riverNoise(vec2(vRiverUv.x * 7.0, along * 0.8));
         float wave = sin(along * 3.2 + vRiverUv.x * 21.0 + noise * 3.0);
         float glint = pow(max(0.0, wave), 14.0) * smoothstep(0.4, 0.8, noise);
@@ -32,7 +32,7 @@ export function createRiverSurface() {
         diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.56, 0.83, 0.79), glint * 0.23 + shore * 0.09);
       `);
   };
-  material.customProgramCacheKey = () => 'yard-river-flow-v1';
+  material.customProgramCacheKey = () => 'yard-river-flow-v2';
   return {
     material,
     advance(delta: number) { clock.value += delta; },

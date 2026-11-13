@@ -6,6 +6,7 @@ import styles from "./yard.module.css";
 const VIEWS = [
   { key: "landscape", label: "园景" },
   { key: "waterside", label: "山水" },
+  { key: "waterfall", label: "瀑布" },
   { key: "yard", label: "前院" },
   { key: "pond", label: "池塘" },
   { key: "garden", label: "花园" },
@@ -24,7 +25,7 @@ export default function YardViewer() {
     import("./yard-scene")
       .then(async (mod) => {
         if (cancelled || !rootRef.current) return;
-        const scene = await mod.createYardScene(rootRef.current, { pillClass: styles.pill });
+        const scene = await mod.createYardScene(rootRef.current, { pillClass: styles.pill, lampClass: styles.lampControl, locateClass: styles.locate });
         if (cancelled) { scene?.destroy(); return; }
         destroy = () => scene?.destroy();
       })
@@ -57,11 +58,12 @@ export default function YardViewer() {
         <div className={styles.sunTicks} aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
         <p id="sun-position" className={styles.sunPosition}>正在计算太阳位置…</p>
         <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
-        <p className={styles.sunHint}>房屋坐标 108.09°E · 34.18°N<br />晴空光照示意</p>
+        <p className={styles.sunHint}>108.09°E · 34.18°N</p>
       </section>
-      <details className={styles.lighting}>
-        <summary className={styles.pill}>灯光设置</summary>
+      <section className={styles.lighting} aria-label="灯光设置">
+        <h2 className={styles.lightingTitle}>灯光设置</h2>
         <div className={styles.dock} aria-label="灯光控制">
+        <div className={styles.lampControl} role="group" aria-label="西墙投光灯">
         <button
           id="floodlight"
           className={styles.pill}
@@ -71,9 +73,11 @@ export default function YardViewer() {
         >
           西墙投光灯
         </button>
+        <button id="floodlight-view" data-lamp-view="floodlight" className={styles.locate} aria-label="查看灯具：西墙投光灯" title="定位到西墙投光灯" disabled><span aria-hidden="true">↗</span></button>
+        </div>
         <div id="lamp-list" className={styles.lampPills} />
         </div>
-      </details>
+      </section>
       </aside>
 
       <aside className={styles.tools} aria-label="预览设置">

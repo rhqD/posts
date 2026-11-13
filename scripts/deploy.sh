@@ -33,7 +33,7 @@ find "$DIST" -maxdepth 1 -type f \
 
 echo "==> other static files"
 ossutil cp -r "$DIST/" "$BUCKET/" --exclude "*.html" --exclude "*.txt" --exclude "*.xml" \
-  --exclude "_next/*" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
+  --exclude "_next/*" --exclude "models/*" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
 
 # 2. Documents last: never cached.
 echo "==> documents (no-cache)"
