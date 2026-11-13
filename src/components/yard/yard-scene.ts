@@ -36,6 +36,9 @@ let displayedInstant = new Date();
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
 const lampRaycaster = new THREE.Raycaster();
 const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
+const MODEL = LIGHTS.model ?? { url: '/models/yard-web.glb', report: '/models/yard-web.report.json' };
+models.light.url = MODEL.url;
+models.light.report = MODEL.report;
 const extraLights = Object.fromEntries(LIGHTS.groups.map(({ key, label, ...g }) => [key, { ...g, offset: new THREE.Vector3(...(g.offset ?? [])) }]));
 const lampList = document.getElementById('lamp-list');
 lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>

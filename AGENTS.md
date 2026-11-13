@@ -118,10 +118,11 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 **同步边界：只同步「模型 + 灯具配置」，页面本身归本仓库所有。**
 
-- `make sync-yard`（`scripts/sync-yard.mjs`）是唯一入口，它做三件事：
+- `make sync-yard`（`scripts/sync-yard.mjs`）是唯一入口，它做四件事：
   1. 从 `../yabai_home/web/preview.html` 解析 `extraLights` 与开关文案，生成 `public/yard/lights.json`
-  2. 把 `../yabai_home/exports/yard-web.glb` 上传到 OSS `models/`
+  2. 对 glb 取 sha256 前 8 位，上传成 **`models/yard-web.<hash>.glb`**（配 `immutable` 一年缓存）
   3. 上传精简后的 `report.json`（只保留 glb 统计，避免泄露本机路径）
+  4. 把 `model.url` / `model.report` 写进 `lights.json`，并在 `public/models/` 建一个同名软链，本地 dev 也能用同一个 URL
 - **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
 - 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
 - 房屋外的起伏草地、松林、石阶步道、自然溪流与连续山体由 `src/components/yard/yard-environment.ts` 本地生成，独立于 Blender 同步；默认「园景」视角展示完整房屋与环境，「山水」视角可查看河道与山峦；灯光按钮平铺展示，胶囊右侧 ↗ 按钮可直达灯具视角；**宽度 <700px 时灯光区改为换行排列**，不做横向滚动。
@@ -132,8 +133,9 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
 - `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。
 - 不要再引入 importmap 或 vendor 版 three：场景已走 npm 依赖，旧 `public/yard/index.html` 已删除。
-- 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，页面用相对路径 `/models/yard-web.glb` 加载（同源，避免 CORS）。
-- 修改 Blender 模型后需要重新导出并上传该对象；文件名不变，CDN 对 `glb` 走 1 年 immutable 缓存，必要时刷新。
+- 模型在 OSS：`oss://renhanquan-site/models/yard-web.<hash>.glb`。页面**不硬编码文件名**，从 `lights.json` 的 `model.url` 读（同源，避免 CORS）。
+- 换模型只需重新导出后跑 `make sync-yard`：文件名里的 hash 变了，URL 随之变化，CDN 和浏览器都能安全地按 immutable 缓存，**不需要刷 CDN**。
+- `yard/lights.json` 必须 `no-cache`（它指向当前 hash），`deploy.sh` 已单独用 `NO_CACHE` 上传并排除在 immutable 批次外。
 
 ## 不要做的事
 

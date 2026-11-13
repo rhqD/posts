@@ -1,4 +1,9 @@
 {
+  "model": {
+    "url": "/models/yard-web.83b4491d.glb",
+    "report": "/models/yard-web.83b4491d.report.json",
+    "hash": "83b4491d"
+  },
   "floodlight": {
     "label": "西墙投光灯",
     "lens": "Yard_West_Floodlight_Lens",

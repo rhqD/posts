@@ -33,7 +33,10 @@ find "$DIST" -maxdepth 1 -type f \
 
 echo "==> other static files"
 ossutil cp -r "$DIST/" "$BUCKET/" --exclude "*.html" --exclude "*.txt" --exclude "*.xml" \
-  --exclude "_next/*" --exclude "models/*" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
+  --exclude "_next/*" --exclude "models/*" --exclude "yard/lights.json" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
+
+# lights.json points at the hashed model, so it must never be cached either.
+ossutil cp "$DIST/yard/lights.json" "$BUCKET/yard/lights.json" --cache-control "$NO_CACHE" -f -q || true
 
 # 2. Documents last: never cached.
 echo "==> documents (no-cache)"

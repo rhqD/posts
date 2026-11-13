@@ -39,14 +39,14 @@ make deploy         # build + upload
 make sync-yard
 ```
 
-它会从 `../yabai_home` 解析灯具配置写到 `public/yard/lights.json`，并把
-`yard-web.glb` 与精简后的 `report.json` 传到 `oss://renhanquan-site/models/`。
+它会从 `../yabai_home` 解析灯具配置写到 `public/yard/lights.json`，按内容哈希把
+模型传成 `models/yard-web.<hash>.glb`（附精简 report），并把当前 hash 写回
+`lights.json` 的 `model` 字段。
 
-注意：对象名固定，而 CDN 对 `glb` 是 1 年 immutable 缓存，换模型后要刷新：
+`yard/lights.json` 是**唯一允许的“指针文件”**，部署时必须 `no-cache`；模型本身
+可以永久 immutable。换模型不需要刷 CDN。
 
-```bash
-aliyun cdn RefreshObjectCaches --ObjectPath "https://www.renhanquan.com/models/yard-web.glb" --ObjectType File
-```
+旧 hash 的模型可以留在 OSS 上（页面永不引用），无需清理；缓存策略见上。
 
 ## 依赖的本地凭证
 
