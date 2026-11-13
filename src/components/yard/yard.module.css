@@ -127,3 +127,24 @@
 }
 .viewbar .pill { box-shadow: none; border-color: transparent; background: transparent; }
 .viewbar .pill[aria-pressed='true'] { background: #455e50; color: #fff; }
+
+.sunPanel { display: none; }
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .sunPanel {
+    display: block; position: absolute; top: 20px; left: 20px; z-index: 2;
+    width: 246px; padding: 18px; color: #354c40;
+    border: 1px solid rgba(255, 255, 255, .75); border-radius: 18px;
+    background: rgba(244, 247, 240, .88); backdrop-filter: blur(18px);
+    box-shadow: 0 8px 28px rgba(35, 53, 44, .08);
+  }
+}
+.sunHeading { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 16px; }
+.sunMode { font-size: 10px; color: #617968; }
+.sunLabel { display: block; font-size: 10px; color: #6b7b6c; margin-bottom: 6px; }
+.sunDateTime { width: 100%; min-width: 0; padding: 8px; border: 1px solid #d3dccf; border-radius: 8px; background: #ffffffa8; color: #354c40; font-size: 12px; color-scheme: light; }
+.sunRangeLabel { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 11px; }
+.sunRangeLabel output { font-size: 18px; font-variant-numeric: tabular-nums; }
+.sunRange { width: 100%; margin: 10px 0 4px; accent-color: #455e50; cursor: ew-resize; }
+.sunTicks { display: flex; justify-content: space-between; color: #7c877b; font-size: 8px; }
+.sunPosition { margin: 14px 0; color: #607564; font-size: 11px; line-height: 1.6; }
+.sunHint { font-size: 9px; color: #7c877b; line-height: 1.6; margin-top: 12px; }

@@ -124,6 +124,7 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
 - 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
 - 房屋外的起伏草地、松林、石阶步道、自然溪流与连续山体由 `src/components/yard/yard-environment.ts` 本地生成，独立于 Blender 同步；默认「园景」视角展示完整房屋与环境，「山水」视角可查看河道与山峦；灯光按钮收纳在可展开的「灯光设置」面板。
+- 日照由 `yard-solar.ts` 按房屋坐标 108.09°E / 34.18°N 与当前真实时间计算，每 10 秒更新（北京时间 UTC+8）。PC 端可手动调日期/时间并通过「跟随实时」恢复；移动端不显示时间控件且始终跟随实时。天空、雾与环境光随昼夜变化。
 - 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
 - `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。
 - 不要再引入 importmap 或 vendor 版 three：场景已走 npm 依赖，旧 `public/yard/index.html` 已删除。

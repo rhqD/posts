@@ -40,6 +40,23 @@ export default function YardViewer() {
     <div ref={rootRef} className={styles.root}>
       <div id="stage" className={styles.stage} />
 
+      <section className={styles.sunPanel} aria-label="日照时间设置">
+        <div className={styles.sunHeading}>
+          <span>日照时间</span>
+          <span id="sun-mode" className={styles.sunMode}>实时跟随</span>
+        </div>
+        <label className={styles.sunLabel} htmlFor="sun-datetime">北京时间 · UTC+8</label>
+        <input id="sun-datetime" className={styles.sunDateTime} type="datetime-local" step="60" min="1900-01-01T00:00" max="2100-12-31T23:59" disabled />
+        <label className={styles.sunRangeLabel} htmlFor="sun-time">
+          <span>时刻</span><output id="sun-clock" htmlFor="sun-time">--:--</output>
+        </label>
+        <input id="sun-time" className={styles.sunRange} type="range" min="0" max="1439" step="1" defaultValue="720" aria-valuetext="12:00" disabled />
+        <div className={styles.sunTicks} aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+        <p id="sun-position" className={styles.sunPosition}>正在计算太阳位置…</p>
+        <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
+        <p className={styles.sunHint}>房屋坐标 108.09°E · 34.18°N<br />晴空光照示意</p>
+      </section>
+
       <aside className={styles.tools} aria-label="预览设置">
         <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
         <button id="wireframe" className={styles.pill} aria-pressed="false">线框</button>

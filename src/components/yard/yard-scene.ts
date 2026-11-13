@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
+import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard-solar';
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
@@ -27,6 +28,10 @@ let renderer, scene, camera, controls, model, fullBounds;
 let onResize: (() => void) | undefined;
 let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
+let followingRealtime = true, sunTimer;
+const desktopSun = matchMedia('(min-width: 1024px) and (hover: hover) and (pointer: fine)');
+const sunEvents = new AbortController();
+let displayedInstant = new Date();
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
 const lampRaycaster = new THREE.Raycaster();
 const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
@@ -225,23 +230,65 @@ function clickLamp(event) {
     }
   }
 }
-// Fixed late-afternoon light. The date/time UI is gone; the scene keeps a
-// consistent look instead of simulating the sun.
-function applySun() {
-  const elevation = 30, azimuth = 215;
-  const phi = THREE.MathUtils.degToRad(90 - elevation);
-  const theta = THREE.MathUtils.degToRad(azimuth);
-  const direction = new THREE.Vector3().setFromSphericalCoords(1, phi, theta);
-  const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .35);
+function applySun(instant = new Date()) {
+  displayedInstant = instant;
+  const { elevation, azimuth, direction: coordinates } = solarPosition(instant);
+  const direction = new THREE.Vector3(...coordinates);
+  const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .4);
   const warmth = THREE.MathUtils.smoothstep(direction.y, 0, .65);
   sun.position.copy(sun.target.position).addScaledVector(direction, 55);
   sun.intensity = 2.4 * daylight;
   sun.color.set(0xffa563).lerp(new THREE.Color(0xfff1d9), warmth);
-  hemisphere.intensity = .18 + daylight * .9;
-  hemisphere.color.set(0x35445e).lerp(new THREE.Color(0xe4ebef), daylight);
+  hemisphere.intensity = .2 + daylight * .9;
+  hemisphere.color.set(0x60758e).lerp(new THREE.Color(0xe4ebef), daylight);
+  hemisphere.groundColor.set(0x25313a).lerp(new THREE.Color(0xafa48a), daylight);
   scene.environmentIntensity = .06 + daylight * .39;
-  scene.background.set(0x172332).lerp(new THREE.Color(0xe9ebe2), daylight);
-    dirty = true;
+  const twilight = THREE.MathUtils.smoothstep(elevation, -12, 0);
+  scene.background.set(0x101c2b).lerp(new THREE.Color(0x8f9a9b), twilight)
+    .lerp(new THREE.Color(0xdce5e5), THREE.MathUtils.smoothstep(elevation, 0, 20));
+  scene.fog?.color.copy(scene.background);
+  const clock = beijingClock(instant);
+  if (document.activeElement !== $('#sun-datetime')) $('#sun-datetime').value = clock.dateTime;
+  $('#sun-time').value = String(clock.minutes);
+  $('#sun-time').setAttribute('aria-valuetext', clock.time);
+  $('#sun-clock').value = clock.time;
+  $('#sun-mode').textContent = followingRealtime ? '实时跟随' : '手动预览';
+  $('#sun-live').setAttribute('aria-pressed', String(followingRealtime));
+  $('#sun-position').textContent = elevation > 0
+    ? `方位 ${azimuth.toFixed(1)}° · 高度 ${elevation.toFixed(1)}°`
+    : elevation > -12 ? '晨昏 · 太阳在地平线下' : '夜间 · 太阳在地平线下';
+  window.yardSunState = { mode: followingRealtime ? 'live' : 'manual', timestamp: instant.toISOString(), site: YARD_SITE, elevation, azimuth, direction: coordinates, intensity: sun.intensity };
+  dirty = true;
+}
+function bindSunTime() {
+  const signal = sunEvents.signal;
+  const followNow = () => { followingRealtime = true; applySun(new Date()); };
+  for (const selector of ['#sun-datetime', '#sun-time', '#sun-live']) $(selector).disabled = false;
+  $('#sun-datetime').addEventListener('change', event => {
+    if (!desktopSun.matches) return;
+    const input = event.target;
+    const instant = input.validity.valid && parseBeijingTime(input.value);
+    if (!instant) { input.value = beijingClock(displayedInstant).dateTime; return; }
+    followingRealtime = false; applySun(instant);
+  }, { signal });
+  $('#sun-time').addEventListener('input', event => {
+    if (!desktopSun.matches) return;
+    const minutes = Number(event.target.value);
+    const hour = String(Math.floor(minutes / 60)).padStart(2, '0');
+    const minute = String(minutes % 60).padStart(2, '0');
+    const instant = parseBeijingTime(`${beijingClock(displayedInstant).date}T${hour}:${minute}`);
+    if (instant) { followingRealtime = false; applySun(instant); }
+  }, { signal });
+  $('#sun-live').addEventListener('click', followNow, { signal });
+  // Hiding the desktop controls also restores realtime on the mobile layout.
+  desktopSun.addEventListener('change', () => { if (!desktopSun.matches) followNow(); }, { signal });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && followingRealtime) applySun(new Date());
+  }, { signal });
+  // Recompute from the wall clock, never accumulate frame deltas or drift.
+  sunTimer = window.setInterval(() => {
+    if (followingRealtime && !document.hidden) applySun(new Date());
+  }, 10_000);
 }
 async function loadModel(key) {
   const id = ++loadId, descriptor = models[key], start = performance.now();
@@ -299,9 +346,9 @@ try {
   sun = new THREE.DirectionalLight(0xfff1d9,3.1); sun.target.position.copy(b(4.5,4.5,0)); sun.castShadow = true;
   sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:90});
   sun.shadow.bias = -.00015; sun.shadow.normalBias = .025; scene.add(sun,sun.target);
-  scene.background = new THREE.Color(); applySun();
-  scene.background.set(0xdce5e5);
+  scene.background = new THREE.Color();
   scene.fog = new THREE.FogExp2(0xdce5e5, .0058);
+  applySun(); bindSunTime();
   landscape = createYardEnvironment();
   scene.add(landscape.group);
   const draco = new DRACOLoader(); draco.setDecoderPath('/yard/draco/'); draco.setWorkerLimit(2);
@@ -332,6 +379,8 @@ try {
 } catch (error) { fail(error); }
   return {
     destroy() {
+      window.clearInterval(sunTimer);
+      sunEvents.abort();
       renderer?.setAnimationLoop(null);
       window.removeEventListener('resize', onResize);
       controls?.dispose();
