@@ -47,6 +47,7 @@
   background: rgba(244, 247, 240, .9); backdrop-filter: blur(18px);
   box-shadow: 0 8px 28px rgba(35, 53, 44, .08); color: #354c40;
 }
+.viewing { margin-top: 12px; }
 .lightingTitle { font-size: 12px; font-weight: 500; line-height: 1.6; margin: 0 0 8px; }
 .dock { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
 .lampPills { display: contents; }
@@ -123,18 +124,36 @@
 .viewbar .pill[aria-pressed='true'] { background: #455e50; color: #fff; }
 
 .sunPanel { display: none; }
-@media (min-width: 768px) {
+@media (min-width: 700px) {
   .settings {
     top: 20px; left: max(20px, env(safe-area-inset-left, 0px)); right: auto; bottom: auto;
     width: 268px; padding: 14px; max-height: calc(100% - 40px); overflow-y: auto;
   }
   .sunPanel { display: block; }
-  .lighting { margin-top: 12px; padding-top: 12px; border-top: 1px solid #d3dccf; }
+  .lighting, .viewing { margin-top: 12px; padding-top: 12px; border-top: 1px solid #d3dccf; }
   .dock { display: grid; grid-template-columns: 1fr; overflow: visible; padding-bottom: 0; }
   .lampControl { width: 100%; }
   .lampControl .pill { flex: 1; text-align: left; }
 }
-.sunHeading { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 12px; }
+.sunHeading { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; margin-bottom: 12px; }
+.settings { transition: width .42s cubic-bezier(.22,.9,.2,1), padding .42s cubic-bezier(.22,.9,.2,1), background-color .3s ease, box-shadow .3s ease; overflow: hidden; }
+.settingsBody { display: grid; grid-template-rows: 1fr; opacity: 1; transform: translateY(0); transition: grid-template-rows .42s cubic-bezier(.22,.9,.2,1), opacity .26s ease, transform .42s cubic-bezier(.22,.9,.2,1); }
+.settingsBodyInner { min-height: 0; overflow: hidden; }
+.panelToggle span[aria-hidden] { display: inline-block; transition: transform .42s cubic-bezier(.22,.9,.2,1); }
+.settings[data-open="false"] .panelToggle span[aria-hidden] { transform: rotate(180deg); }
+@media (max-width: 699px) {
+  .settings[data-open="true"] .sunPanel { display: block; }
+  /* Wrap the lamp switches instead of scrolling them sideways. */
+  .dock { flex-wrap: wrap; overflow: visible; padding-bottom: 0; row-gap: 6px; }
+  .dock .pill { padding: 7px 10px; }
+  .lampControl .pill { padding: 7px 8px; }
+}
+.panelToggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-bottom: 10px; padding: 6px 8px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, .55); color: #4b5741; font: inherit; font-size: 11px; cursor: pointer; }
+.settings[data-open="false"] { width: 132px; right: auto; padding: 8px; background: rgba(244, 247, 240, .92); }
+.settings[data-open="false"] .settingsBody { grid-template-rows: 0fr; opacity: 0; transform: translateY(-6px); }
+
+.settings[data-open="false"] .settingsBody { display: none; }
+.settings[data-open="false"] .panelToggle { margin-bottom: 0; padding: 8px 12px; }
 .sunMode { font-size: 10px; color: #617968; }
 .sunLabel { display: block; font-size: 10px; color: #6b7b6c; margin-bottom: 6px; }
 .sunDateTime { width: 100%; min-width: 0; padding: 8px; border: 1px solid #d3dccf; border-radius: 8px; background: #ffffffa8; color: #354c40; font-size: 12px; color-scheme: light; }

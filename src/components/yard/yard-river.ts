@@ -1,20 +1,21 @@
 import * as THREE from 'three';
 
 /**
- * Creek surface shading. The ribbon geometry stays flat; the look comes from:
- * dark deep water, pale shallows, a moving roughness field (so the sun and the
- * environment map sparkle), and foam where the water meets the bank.
+ * Stylised creek: a flat cyan surface with thin white ripple lines and a foam
+ * edge, matching the low-poly diorama look rather than photoreal water.
+ *
+ * vRiverUv.y is world length along the creek (0..~450 m), not 0..1.
  */
 export function createRiverSurface() {
   const clock = { value: 0 };
 
   const material = new THREE.MeshStandardMaterial({
     color: 0x2f8f97,
-    roughness: 0.12,
+    roughness: 0.3,
     metalness: 0,
     transparent: true,
-    opacity: 0.96,
-    envMapIntensity: 1.15,
+    opacity: 0.97,
+    envMapIntensity: 0.7,
   });
 
   material.onBeforeCompile = (shader) => {
@@ -22,11 +23,15 @@ export function createRiverSurface() {
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
-        '#include <common>\nvarying vec2 vRiverUv;',
+        '#include <common>\nvarying vec2 vRiverUv;\nuniform float uRiverTime;',
       )
       .replace(
         '#include <begin_vertex>',
-        '#include <begin_vertex>\nvRiverUv = uv;',
+        `#include <begin_vertex>
+        vRiverUv = uv;
+        float wobble = sin(uv.y * 1.3 - uRiverTime * 2.6) * 0.6
+          + sin(uv.x * 4.0 + uv.y * 0.6 - uRiverTime * 1.8) * 0.4;
+        transformed.y += wobble * 0.01;`,
       );
     shader.fragmentShader = shader.fragmentShader
       .replace(
@@ -48,31 +53,37 @@ export function createRiverSurface() {
       .replace(
         '#include <color_fragment>',
         `#include <color_fragment>
-        // Flow follows the channel: uv.y runs along the creek, uv.x across it.
-        vec2 flow = vec2(vRiverUv.x * 6.0, vRiverUv.y * 42.0 - uRiverTime * 2.2);
-        float ripple = riverFbm(flow);
         float across = abs(vRiverUv.x - 0.5) * 2.0;
+        float slow = riverFbm(vec2(vRiverUv.x * 3.0, vRiverUv.y * 0.45 - uRiverTime * 1.6));
 
-        // Deep water reads dark teal; the shallows near the bank lift towards
-        // a pale green-blue, which is what makes a stream look like water.
-        vec3 deep = vec3(0.035, 0.20, 0.24);
-        vec3 shallow = vec3(0.28, 0.58, 0.56);
-        float shallowMix = smoothstep(0.35, 1.0, across) * 0.8 + ripple * 0.16;
-        diffuseColor.rgb = mix(deep, shallow, clamp(shallowMix, 0.0, 1.0));
+        // Flat, saturated cyan with only a gentle tone shift across the channel.
+        vec3 deep = vec3(0.030, 0.19, 0.23);
+        vec3 light = vec3(0.27, 0.56, 0.55);
+        vec3 base = mix(deep, light, slow * 0.55 + smoothstep(0.2, 1.0, across) * 0.25);
 
-        // Thin foam line where the surface meets the bank.
-        float foam = smoothstep(0.86, 1.0, across) * (0.45 + ripple * 0.55);
-        diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.86, 0.94, 0.91), foam * 0.55);
-        diffuseColor.a *= mix(0.94, 0.6, smoothstep(0.9, 1.0, across));`,
+        // Whitewater filaments stretched along the flow: high frequency across
+        // the channel, low frequency downstream, so they read as running
+        // streaks instead of regular bands.
+        vec2 streakUv = vec2(vRiverUv.x * 30.0, vRiverUv.y * 0.5 - uRiverTime * 5.0);
+        float streak = riverFbm(streakUv) * 0.65 + riverFbm(streakUv * 2.7 + 17.0) * 0.35;
+        float white = smoothstep(0.60, 0.84, streak);
+        base = mix(base, vec3(0.92, 0.98, 0.97), white * 0.5 * smoothstep(0.04, 0.5, across));
+
+        // Foam collar at the bank, then a clean fade out.
+        float foam = smoothstep(0.84, 1.0, across);
+        base = mix(base, vec3(0.93, 0.99, 1.0), foam * 0.65);
+
+        diffuseColor.rgb = base;
+        diffuseColor.a *= mix(0.97, 0.72, smoothstep(0.9, 1.0, across));`,
       )
       .replace(
         '#include <roughnessmap_fragment>',
         `#include <roughnessmap_fragment>
-        // Moving patches of calm and chop: this is what gives the sun glints.
-        roughnessFactor = mix(0.05, 0.34, riverFbm(vec2(vRiverUv.x * 9.0, vRiverUv.y * 70.0 - uRiverTime * 3.4)));`,
+        roughnessFactor = mix(0.2, 0.42,
+          riverFbm(vec2(vRiverUv.x * 6.0, vRiverUv.y * 0.6 - uRiverTime * 3.0)));`,
       );
   };
-  material.customProgramCacheKey = () => 'yard-river-water-v3';
+  material.customProgramCacheKey = () => 'yard-river-diorama-v5';
 
   return {
     material,

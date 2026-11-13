@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./yard.module.css";
 
 const VIEWS = [
@@ -17,6 +17,7 @@ const VIEWS = [
 
 export default function YardViewer() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [panelOpen, setPanelOpen] = useState(true);
 
   useEffect(() => {
     let destroy: (() => void) | undefined;
@@ -43,7 +44,13 @@ export default function YardViewer() {
     }}>
       <div id="stage" className={styles.stage} />
 
-      <aside className={styles.settings} aria-label="时间与灯光设置">
+      <aside className={styles.settings} data-open={panelOpen} aria-label="时间与灯光设置">
+      <button type="button" className={styles.panelToggle} aria-expanded={panelOpen} aria-controls="settings-body" onClick={() => setPanelOpen(value => !value)}>
+        <span>{panelOpen ? "收起面板" : "时间与灯光"}</span>
+        <span aria-hidden="true">{panelOpen ? "‹" : "›"}</span>
+      </button>
+      <div id="settings-body" className={styles.settingsBody}>
+      <div className={styles.settingsBodyInner}>
       <section className={styles.sunPanel} aria-label="日照时间设置">
         <div className={styles.sunHeading}>
           <span>日照时间</span>
@@ -59,6 +66,10 @@ export default function YardViewer() {
         <p id="sun-position" className={styles.sunPosition}>正在计算太阳位置…</p>
         <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
         <p className={styles.sunHint}>108.09°E · 34.18°N</p>
+      </section>
+      <section className={styles.viewing} aria-label="视图设置">
+        <h2 className={styles.lightingTitle}>视图</h2>
+        <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
       </section>
       <section className={styles.lighting} aria-label="灯光设置">
         <h2 className={styles.lightingTitle}>灯光设置</h2>
@@ -78,11 +89,8 @@ export default function YardViewer() {
         <div id="lamp-list" className={styles.lampPills} />
         </div>
       </section>
-      </aside>
-
-      <aside className={styles.tools} aria-label="预览设置">
-        <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
-        <button id="wireframe" className={styles.pill} aria-pressed="false">线框</button>
+      </div>
+      </div>
       </aside>
 
 

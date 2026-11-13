@@ -30,7 +30,7 @@ let preparingLights = false;
 let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
-const wideScreen = matchMedia('(min-width: 768px)');
+const wideScreen = matchMedia('(min-width: 700px)');
 const sunEvents = new AbortController();
 let displayedInstant = new Date();
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
@@ -103,12 +103,6 @@ function compass() {
   const n = controls.target.clone().add(new THREE.Vector3(0,0,1)).project(camera);
   const angle = Math.atan2(n.x-c.x, n.y-c.y) * 180 / Math.PI;
   arrow.style.transform = `rotate(${angle}deg)`;
-}
-function toggleWireframe() {
-  wireframe = !wireframe;
-  $('#wireframe').setAttribute('aria-pressed', String(wireframe));
-  if (model) model.traverse(o => materialsOf(o).forEach(m => { m.wireframe = wireframe; }));
-  dirty = true;
 }
 function updateFloodlight(on) {
   floodlightOn = on;
@@ -413,7 +407,6 @@ try {
   root.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click',()=>selectView(button.dataset.view)));
   $('#reset').addEventListener('click',()=>selectView(activeView));
   $('#rotate').addEventListener('click',()=> { controls.autoRotate = !controls.autoRotate; $('#rotate').setAttribute('aria-pressed',String(controls.autoRotate)); dirty = true; });
-  $('#wireframe').addEventListener('click',toggleWireframe);
   root.querySelectorAll('[data-lamp-view]').forEach(button => button.addEventListener('click', () => {
     selectView(button.dataset.lampView === 'floodlight' ? 'lamp' : button.dataset.lampView, true);
   }));
