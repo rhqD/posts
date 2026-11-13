@@ -54,18 +54,7 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 // a semantic type; the renderer dispatches on the type and reads whatever
 // fields are present. "light" is the only renderer today.
 Object.values(extraLights).forEach(group => Object.assign(group, { state: { type: 'light', on: false }, lights: [], emitters: [] }));
-Object.entries(extraLights).forEach(([key, group]) => registerDevice(
-  key,
-  () => group.state,
-  (next) => { group.state = next; },
-  () => renderDevice(key),
-));
-registerDevice(
-  'floodlight',
-  () => floodlightState,
-  (next) => { floodlightState = next; },
-  () => renderFloodlight(),
-);
+
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
   waterfall: { position: new THREE.Vector3(-32, 18, -66), target: new THREE.Vector3(-57, 6, -104), fov: 44 },
@@ -252,6 +241,21 @@ function setDeviceState(key, patch) {
   device.render();
   return previous;
 }
+
+// Registration must come after DEVICES exists: these run at module init, and a
+// const declared later would still be in its temporal dead zone.
+Object.entries(extraLights).forEach(([key, group]) => registerDevice(
+  key,
+  () => group.state,
+  (next) => { group.state = next; },
+  () => renderDevice(key),
+));
+registerDevice(
+  'floodlight',
+  () => floodlightState,
+  (next) => { floodlightState = next; },
+  () => renderFloodlight(),
+);
 function bindExtraLights() {
   model.updateMatrixWorld(true);
   for (const [key, group] of Object.entries(extraLights)) {
