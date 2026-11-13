@@ -102,11 +102,17 @@ func WithHTTPClient(c *http.Client) Option { return func(p *Provider) { p.hc = c
 func WithCacheTTL(d time.Duration) Option  { return func(p *Provider) { p.ttl = d } }
 func WithMinGap(d time.Duration) Option    { return func(p *Provider) { p.gap = d } }
 
-func New(region string, token TokenSource, opts ...Option) *Provider {
-	base, ok := baseURLs[region]
-	if !ok {
-		base = baseURLs["cn"]
+// BaseURL resolves a region to its API host, so callers building a token
+// source end up on the same host the provider talks to.
+func BaseURL(region string) string {
+	if b, ok := baseURLs[region]; ok {
+		return b
 	}
+	return baseURLs["cn"]
+}
+
+func New(region string, token TokenSource, opts ...Option) *Provider {
+	base := BaseURL(region)
 	p := &Provider{
 		base:    base,
 		token:   token,

@@ -123,9 +123,15 @@ POST /v2/device/thing/status   {type, id, params}
 
 外呼串行 + 最小间隔 200ms：厂商没公布限流策略，就按克制的方式调用。
 
-⚠️ **token 是这套方案唯一的运维负担。** ``at`` 大约 30 天过期，而刷新需要 App 私有密钥，
-不适合写进仓库。当前实现是 `StaticToken`：过期后 `/admin/status` 会显示
-`last_error`，不会静默失效。真要自动化，正确做法是申请厂商开发者凭据，而不是逆向。
+**token 续期**：CoolKit 有 `/v2/user/refresh`，只要 `at` 和 `rt` 就能续，
+不需要重新登录（登录要用 App 私有密钥做 HMAC 签名，那一步我们不做）。配上
+`SONOFF_REFRESH_TOKEN` 后，401 时自动刷新一次并重试。
+
+没配 `rt` 就退化成 `StaticToken`：`at` 约 30 天过期，过期后 `/admin/status` 显示
+`last_error`，不会静默失效。
+
+⚠️ **一个 bearer 就能控账号下所有设备**，没有二次验证、没有按设备授权。所以：
+token 只放服务端；泄露的处置只有改 eWeLink 密码、作废全部 token。
 
 ### 3D 灯具映射（/home）
 
@@ -315,7 +321,8 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 | `COOKIE_SECURE` | `true` | 本地 http 调试设 `false` |
 | `COOKIE_DOMAIN` | 空 | 跨子域时设 `.renhanquan.com` |
 | `DEVICE_PROVIDER` | `mock` | `mock` 假设备；`sonoff` 走 CoolKit |
-| `SONOFF_ACCESS_TOKEN` | — | `DEVICE_PROVIDER=sonoff` 必填 |
+| `SONOFF_ACCESS_TOKEN` | — | `DEVICE_PROVIDER=sonoff` 必填，eWeLink 的 `at` |
+| `SONOFF_REFRESH_TOKEN` | — | eWeLink 的 `rt`；配上后 token 会自动续期，不会 30 天到期 |
 | `SONOFF_REGION` | `cn` | `cn` / `as` / `us` / `eu` |
 | `SONOFF_BASE_URL` | 按 region | 覆盖 API 域名，测试或自建代理用 |
 | `ALLOWED_ORIGINS` | 空 | 跨域白名单，如 `https://www.renhanquan.com` |

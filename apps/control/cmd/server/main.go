@@ -155,11 +155,24 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		if tok == "" {
 			return nil, errors.New("SONOFF_ACCESS_TOKEN required for DEVICE_PROVIDER=sonoff")
 		}
+		region := env("SONOFF_REGION", "cn")
+		base := env("SONOFF_BASE_URL", sonoff.BaseURL(region))
+
 		opts := []sonoff.Option{}
-		if base := os.Getenv("SONOFF_BASE_URL"); base != "" {
-			opts = append(opts, sonoff.WithBaseURL(base))
+		if v := os.Getenv("SONOFF_BASE_URL"); v != "" {
+			opts = append(opts, sonoff.WithBaseURL(v))
 		}
-		p := sonoff.New(env("SONOFF_REGION", "cn"), sonoff.NewStaticToken(tok), opts...)
+
+		// With a refresh token the credential survives restarts and renews
+		// itself; without one it dies after ~30 days.
+		var source sonoff.TokenSource
+		if rt := os.Getenv("SONOFF_REFRESH_TOKEN"); rt != "" {
+			source = sonoff.NewRefreshToken(base, tok, rt)
+		} else {
+			source = sonoff.NewStaticToken(tok)
+		}
+
+		p := sonoff.New(region, source, opts...)
 		// Fail fast: a token that is already dead should stop the boot, not
 		// surface as an empty device list hours later.
 		if _, err := p.Discover(ctx); err != nil {
