@@ -415,6 +415,7 @@
         if (id !== loadId) return;
         let triangles = report?.glb?.triangles;
         if (!triangles) { triangles = 0; model.traverse(o => { if (o.isMesh) triangles += (o.geometry.index?.count || o.geometry.attributes.position.count)/3; }); }
+        $('#loading').hidden = true;
         window.yardPreviewState = { loaded: true, model: key, triangles, images: report?.glb?.images, error: null };
       } catch (error) { if (id === loadId) { window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
     }
