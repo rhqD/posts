@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./yard.module.css";
 import { YARD_SITE } from "./yard-solar";
-import { fetchDevices, isOn, sendCommand } from "./yard-api";
+import { fetchDevices, sendLampPatch, toLampState, type LampState } from "./yard-api";
 import { DEVICE_MAP } from "./device-map";
 
 const VIEWS = [
@@ -47,7 +47,7 @@ export default function YardViewer() {
     let destroy: (() => void) | undefined;
     let cancelled = false;
     const controller = new AbortController();
-    let sceneApi: { setLamp(key: string, on: boolean): void } | undefined;
+    let sceneApi: { setLamp(key: string, patch: boolean | Record<string, unknown>): void } | undefined;
     // Filled once the device list arrives; the scene callback is created
     // earlier, so it reads through this ref instead of closing over it.
     const bindings: Record<string, { device: string; action: string; outlet?: number }> = {};
@@ -60,15 +60,15 @@ export default function YardViewer() {
           pillClass: styles.pill,
           lampClass: styles.lampControl,
           locateClass: styles.locate,
-          onLampChange: (key, on) => {
+          onLampChange: (key, patch, previous) => {
             const binding = bindings[key];
             if (!binding) {
-              sceneApi?.setLamp(key, !on);
+              sceneApi?.setLamp(key, previous);
               return;
             }
-            sendCommand(binding.device, binding.action, on, binding.outlet).catch((error) => {
+            sendLampPatch(binding.device, binding.action, patch, binding.outlet).catch((error) => {
               console.warn("[yard] command failed", error);
-              sceneApi?.setLamp(key, !on); // revert the optimistic toggle
+              sceneApi?.setLamp(key, previous); // revert the optimistic change
             });
           },
         });
@@ -83,14 +83,14 @@ export default function YardViewer() {
           fetchDevices(controller.signal).then((devices) => {
             if (cancelled) return;
             for (const key of Object.keys(bindings)) delete bindings[key];
-            const live: Record<string, boolean> = {};
+            const live: Record<string, LampState> = {};
             for (const [lamp, binding] of Object.entries(DEVICE_MAP)) {
               const device = devices[binding.device];
               if (!device?.permissions.control) continue;
               const action = binding.action ?? "set_switch";
               if (!(action in device.actions)) continue;
               bindings[lamp] = { device: binding.device, action, outlet: binding.outlet };
-              live[lamp] = isOn(device.state);
+              live[lamp] = toLampState(device.state);
             }
             scene.applyLampStates(live);
           });

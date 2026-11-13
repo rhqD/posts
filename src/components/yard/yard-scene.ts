@@ -9,7 +9,7 @@ import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onLampChange?: (key: string, on: boolean) => void } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onLampChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
 
 
 
@@ -32,7 +32,7 @@ let sun, hemisphere;
 let followingRealtime = true, sunTimer;
 const sunEvents = new AbortController();
 let displayedInstant = new Date();
-let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
+let floodlight = null, floodlightState = { on: false }, floodlightLens = null, pointerDown = null, floodlightProfile = null;
 const lampRaycaster = new THREE.Raycaster();
 const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
 const MODEL = LIGHTS.model ?? { url: '/models/yard-web.glb', report: '/models/yard-web.report.json' };
@@ -46,7 +46,11 @@ const lampList = document.getElementById('lamp-list');
 lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
   `<div class="${opts.lampClass || ''}" role="group" aria-label="${label}"><button class="${opts.pillClass || 'pill'} lamp" data-light-group="${key}" role="switch" aria-checked="false" aria-label="${label}开关" disabled>${label}</button><button class="${opts.locateClass || ''}" data-lamp-view="${key}" aria-label="查看灯具：${label}" title="定位到${label}" disabled><span aria-hidden="true">↗</span></button></div>`
 ).join('');
-Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
+// A lamp is a state object, not a boolean: fixtures differ in what they expose
+// (switch only, or also brightness / colour temperature / colour). Rendering
+// reads whatever is present and ignores the rest, so a new capability is an
+// additive change instead of another special case.
+Object.values(extraLights).forEach(group => Object.assign(group, { state: { on: false }, lights: [], emitters: [] }));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
   waterfall: { position: new THREE.Vector3(-32, 18, -66), target: new THREE.Vector3(-57, 6, -104), fov: 44 },
@@ -109,15 +113,44 @@ function compass() {
   const angle = Math.atan2(n.x-c.x, n.y-c.y) * 180 / Math.PI;
   arrow.style.transform = `rotate(${angle}deg)`;
 }
-function updateFloodlight(on) {
-  floodlightOn = on;
-  $('#floodlight').setAttribute('aria-checked', String(on));
-  if (floodlight) { floodlight.visible = true; floodlight.intensity = on ? LIGHTS.floodlight.intensity : 0; }
+// Colour of a lamp given its state. Fixtures that expose colour or colour
+// temperature get their own hue; the rest fall back to the warm default.
+const LAMP_WARM = 0xffe6bf;
+function lampColor(state) {
+  if (state.color != null) return new THREE.Color(state.color);
+  if (state.colorTemperature != null) {
+    // eWeLink reports 0..100 from cold to warm.
+    const t = THREE.MathUtils.clamp(state.colorTemperature / 100, 0, 1);
+    return new THREE.Color().setHSL(0.10 - 0.03 * t, 0.45, 0.60 + 0.14 * t);
+  }
+  return new THREE.Color(LAMP_WARM);
+}
+// Intensity scales with brightness when the fixture reports it.
+function lampIntensity(base, state) {
+  if (!state.on) return 0;
+  const b = state.brightness == null ? 1 : THREE.MathUtils.clamp(state.brightness / 100, 0, 1);
+  return base * b;
+}
+function renderFloodlight() {
+  const state = floodlightState;
+  $('#floodlight').setAttribute('aria-checked', String(state.on));
+  if (floodlight) {
+    floodlight.visible = true;
+    floodlight.intensity = lampIntensity(LIGHTS.floodlight.intensity, state);
+    floodlight.color.copy(lampColor(state));
+  }
   if (floodlightLens) materialsOf(floodlightLens).forEach(m => {
-    m.color.set(on ? 0xffedc9 : 0xc1c7c7);
-    m.emissive.set(on ? 0xffe2ab : 0x000000); m.emissiveIntensity = on ? 3 : 0;
+    m.color.set(state.on ? 0xffedc9 : 0xc1c7c7);
+    if (state.on) m.emissive.copy(lampColor(state)); else m.emissive.set(0x000000);
+    m.emissiveIntensity = state.on ? 3 : 0;
   });
   dirty = true;
+}
+function setFloodlightState(patch) {
+  const previous = floodlightState;
+  floodlightState = { ...floodlightState, ...patch };
+  renderFloodlight();
+  return previous;
 }
 function rectangularLightProfile() {
   // Continuous rectangular falloff with a dim, broad spill component.
@@ -164,18 +197,32 @@ function bindFloodlight() {
   floodlight.shadow.camera.near = .025; floodlight.shadow.camera.far = 12;
   floodlight.shadow.bias = -.0001; floodlight.shadow.normalBias = .015;
   scene.add(floodlight, floodlight.target);
-  updateFloodlight(floodlightOn);
+  renderFloodlight();
 }
-function updateExtraLight(key, on) {
-  const group = extraLights[key]; group.on = on;
+function renderExtraLight(key) {
+  const group = extraLights[key];
+  const state = group.state;
   const button = $(`[data-light-group="${key}"]`);
-  button.setAttribute('aria-checked', String(on));
-  group.lights.forEach(light => { light.visible = true; light.intensity = on ? light.userData.baseIntensity : 0; });
+  button.setAttribute('aria-checked', String(state.on));
+  group.lights.forEach(light => {
+    light.visible = true;
+    light.intensity = lampIntensity(light.userData.baseIntensity, state);
+    light.color.copy(lampColor(state));
+  });
   group.emitters.forEach(mesh => materialsOf(mesh).forEach(m => {
-    m.color.set(on ? 0xffedcf : 0xc9cece);
-    m.emissive.set(on ? 0xffe2b7 : 0x000000); m.emissiveIntensity = on ? 2.3 : 0;
+    m.color.set(state.on ? 0xffedcf : 0xc9cece);
+    if (state.on) m.emissive.copy(lampColor(state)); else m.emissive.set(0x000000);
+    m.emissiveIntensity = state.on ? 2.3 : 0;
   }));
   dirty = true;
+}
+function setLampState(key, patch) {
+  const group = extraLights[key];
+  if (!group) return null;
+  const previous = group.state;
+  group.state = { ...group.state, ...patch };
+  renderExtraLight(key);
+  return previous;
 }
 function bindExtraLights() {
   model.updateMatrixWorld(true);
@@ -214,7 +261,7 @@ function bindExtraLights() {
         scene.add(light); group.lights.push(light);
       }
     }
-    updateExtraLight(key, group.on);
+    renderExtraLight(key);
   }
 }
 function clickLamp(event) {
@@ -226,12 +273,20 @@ function clickLamp(event) {
   const hit = lampRaycaster.intersectObject(model, true)[0];
   // Use nearest visible surface: walls and other objects can occlude the lamp.
   if (!hit) return;
-  if (hit.object.name.startsWith('Yard_West_Floodlight')) { updateFloodlight(!floodlightOn); return; }
+  if (hit.object.name.startsWith('Yard_West_Floodlight')) {
+    const previous = setFloodlightState({ on: !floodlightState.on });
+    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', { on: floodlightState.on }, previous);
+    return;
+  }
   for (const [key, group] of Object.entries(extraLights)) {
     let object = hit.object;
     while (object && object !== model) {
       if (object.name === group.root || group.meshes.includes(object.name) || (group.prefix && object.name.startsWith(group.prefix))) {
-        updateExtraLight(key, !group.on); return;
+        {
+          const previous = setLampState(key, { on: !group.state.on });
+          if (liveLamps.has(key)) opts.onLampChange?.(key, { on: group.state.on }, previous);
+        }
+        return;
       }
       object = object.parent;
     }
@@ -414,17 +469,15 @@ try {
     selectView(button.dataset.lampView === 'floodlight' ? 'lamp' : button.dataset.lampView, true);
   }));
   $('#floodlight').addEventListener('click', () => {
-    const next = !floodlightOn;
-    updateFloodlight(next);
-    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', next);
+    // Optimistic: the 3D lamp reacts immediately, then the caller either
+    // confirms with the device or hands back the previous state.
+    const previous = setFloodlightState({ on: !floodlightState.on });
+    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', { on: floodlightState.on }, previous);
   });
   root.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
     const key = button.dataset.lightGroup;
-    const next = !extraLights[key].on;
-    // Optimistic: the 3D lamp reacts immediately, then the caller either
-    // confirms with the device or reverts us.
-    updateExtraLight(key, next);
-    if (liveLamps.has(key)) opts.onLampChange?.(key, next);
+    const previous = setLampState(key, { on: !extraLights[key].state.on });
+    if (liveLamps.has(key)) opts.onLampChange?.(key, { on: extraLights[key].state.on }, previous);
   }));
     $('#retry').addEventListener('click',()=>loadModel('light'));
   selectView('all',true); loadModel('light');
@@ -433,14 +486,15 @@ try {
     // States reported by the control service. Listed keys become live lamps;
     // absent keys stay virtual, which is exactly the fallback we want when the
     // visitor is anonymous or the mapping does not cover a lamp.
-    applyLampStates(states: Record<string, boolean>) {
+    // Accepts either a bare boolean (switch-only) or a partial state object.
+    applyLampStates(states: Record<string, boolean | { on?: boolean; brightness?: number; colorTemperature?: number; color?: string }>) {
       liveLamps.clear();
-      for (const [key, on] of Object.entries(states)) {
-        // The floodlight is a standalone control, not one of the light groups,
-        // so it needs its own path here.
+      for (const [key, value] of Object.entries(states)) {
+        const patch = typeof value === 'boolean' ? { on: value } : value;
+        // The floodlight is a standalone control, not one of the light groups.
         if (key === 'floodlight') {
           liveLamps.add(key);
-          updateFloodlight(on);
+          setFloodlightState(patch);
           continue;
         }
         if (!extraLights[key]) {
@@ -450,12 +504,13 @@ try {
           continue;
         }
         liveLamps.add(key);
-        updateExtraLight(key, on);
+        setLampState(key, patch);
       }
     },
-    setLamp(key: string, on: boolean) {
-      if (key === 'floodlight') { updateFloodlight(on); return; }
-      if (extraLights[key]) updateExtraLight(key, on);
+    setLamp(key: string, patch: boolean | Record<string, unknown>) {
+      const next = typeof patch === 'boolean' ? { on: patch } : patch;
+      if (key === 'floodlight') { setFloodlightState(next); return; }
+      if (extraLights[key]) setLampState(key, next);
     },
     destroy() {
       ++loadId;

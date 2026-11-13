@@ -64,3 +64,6 @@ next-env.d.ts
 /apps/control/data/
 /apps/control/.gocache/
 /bin/
+
+# ossutil deploy reports
+/ossutil_output/

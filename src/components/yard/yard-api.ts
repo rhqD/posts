@@ -66,3 +66,45 @@ export function isOn(state: Record<string, unknown> | undefined): boolean {
   if (sw === true) return true;
   return state.power === true;
 }
+
+// What the viewer needs to render a lamp. Only the fields the fixture reports
+// are present; everything else is left undefined and the renderer ignores it.
+export type LampState = {
+  on: boolean;
+  brightness?: number;
+  colorTemperature?: number;
+  color?: string;
+};
+
+/** Translate a vendor state into the viewer's lamp state. */
+export function toLampState(state: Record<string, unknown> | undefined): LampState {
+  const out: LampState = { on: isOn(state) };
+  if (state) {
+    if (typeof state.brightness === "number") out.brightness = state.brightness;
+    if (typeof state.colorTemperature === "number") out.colorTemperature = state.colorTemperature;
+    if (typeof state.color === "string") out.color = state.color;
+  }
+  return out;
+}
+
+// One command per changed field. The API takes a single action, so a patch with
+// brightness and colour becomes two calls — rare, and fine at this scale.
+const ACTION_FOR: Record<string, string> = {
+  on: "set_switch",
+  brightness: "set_brightness",
+  colorTemperature: "set_color_temperature",
+  color: "set_color",
+};
+
+export async function sendLampPatch(
+  device: string,
+  baseAction: string,
+  patch: Record<string, unknown>,
+  outlet?: number,
+): Promise<void> {
+  for (const [field, value] of Object.entries(patch)) {
+    if (value === undefined) continue;
+    const action = field === "on" ? baseAction || "set_switch" : ACTION_FOR[field] ?? "set_" + field;
+    await sendCommand(device, action, value, outlet);
+  }
+}
