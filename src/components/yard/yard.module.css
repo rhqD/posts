@@ -142,6 +142,7 @@
 .panelToggle span[aria-hidden] { display: inline-block; transition: transform .42s cubic-bezier(.22,.9,.2,1); }
 .settings[data-open="false"] .panelToggle span[aria-hidden] { transform: rotate(180deg); }
 @media (max-width: 699px) {
+  .settings[data-ready="false"] { visibility: hidden; }
   .settings[data-open="true"] .sunPanel { display: block; }
   /* Wrap the lamp switches instead of scrolling them sideways. */
   .dock { flex-wrap: wrap; overflow: visible; padding-bottom: 0; row-gap: 6px; }

@@ -19,6 +19,27 @@ const VIEWS = [
 export default function YardViewer() {
   const rootRef = useRef<HTMLDivElement>(null);
   const [panelOpen, setPanelOpen] = useState(true);
+  const [panelReady, setPanelReady] = useState(false);
+  const panelRef = useRef<HTMLElement>(null);
+
+  // Small screens start with the panel tucked away; the static export renders
+  // it open, so the CSS hides it until this effect has decided.
+  useEffect(() => {
+    if (!window.matchMedia('(min-width: 700px)').matches) setPanelOpen(false);
+    setPanelReady(true);
+  }, []);
+
+  // Tapping the scene on a narrow screen dismisses the sheet, like a drawer.
+  useEffect(() => {
+    if (!panelOpen) return;
+    if (!window.matchMedia('(max-width: 699px)').matches) return;
+    const dismiss = (event: PointerEvent) => {
+      if (panelRef.current?.contains(event.target as Node)) return;
+      setPanelOpen(false);
+    };
+    document.addEventListener('pointerdown', dismiss, true);
+    return () => document.removeEventListener('pointerdown', dismiss, true);
+  }, [panelOpen]);
 
   useEffect(() => {
     let destroy: (() => void) | undefined;
@@ -45,7 +66,7 @@ export default function YardViewer() {
     }}>
       <div id="stage" className={styles.stage} />
 
-      <aside className={styles.settings} data-open={panelOpen} aria-label="时间与灯光设置">
+      <aside ref={panelRef} className={styles.settings} data-open={panelOpen} data-ready={panelReady} aria-label="时间与灯光设置">
       <button type="button" className={styles.panelToggle} aria-expanded={panelOpen} aria-controls="settings-body" onClick={() => setPanelOpen(value => !value)}>
         <span>{panelOpen ? "收起面板" : "时间与灯光"}</span>
         <span aria-hidden="true">{panelOpen ? "‹" : "›"}</span>
