@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./yard.module.css";
+import { YARD_SITE } from "./yard-solar";
 
 const VIEWS = [
   { key: "landscape", label: "园景" },
@@ -65,7 +66,7 @@ export default function YardViewer() {
         <div className={styles.sunTicks} aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
         <p id="sun-position" className={styles.sunPosition}>正在计算太阳位置…</p>
         <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
-        <p className={styles.sunHint}>108.09°E · 34.18°N</p>
+        <p className={styles.sunHint}>{YARD_SITE.longitude}°E · {YARD_SITE.latitude}°N</p>
       </section>
       <section className={styles.viewing} aria-label="视图设置">
         <h2 className={styles.lightingTitle}>视图</h2>
