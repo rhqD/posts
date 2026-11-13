@@ -1,12 +1,9 @@
 .root {
   position: relative;
   width: 100%;
-  height: calc(100dvh - 3rem);
+  height: calc(100dvh - var(--site-header-height) - env(safe-area-inset-top, 0px));
   overflow: hidden;
   background: radial-gradient(ellipse at 55% 40%, #f7f7f1, #e4e7dd);
-}
-@media (min-width: 640px) {
-  .root { height: calc(100dvh - 3.5rem); }
 }
 
 .stage { position: absolute; inset: 0; }
@@ -34,7 +31,7 @@
 .tools {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: max(20px, env(safe-area-inset-right, 0px));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -42,7 +39,7 @@
   z-index: 2;
 }
 
-.settings { position: absolute; top: 108px; right: 20px; z-index: 3; }
+.settings { position: absolute; top: 108px; right: max(20px, env(safe-area-inset-right, 0px)); z-index: 3; }
 .lighting { position: relative; }
 .lighting summary { cursor: pointer; list-style: none; text-align: center; }
 .lighting summary::-webkit-details-marker { display: none; }
@@ -68,7 +65,7 @@
 .viewbar {
   position: absolute;
   left: 50%;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   width: max-content;
   transform: translateX(-50%);
   display: flex;
@@ -132,7 +129,7 @@
 .sunPanel { display: none; }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
   .settings {
-    top: 20px; left: 20px; right: auto; width: 246px; padding: 18px; color: #354c40;
+    top: 20px; left: max(20px, env(safe-area-inset-left, 0px)); right: auto; width: 246px; padding: 18px; color: #354c40;
     max-height: calc(100% - 40px); overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, .75); border-radius: 18px;
     background: rgba(244, 247, 240, .9); backdrop-filter: blur(18px);
@@ -158,3 +155,8 @@
 .sunTicks { display: flex; justify-content: space-between; color: #7c877b; font-size: 8px; }
 .sunPosition { margin: 14px 0; color: #607564; font-size: 11px; line-height: 1.6; }
 .sunHint { font-size: 9px; color: #7c877b; line-height: 1.6; margin-top: 12px; }
+
+/* Keep touch gestures on the viewer from entering Safari's selection/callout UI. */
+.root, .root * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.root input[type='datetime-local'] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+.root button, .root summary, .root input { touch-action: manipulation; }

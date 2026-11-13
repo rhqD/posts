@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createYardWildlife } from './yard-wildlife';
+import { createRiverSurface } from './yard-river';
 
 /** A quiet mountain garden. All scenery is local, seeded, and shared on the GPU. */
 export function createYardEnvironment() {
@@ -64,12 +64,17 @@ export function createYardEnvironment() {
   mesh(terrain, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 }));
 
   const ribbon = (offsets: number[], level: (x: number, z: number) => number, side = 1, valleyOnly = false) => {
-    const vertices: number[] = [], indices: number[] = [];
+    const vertices: number[] = [], indices: number[] = [], uvs: number[] = [];
+    let length = 0, previousX = riverX(-210), previousZ = -210;
     for (let i = 0; i <= 520; i++) {
       const z = -210 + i / 520 * 420;
+      const center = riverX(z);
+      length += Math.hypot(center - previousX, z - previousZ);
+      previousX = center; previousZ = z;
       for (const offset of offsets) {
         const x = riverX(z) + offset * width(z) * side;
         vertices.push(x, level(x, z), z);
+        uvs.push(offset / 2.8 + .5, length);
       }
       if (i < 520 && (!valleyOnly || Math.max(height(riverX(z) - width(z) * 1.94, z), height(riverX(z) + width(z) * 1.94, z)) < floor + 1.5)) for (let j = 0; j < offsets.length - 1; j++) {
         const a = i * offsets.length + j, b = a + offsets.length;
@@ -78,11 +83,15 @@ export function createYardEnvironment() {
     }
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
     geometry.setIndex(indices); geometry.computeVertexNormals();
     return geometry;
   };
   const waterY = floor - .38;
-  mesh(ribbon([-1.4, 1.4], () => waterY), new THREE.MeshLambertMaterial({ color: 0x299cab }));
+  const river = createRiverSurface();
+  const riverMesh = mesh(ribbon([-1.4, 1.4], () => waterY), river.material);
+  riverMesh.name = 'Flowing creek';
+  riverMesh.geometry.computeBoundingSphere();
   const bank = new THREE.MeshStandardMaterial({color: 0x90957c, roughness: 1, side: THREE.DoubleSide});
   for (const side of [-1, 1]) mesh(ribbon([1.18, 1.35, 1.55, 1.75, 1.94], (x, z) => height(x, z) + .025, side, true), bank);
 
@@ -184,12 +193,10 @@ export function createYardEnvironment() {
     tread.rotation.y = Math.atan2(tangent.x, tangent.z);
   }
 
-  const wildlife = createYardWildlife({height, riverX, waterY});
-  group.add(wildlife.group);
-
   return {
     group,
-    updateWildlife: wildlife.update,
+    advanceWater: river.advance,
+    riverBounds: riverMesh.geometry.boundingSphere!,
     dispose() {
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
       group.traverse(object => {

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { House } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
@@ -14,6 +15,9 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+  const isYard = pathname === "/home" || pathname === "/home/";
+  const [yardSky, setYardSky] = useState("#86c7ee");
   const [scrolled, setScrolled] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -32,25 +36,43 @@ export default function Header() {
     };
   }, []);
 
-  const headerBg = scrolled
-    ? isDark ? "rgba(10,10,15,0.8)" : "rgba(255,255,255,0.7)"
+  useEffect(() => {
+    const updateSky = () => setYardSky(document.documentElement.style.getPropertyValue("--yard-sky").trim() || "#86c7ee");
+    updateSky();
+    window.addEventListener("yard-sky-change", updateSky);
+    return () => window.removeEventListener("yard-sky-change", updateSky);
+  }, []);
+
+  const overHero = pathname === "/" && !scrolled;
+  const chromeColor = isYard ? yardSky : overHero ? "#0a0f0a" : isDark ? "#0a0a0f" : "#F9F7F4";
+  useEffect(() => {
+    document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach(meta => { meta.content = chromeColor; });
+    document.documentElement.style.setProperty("--browser-chrome-color", chromeColor);
+  }, [chromeColor, pathname]);
+
+  const headerBg = isYard ? yardSky : scrolled
+    ? isDark ? "rgba(10,10,15,0.8)" : "rgba(249,247,244,0.9)"
     : "transparent";
-  const headerBorder = scrolled
+  const headerBorder = scrolled && !isYard
     ? isDark ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(0,0,0,0.06)"
     : "1px solid transparent";
-  const textColor = isDark ? "#fff" : "#1a2e1a";
-  const textMuted = isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.5)";
+  const skyRgb = Number.parseInt(yardSky.slice(1), 16);
+  const skyLuminance = (((skyRgb >> 16) & 255) * .2126 + ((skyRgb >> 8) & 255) * .7152 + (skyRgb & 255) * .0722) / 255;
+  const headerDark = isYard ? skyLuminance < .45 : isDark || overHero;
+  const textColor = headerDark ? "#fff" : "#1a2e1a";
+  const textMuted = headerDark ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)";
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className={`site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isYard ? "select-none" : ""}`}
       style={{
         background: headerBg,
         backdropFilter: scrolled ? "blur(20px) saturate(150%)" : "none",
         borderBottom: headerBorder,
+        WebkitTouchCallout: isYard ? "none" : undefined,
       }}
     >
-      <div className="mx-auto max-w-5xl px-6 h-12 sm:h-14 flex items-center justify-between">
+      <div className="site-header-inner mx-auto max-w-5xl px-6 h-12 sm:h-14 flex items-center justify-between">
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/home"

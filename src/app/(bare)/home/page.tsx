@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="bg-[#F9F7F4] pt-12 sm:pt-14">
+    <div className="yard-page">
       <YardViewer />
     </div>
   );

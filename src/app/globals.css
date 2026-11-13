@@ -25,7 +25,7 @@
 
 @layer base {
   html {
-    background-color: var(--color-bg);
+    background-color: var(--browser-chrome-color, var(--color-bg));
   }
   body {
     background-color: var(--color-bg);
@@ -240,3 +240,15 @@
   border-color: #E8E4DF;
 }
 
+
+:root { --site-header-height: 3rem; }
+@media (min-width: 640px) { :root { --site-header-height: 3.5rem; } }
+.site-header { padding-top: env(safe-area-inset-top, 0px); }
+.site-header-inner {
+  padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+}
+.yard-page {
+  padding-top: calc(var(--site-header-height) + env(safe-area-inset-top, 0px));
+  background: var(--yard-sky, #86c7ee);
+}

@@ -1,7 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.renhanquan.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F9F7F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0f" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -18,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="git-commit" content={commitSha} />
       </head>
-      <body className="bg-[#0a0a0f]">
+      <body>
         {children}
       </body>
     </html>

@@ -6,7 +6,6 @@ import styles from "./yard.module.css";
 const VIEWS = [
   { key: "landscape", label: "园景" },
   { key: "waterside", label: "山水" },
-  { key: "wildlife", label: "小动物" },
   { key: "yard", label: "前院" },
   { key: "pond", label: "池塘" },
   { key: "garden", label: "花园" },
@@ -38,7 +37,9 @@ export default function YardViewer() {
   }, []);
 
   return (
-    <div ref={rootRef} className={styles.root}>
+    <div ref={rootRef} className={styles.root} onContextMenu={(event) => {
+      if (!(event.target instanceof HTMLInputElement)) event.preventDefault();
+    }}>
       <div id="stage" className={styles.stage} />
 
       <aside className={styles.settings} aria-label="时间与灯光设置">

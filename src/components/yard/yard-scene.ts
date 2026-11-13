@@ -26,6 +26,7 @@ const models = {
 const b = (x, y, z) => new THREE.Vector3(x, z, -y);
 let renderer, scene, camera, controls, model, fullBounds;
 let onResize: (() => void) | undefined;
+let preparingLights = false;
 let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
@@ -43,7 +44,6 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
-  wildlife: { position: new THREE.Vector3(-11, 8, 17), target: new THREE.Vector3(-25, -.5, 5), fov: 48 },
   waterside: { position: b(18,-48,31), target: b(-17,16,2) },
   landscape: { position: b(32,-48,23), target: b(-7,16,7.5), fov: 42 },
   yard: { position: b(14,-8,14), target: b(4.5,4.8,1.3) },
@@ -112,7 +112,7 @@ function toggleWireframe() {
 function updateFloodlight(on) {
   floodlightOn = on;
   $('#floodlight').setAttribute('aria-checked', String(on));
-  if (floodlight) { floodlight.visible = on; floodlight.intensity = on ? LIGHTS.floodlight.intensity : 0; }
+  if (floodlight) { floodlight.visible = true; floodlight.intensity = on ? LIGHTS.floodlight.intensity : 0; }
   if (floodlightLens) materialsOf(floodlightLens).forEach(m => {
     m.color.set(on ? 0xffedc9 : 0xc1c7c7);
     m.emissive.set(on ? 0xffe2ab : 0x000000); m.emissiveIntensity = on ? 3 : 0;
@@ -157,7 +157,9 @@ function bindFloodlight() {
   floodlight.map = floodlightProfile;
   floodlight.position.copy(lensPosition).addScaledVector(direction, .015);
   floodlight.target.position.copy(floodlight.position).addScaledVector(direction, 12);
-  floodlight.castShadow = true; floodlight.shadow.mapSize.set(1024, 1024);
+  floodlight.castShadow = true;
+  floodlight.shadow.autoUpdate = false; floodlight.shadow.needsUpdate = true;
+  floodlight.shadow.mapSize.set(1024, 1024);
   floodlight.shadow.camera.near = .025; floodlight.shadow.camera.far = 12;
   floodlight.shadow.bias = -.0001; floodlight.shadow.normalBias = .015;
   scene.add(floodlight, floodlight.target);
@@ -167,7 +169,7 @@ function updateExtraLight(key, on) {
   const group = extraLights[key]; group.on = on;
   const button = $(`[data-light-group="${key}"]`);
   button.setAttribute('aria-checked', String(on));
-  group.lights.forEach(light => { light.visible = on; light.intensity = on ? light.userData.baseIntensity : 0; });
+  group.lights.forEach(light => { light.visible = true; light.intensity = on ? light.userData.baseIntensity : 0; });
   group.emitters.forEach(mesh => materialsOf(mesh).forEach(m => {
     m.color.set(on ? 0xffedcf : 0xc9cece);
     m.emissive.set(on ? 0xffe2b7 : 0x000000); m.emissiveIntensity = on ? 2.3 : 0;
@@ -201,6 +203,7 @@ function bindExtraLights() {
         light.userData.baseIntensity = group.intensity / positions.length;
         // Gate globe lights use diffuse fill; avoid two six-face shadow maps.
         light.castShadow = key !== 'gate';
+        light.shadow.autoUpdate = false; light.shadow.needsUpdate = true;
         light.shadow.mapSize.set(key === 'entry' ? 1024 : 512, key === 'entry' ? 1024 : 512);
         light.shadow.camera.near = .02; light.shadow.camera.far = group.range;
         light.shadow.bias = -.0001; light.shadow.normalBias = .015;
@@ -238,6 +241,7 @@ function applySun(instant = new Date()) {
   const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .4);
   const warmth = THREE.MathUtils.smoothstep(direction.y, 0, .65);
   sun.position.copy(sun.target.position).addScaledVector(direction, 55);
+  sun.shadow.needsUpdate = true;
   sun.intensity = 2.6 * daylight;
   sun.color.set(0xffa563).lerp(new THREE.Color(0xfff1d9), warmth);
   hemisphere.intensity = .2 + daylight * .9;
@@ -248,6 +252,8 @@ function applySun(instant = new Date()) {
   scene.background.set(0x101c2b).lerp(new THREE.Color(0x8f9a9b), twilight)
     .lerp(new THREE.Color(0x86c7ee), THREE.MathUtils.smoothstep(elevation, 0, 20));
   scene.fog?.color.copy(scene.background);
+  document.documentElement.style.setProperty('--yard-sky', `#${scene.background.getHexString()}`);
+  window.dispatchEvent(new Event('yard-sky-change'));
   const clock = beijingClock(instant);
   if (document.activeElement !== $('#sun-datetime')) $('#sun-datetime').value = clock.dateTime;
   $('#sun-time').value = String(clock.minutes);
@@ -292,7 +298,7 @@ function bindSunTime() {
   }, 10_000);
 }
 async function loadModel(key) {
-  const id = ++loadId, descriptor = models[key], start = performance.now();
+  const id = ++loadId, descriptor = models[key];
   $('#loading').hidden = false; $('#spinner').hidden = false; $('#progress').hidden = false; $('#retry').hidden = true;
   $('#load-title').textContent = '正在打开院子'; $('#load-message').textContent = '读取模型与几何数据…';
   $('#progress-fill').style.width = '0%';
@@ -304,6 +310,7 @@ async function loadModel(key) {
       if (e.lengthComputable) { const progress = Math.round(e.loaded/e.total*100); $('#progress-fill').style.width = progress+'%'; $('#load-message').textContent = progress === 100 ? '模型已下载，正在解码…' : `正在读取 ${progress}%`; }
     }, reject));
     if (id !== loadId) { dispose(gltf.scene); return; }
+    preparingLights = true;
     if (model) { scene.remove(model); dispose(model); }
     model = gltf.scene;
     model.traverse(o => {
@@ -313,6 +320,18 @@ async function loadModel(key) {
     scene.add(model);
     bindFloodlight();
     bindExtraLights();
+    // Keep every fixture in the light layout at zero intensity when off. One
+    // async compile covers every switch combination instead of compiling on tap.
+    $('#load-message').textContent = '正在准备灯光与静态阴影…';
+    await renderer.compileAsync(scene, camera);
+    if (id !== loadId) return;
+    // The loading overlay covers this first render. It allocates shadow maps
+    // and uploads lamp textures before controls become interactive.
+    sun.shadow.needsUpdate = true;
+    renderer.render(scene, camera);
+    renderer.domElement.dataset.shaderPrograms = String(renderer.info.programs.length);
+    preparingLights = false;
+    dirty = true;
     // Frame the building rather than any outlying interior prop.
     const building = model.getObjectByName('____15') || model;
     fullBounds = new THREE.Box3().setFromObject(building);
@@ -322,9 +341,9 @@ async function loadModel(key) {
     if (!triangles) { triangles = 0; model.traverse(o => { if (o.isMesh) triangles += (o.geometry.index?.count || o.geometry.attributes.position.count)/3; }); }
     $('#loading').hidden = true;
     window.yardPreviewState = { loaded: true, model: key, triangles, images: report?.glb?.images, error: null };
-  } catch (error) { if (id === loadId) { window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
+  } catch (error) { if (id === loadId) { preparingLights = false; window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
 }
-let loader, landscape;
+let loader, landscape, draco, environmentTarget;
 try {
   renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true, powerPreference:'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.7)); renderer.setSize(root.clientWidth, root.clientHeight);
@@ -342,22 +361,23 @@ try {
   controls.addEventListener('start', () => { transition = null; });
   hemisphere = new THREE.HemisphereLight(0xe4ebef,0xafa48a,1.15); scene.add(hemisphere);
   const environment = new RoomEnvironment(); const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(environment,.04).texture;
+  environmentTarget = pmrem.fromScene(environment,.04);
+  scene.environment = environmentTarget.texture;
   environment.dispose(); pmrem.dispose(); scene.environmentIntensity = .45;
   sun = new THREE.DirectionalLight(0xfff1d9,3.1); sun.target.position.copy(b(4.5,4.5,0)); sun.castShadow = true;
   sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:90});
+  sun.shadow.autoUpdate = false; sun.shadow.needsUpdate = true;
   sun.shadow.bias = -.00015; sun.shadow.normalBias = .025; scene.add(sun,sun.target);
   scene.background = new THREE.Color();
   scene.fog = new THREE.FogExp2(0x86c7ee, .0025);
   applySun(); bindSunTime();
   landscape = createYardEnvironment();
   scene.add(landscape.group);
-  const draco = new DRACOLoader(); draco.setDecoderPath('/yard/draco/'); draco.setWorkerLimit(2);
+  draco = new DRACOLoader(); draco.setDecoderPath('/yard/draco/'); draco.setWorkerLimit(2);
   loader = new GLTFLoader(); loader.setDRACOLoader(draco);
-  let previous = performance.now(), wildlifeElapsed = 0;
-  const wildlifeFrustum = new THREE.Frustum();
-  const wildlifeProjection = new THREE.Matrix4();
-  const wildlifeBounds = new THREE.Sphere(new THREE.Vector3(-21, 0, 6), 15);
+  let previous = performance.now(), waterElapsed = 0;
+  const waterFrustum = new THREE.Frustum();
+  const waterProjection = new THREE.Matrix4();
   renderer.setAnimationLoop(now => {
     const delta = Math.min((now-previous)/1000,.1); previous = now;
     if (transition) {
@@ -367,17 +387,22 @@ try {
     }
     const changed = controls.update(delta);
     if (!reducedMotion && !document.hidden) {
-      wildlifeElapsed += delta;
-      if (wildlifeElapsed >= .05) {
-        wildlifeProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
-        wildlifeFrustum.setFromProjectionMatrix(wildlifeProjection);
-        if (camera.position.distanceTo(wildlifeBounds.center) < 100 && wildlifeFrustum.intersectsSphere(wildlifeBounds)) {
-          landscape.updateWildlife(wildlifeElapsed); dirty = true;
+      waterElapsed += delta;
+      if (waterElapsed >= .05) {
+        waterProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+        waterFrustum.setFromProjectionMatrix(waterProjection);
+        if (waterFrustum.intersectsSphere(landscape.riverBounds) && !presets[activeView]?.interior) {
+          landscape.advanceWater(waterElapsed); dirty = true;
         }
-        wildlifeElapsed = 0;
+        waterElapsed = 0;
       }
     }
-    if (dirty || changed || controls.autoRotate) { renderer.render(scene,camera); compass(); dirty = false; }
+    if (!preparingLights && (dirty || changed || controls.autoRotate)) {
+      renderer.render(scene,camera);
+      const programs = String(renderer.info.programs.length);
+      if (renderer.domElement.dataset.shaderPrograms !== programs) renderer.domElement.dataset.shaderPrograms = programs;
+      compass(); dirty = false;
+    }
   });
   onResize = () => resize();
   window.addEventListener('resize', onResize);
@@ -394,12 +419,18 @@ try {
 } catch (error) { fail(error); }
   return {
     destroy() {
+      ++loadId;
       window.clearInterval(sunTimer);
       sunEvents.abort();
       renderer?.setAnimationLoop(null);
       window.removeEventListener('resize', onResize);
       controls?.dispose();
+      scene?.traverse(object => { if (object.isLight) object.dispose?.(); });
+      if (model) dispose(model);
       landscape?.dispose();
+      environmentTarget?.dispose();
+      floodlightProfile?.dispose();
+      draco?.dispose();
       renderer?.dispose();
       root.querySelector('canvas')?.remove();
     },
