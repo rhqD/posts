@@ -91,6 +91,10 @@ aliyun cdn SetCdnDomainSSLCertificate --DomainName www.renhanquan.com \
   --SSLPri "$(cat ~/certs/renhanquan/key.pem)"
 aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
   --Functions '[{"functionArgs":[{"argName":"enable","argValue":"on"}],"functionName":"https_force"}]'
+
+# 6. HTTP/2（默认不开，不加这段所有资源都走 HTTP/1.1）
+aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
+  --Functions '[{"functionArgs":[{"argName":"http2","argValue":"on"}],"functionName":"https_option"}]'
 ```
 
 ## 验收清单
@@ -98,6 +102,8 @@ aliyun cdn BatchSetCdnDomainConfig --DomainNames "www.renhanquan.com" \
 ```bash
 curl -sI https://www.renhanquan.com/ | grep -i cache-control      # no-cache
 curl -sI https://www.renhanquan.com/_next/static/...js | grep -i cache-control  # immutable
+curl -sI --http2 https://www.renhanquan.com/ | head -1                # HTTP/2 200
+curl -sI https://www.renhanquan.com/models/yard-web.glb | grep -iE 'cache-control|age'  # immutable + Age
 curl -s  https://www.renhanquan.com/posts/ | grep -c "/posts/"   # 文章数
 curl -sI https://www.renhanquan.com/nope | head -1               # 404
 curl -sI http://www.renhanquan.com/ | head -1                    # 301 到 https

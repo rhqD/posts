@@ -83,6 +83,7 @@ OSS    oss://renhanquan-site   (cn-hangzhou, public-read, 静态网站托管 ind
 CDN    www.renhanquan.com      CNAME -> www.renhanquan.com.w.kunlunaq.com
 DNS    阿里云云解析 ns1/ns2.alidns.com
 TLS    Let's Encrypt 通配符 *.renhanquan.com，acme.sh 管理，自动续期
+HTTP/2 已开启（https_option 的 http2 参数）
 ```
 
 CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
@@ -90,7 +91,7 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 | 路径 | TTL |
 | --- | --- |
 | `/_next/static/` | 31536000 |
-| `jpg,jpeg,png,webp,gif,svg,ico,mp3,woff,woff2` | 31536000 |
+| `jpg,jpeg,png,webp,gif,svg,ico,mp3,woff,woff2,glb,gltf,bin,ktx2` | 31536000 |
 | `/`（兜底，含 HTML/TXT/XML） | 0（不缓存） |
 
 ## 密钥放在哪
@@ -123,9 +124,10 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
   3. 上传精简后的 `report.json`（只保留 glb 统计，避免泄露本机路径）
 - **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
 - 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
-- 房屋外的起伏草地、松林、石阶步道、自然溪流与连续山体由 `src/components/yard/yard-environment.ts` 本地生成，独立于 Blender 同步；默认「园景」视角展示完整房屋与环境，「山水」视角可查看河道与山峦；灯光按钮平铺展示，胶囊右侧 ↗ 按钮可直达灯具视角；窄屏时灯光区域横向滚动。
-- 日照由 `yard-solar.ts` 按房屋坐标 108.09°E / 34.18°N 与当前真实时间计算，每 10 秒更新（北京时间 UTC+8）。屏幕宽度 ≥768px 时显示左侧面板，可手动调日期/时间并通过「跟随实时」恢复；宽度 <768px 时不显示时间控件且始终跟随实时（不区分触控或鼠标设备）。天空、雾与环境光随昼夜变化。
-- 溪流水面由 `yard-river.ts` 着色器按河道弧长生成流纹，山间源头由 `yard-waterfall.ts` 生成瀑布与落水涟漪，可用「瀑布」视角查看；画面不可见、室内预设或减少动态效果开启时不更新。动物已移除。灯具关闭时仅将强度归零，保持灯光布局稳定；加载阶段异步预编译并预热静态阴影，太阳变化时只刷新太阳阴影。
+- 房屋外的起伏草地、松林、石阶步道、自然溪流与连续山体由 `src/components/yard/yard-environment.ts` 本地生成，独立于 Blender 同步；默认「园景」视角展示完整房屋与环境，「山水」视角可查看河道与山峦；灯光按钮平铺展示，胶囊右侧 ↗ 按钮可直达灯具视角；**宽度 <700px 时灯光区改为换行排列**，不做横向滚动。
+- 日照由 `yard-solar.ts` 按房屋坐标 108.09°E / 34.18°N 与当前真实时间计算，每 10 秒更新（北京时间 UTC+8）。面板按**宽度**（`min-width: 700px`）显示，与设备类型无关；宽屏为左上常驻面板，窄屏为底部面板，展开时同样能看到时间控件。可手动调日期/时间并通过「跟随实时」恢复。天空、雾与环境光随昼夜变化。
+- 左侧面板可整体收起（`data-open`）：收起时高度用 `grid-template-rows: 1fr → 0fr` 过渡、内容淡出上移、宽度收到 132px，只留一个胶囊。**自动旋转在面板的「视图」区**（`#rotate`），线框功能已移除，右上角不再有工具胶囊。
+- 溪流水面由 `yard-river.ts` 着色器按河道弧长生成流纹（`uv.y` 是**世界米数**，不是 0..1，频率按米给），白色浪花是沿流向拉长的丝状噪声而不是正弦横纹。山间源头由 `yard-waterfall.ts` 生成瀑布：水幕**逐顶点贴合崖面**（独立曲线会埋进岩体），落水点是卡通水花（圆球气泡 + 抛物线水珠 + 泡沫池 + 扩散环），可用「瀑布」视角查看；画面不可见、室内预设或减少动态效果开启时不更新。动物已移除。灯具关闭时仅将强度归零，保持灯光布局稳定；加载阶段异步预编译并预热静态阴影，太阳变化时只刷新太阳阴影。
 - 全站 `viewport-fit: cover`，Header 与 `/home` 按 safe-area inset 布局；Safari theme-color 随页面主题与天空更新。只在 3D 查看器禁用触控文字选取/长按菜单，日期时间输入仍可编辑。
 - 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
 - `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。

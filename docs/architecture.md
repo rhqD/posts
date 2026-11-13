@@ -51,11 +51,19 @@ Notion DB ──(make sync, Go)──> content/posts.index.json
 - 页面在 `(bare)` 路由组：有站点 Header，没有 Footer，画布从顶栏下方开始。
 - 场景是 `src/components/yard/yard-scene.ts`（命令式 three.js），由 `YardViewer.tsx` 在
   `useEffect` 里用 `import('./yard-scene')` 动态加载，three.js 因此不进主 bundle。
+- 场景由三块拼成：
+  - `yard-environment.ts`：本地生成的草地、松林、石阶、溪流与山体（不来自 Blender）
+  - `yard-river.ts`：溪流水面着色（`uv.y` 是世界米数，丝状白浪沿流向拉长）
+  - `yard-waterfall.ts`：贴崖水幕 + 落水的卡通水花（气泡、水珠、泡沫池、扩散环）
 - 灯具配置来自 `public/yard/lights.json`（由 `make sync-yard` 从 yabai_home 解析生成），
-  开关按钮由场景按这份 JSON 注入，增删灯具不需要改页面代码。
+  开关按钮由场景按这份 JSON 注入，增删灯具不需要改页面代码；每盏灯旁的 ↗ 直接跳到对应视角。
+- 控制面板按**宽度**切换形态（`min-width: 700px`），与设备类型无关：宽屏是左上常驻面板，
+  窄屏是底部面板。面板可整体收起（`data-open`，grid 行高过渡 + 淡出），自动旋转收在「视图」区，
+  线框功能已移除。窄屏的灯光按钮换行排列，不横向滚动。
+- 日照由 `yard-solar.ts` 按 108.09°E / 34.18°N 与真实时间计算，每 10 秒刷新；可手动指定
+  日期时刻，再用「跟随实时」恢复。天空、雾与环境光随昼夜变化。
 - 模型在 OSS `models/yard-web.glb`，页面用相对路径 `/models/yard-web.glb` 加载；
-  draco 解码器在 `public/yard/draco/`。
-- 光照是固定的下午角度（不再做日照模拟），切主题不影响画布。
+  draco 解码器在 `public/yard/draco/`。`glb` 走 CDN 一年 immutable 缓存，换模型后需刷新。
 
 ## 数据来源
 
