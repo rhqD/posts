@@ -27,7 +27,7 @@ const b = (x, y, z) => new THREE.Vector3(x, z, -y);
 let renderer, scene, camera, controls, model, fullBounds;
 let onResize: (() => void) | undefined;
 let preparingLights = false;
-let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
+let activeView = 'all', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
 const sunEvents = new AbortController();
@@ -331,6 +331,8 @@ async function loadModel(key) {
     // Frame the building rather than any outlying interior prop.
     const building = model.getObjectByName('____15') || model;
     fullBounds = new THREE.Box3().setFromObject(building);
+    // The overview needs the model bounds, which only exist after loading.
+    if (activeView === 'all') selectView('all', true);
     const report = await reportPromise;
     if (id !== loadId) return;
     let triangles = report?.glb?.triangles;
@@ -413,7 +415,7 @@ try {
     const key = button.dataset.lightGroup; updateExtraLight(key, !extraLights[key].on);
   }));
     $('#retry').addEventListener('click',()=>loadModel('light'));
-  selectView('landscape',true); loadModel('light');
+  selectView('all',true); loadModel('light');
 } catch (error) { fail(error); }
   return {
     destroy() {

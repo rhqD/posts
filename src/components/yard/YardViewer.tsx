@@ -5,6 +5,7 @@ import styles from "./yard.module.css";
 import { YARD_SITE } from "./yard-solar";
 
 const VIEWS = [
+  { key: "all", label: "全景" },
   { key: "landscape", label: "园景" },
   { key: "waterside", label: "山水" },
   { key: "waterfall", label: "瀑布" },
@@ -13,7 +14,6 @@ const VIEWS = [
   { key: "garden", label: "花园" },
   { key: "top", label: "俯视" },
   { key: "attic", label: "三楼阁楼" },
-  { key: "all", label: "全景" },
 ];
 
 export default function YardViewer() {
