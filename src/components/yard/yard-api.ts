@@ -38,6 +38,27 @@ export async function fetchDevices(signal?: AbortSignal): Promise<Record<string,
   }
 }
 
+/**
+ * Live device state. Server-sent events rather than a websocket: the flow is
+ * one-way, the browser reconnects by itself, and nginx needs one directive.
+ * Returns an unsubscribe function.
+ */
+export function subscribeDeviceStates(
+  onStates: (states: Record<string, Record<string, unknown>>) => void,
+): () => void {
+  if (!BASE || typeof EventSource === "undefined") return () => {};
+  const source = new EventSource(BASE + "/events", { withCredentials: true });
+  source.onmessage = (event) => {
+    try {
+      const frame = JSON.parse(event.data) as { states?: Record<string, Record<string, unknown>> };
+      if (frame.states) onStates(frame.states);
+    } catch {
+      // A malformed frame is not worth tearing the stream down for.
+    }
+  };
+  return () => source.close();
+}
+
 /** Throws when the device refused; the caller reverts the optimistic state. */
 export async function sendCommand(
   device: string,
@@ -58,13 +79,26 @@ export async function sendCommand(
   if (!res.ok) throw new Error(device + " " + action + " -> " + res.status);
 }
 
-/** Best-effort "is this on" across the shapes vendors report. */
-export function isOn(state: Record<string, unknown> | undefined): boolean {
+/**
+ * Best-effort "is this on" across the shapes vendors report.
+ * Multi-gang modules report a switches array instead of a single field, and the
+ * lamp may be wired to any one of its outlets.
+ */
+export function isOn(state: Record<string, unknown> | undefined, outlet = 0): boolean {
   if (!state) return false;
   const sw = state.switch;
-  if (sw === "on") return true;
-  if (sw === true) return true;
-  return state.power === true;
+  if (sw === "on" || sw === true) return true;
+  if (state.power === true) return true;
+
+  const gangs = state.switches;
+  if (Array.isArray(gangs)) {
+    const mine = gangs.find((gang) => gang && (gang as { outlet?: number }).outlet === outlet);
+    if (mine) {
+      const s = (mine as { switch?: unknown }).switch;
+      return s === "on" || s === true;
+    }
+  }
+  return false;
 }
 
 // Device state is an open bag. `type` picks the renderer; every other field is
@@ -85,11 +119,12 @@ export type DeviceState = {
 export function toDeviceState(
   state: Record<string, unknown> | undefined,
   type = "light",
+  outlet = 0,
 ): DeviceState {
   const out: DeviceState = { ...(state ?? {}), type };
   delete out.switch;
   delete out.power;
-  out.on = isOn(state);
+  out.on = isOn(state, outlet);
   return out;
 }
 

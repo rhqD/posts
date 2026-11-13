@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"syscall"
 	"time"
@@ -27,6 +28,7 @@ import (
 	"renhanquan/control/internal/device/mock"
 	"renhanquan/control/internal/device/sonoff"
 	"renhanquan/control/internal/device/unavailable"
+	"renhanquan/control/internal/events"
 	"renhanquan/control/internal/sms"
 	"renhanquan/control/internal/store"
 	"renhanquan/control/internal/store/filestore"
@@ -98,13 +100,14 @@ func main() {
 	log.Printf("sms provider: %s", sp.Name())
 
 	sessions := auth.NewSessions(st, ttl)
+	hub := events.New()
 	srv := api.New(api.Config{
 		AllowedPhones:  allowed,
 		AllowedOrigins: splitList(os.Getenv("ALLOWED_ORIGINS")),
 		CookieName:     cookieName,
 		CookieSecure:   cookieSecure,
 		CookieDomain:   cookieDomain,
-	}, st, sessions, az, al, sp, prov)
+	}, st, sessions, az, al, sp, prov, hub)
 
 	httpSrv := &http.Server{
 		Addr:              addr,
@@ -119,6 +122,7 @@ func main() {
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	go housekeeping(ctx, st, sessions, prov)
+	go watchDevices(ctx, st, prov, hub)
 
 	go func() {
 		log.Printf("listening on %s (data=%s)", addr, dataDir)
@@ -436,6 +440,55 @@ func reloadACL(ctx context.Context, st store.Store, az *acl.Authorizer) error {
 	}
 	az.Load(all)
 	return nil
+}
+
+// watchDevices polls the vendor while a browser is listening and pushes only
+// what changed. Idle houses do not generate traffic: no subscribers, no calls.
+func watchDevices(ctx context.Context, st store.Store, prov device.Provider, hub *events.Hub) {
+	const interval = 4 * time.Second
+	last := map[string]map[string]any{}
+
+	t := time.NewTicker(interval)
+	defer t.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-t.C:
+			if hub.Count() == 0 {
+				continue
+			}
+			list, err := st.Devices().List(ctx)
+			if err != nil {
+				continue
+			}
+			keys := make([]string, 0, len(list))
+			for _, d := range list {
+				keys = append(keys, d.Key)
+			}
+			states, err := prov.Read(ctx, keys)
+			if err != nil {
+				continue
+			}
+			changed := make(map[string]any, len(states))
+			for key, state := range states {
+				if !reflect.DeepEqual(last[key], map[string]any(state)) {
+					changed[key] = state
+				}
+			}
+			if len(changed) == 0 {
+				continue
+			}
+			for key, state := range states {
+				last[key] = map[string]any(state)
+			}
+			payload, err := json.Marshal(map[string]any{"states": changed})
+			if err != nil {
+				continue
+			}
+			hub.Publish(payload)
+		}
+	}
 }
 
 func housekeeping(ctx context.Context, st store.Store, sessions *auth.Sessions, prov device.Provider) {

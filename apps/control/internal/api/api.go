@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -18,6 +19,7 @@ import (
 	"renhanquan/control/internal/audit"
 	"renhanquan/control/internal/auth"
 	"renhanquan/control/internal/device"
+	"renhanquan/control/internal/events"
 	"renhanquan/control/internal/ratelimit"
 	"renhanquan/control/internal/sms"
 	"renhanquan/control/internal/store"
@@ -39,14 +41,16 @@ type Server struct {
 	audit    *audit.Logger
 	sms      sms.Provider
 	provider device.Provider
+	hub      *events.Hub
 
 	phoneLimit  *ratelimit.Limiter
 	ipLimit     *ratelimit.Limiter
 	verifyLimit *ratelimit.Limiter
 }
 
-func New(cfg Config, st store.Store, sessions *auth.Sessions, az *acl.Authorizer, al *audit.Logger, sp sms.Provider, dp device.Provider) *Server {
+func New(cfg Config, st store.Store, sessions *auth.Sessions, az *acl.Authorizer, al *audit.Logger, sp sms.Provider, dp device.Provider, hub *events.Hub) *Server {
 	return &Server{
+		hub:         hub,
 		cfg:         cfg,
 		st:          st,
 		sessions:    sessions,
@@ -73,6 +77,7 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("DELETE /admin/policies/{id}", s.revoke)
 	mux.HandleFunc("GET /admin/audit", s.listAudit)
 	mux.HandleFunc("GET /admin/status", s.adminStatus)
+	mux.HandleFunc("GET /events", s.streamEvents)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 	})
@@ -432,6 +437,55 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	})
 	state, _ := s.provider.Read(r.Context(), []string{key})
 	writeJSON(w, http.StatusOK, map[string]any{"ok": true, "readings": state[key]})
+}
+
+// ---- live stream ------------------------------------------------------
+
+// streamEvents pushes device state changes to a signed-in browser. Anonymous
+// visitors get nothing: device state is household data.
+func (s *Server) streamEvents(w http.ResponseWriter, r *http.Request) {
+	_, u := s.subject(r)
+	if u == nil {
+		fail(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		fail(w, http.StatusInternalServerError, "streaming unsupported")
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-store")
+	w.Header().Set("X-Accel-Buffering", "no") // keep nginx from buffering
+	w.WriteHeader(http.StatusOK)
+	flusher.Flush()
+
+	ch, cancel := s.hub.Subscribe()
+	defer cancel()
+
+	ping := time.NewTicker(15 * time.Second)
+	defer ping.Stop()
+
+	for {
+		select {
+		case <-r.Context().Done():
+			return
+		case payload, ok := <-ch:
+			if !ok {
+				return
+			}
+			if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
+				return
+			}
+			flusher.Flush()
+		case <-ping.C:
+			if _, err := fmt.Fprint(w, ": ping\n\n"); err != nil {
+				return
+			}
+			flusher.Flush()
+		}
+	}
 }
 
 // ---- admin ------------------------------------------------------------

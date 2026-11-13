@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import styles from "./yard.module.css";
 import { YARD_SITE } from "./yard-solar";
-import { fetchDevices, sendDevicePatch, toDeviceState, type DeviceState } from "./yard-api";
+import { sendDevicePatch, toDeviceState } from "./yard-api";
+import { useDevices } from "./use-devices";
 import { DEVICE_MAP } from "./device-map";
 
 const VIEWS = [
@@ -23,6 +24,17 @@ export default function YardViewer() {
   const [panelOpen, setPanelOpen] = useState(true);
   const [panelReady, setPanelReady] = useState(false);
   const panelRef = useRef<HTMLElement>(null);
+
+  // One table for every device this visitor may see; the scene is a consumer.
+  const devices = useDevices();
+  const sceneRef = useRef<{
+    setDevice(key: string, patch: boolean | Record<string, unknown>): void;
+    applyDeviceStates(states: Record<string, unknown>): void;
+    destroy(): void;
+  } | null>(null);
+  const [sceneVersion, setSceneVersion] = useState(0);
+  // Which scene object each lamp key drives; the click callback reads it.
+  const bindingsRef = useRef<Record<string, { device: string; action: string; outlet?: number; type?: string }>>({});
 
   // Small screens start with the panel tucked away; the static export renders
   // it open, so the CSS hides it until this effect has decided.
@@ -44,14 +56,7 @@ export default function YardViewer() {
   }, [panelOpen]);
 
   useEffect(() => {
-    let destroy: (() => void) | undefined;
     let cancelled = false;
-    const controller = new AbortController();
-    let sceneApi: { setDevice(key: string, patch: boolean | Record<string, unknown>): void } | undefined;
-    // Filled once the device list arrives; the scene callback is created
-    // earlier, so it reads through this ref instead of closing over it.
-    const bindings: Record<string, { device: string; action: string; outlet?: number; type?: string }> = {};
-    let detachAuth: () => void = () => {};
 
     import("./yard-scene")
       .then(async (mod) => {
@@ -61,54 +66,57 @@ export default function YardViewer() {
           lampClass: styles.lampControl,
           locateClass: styles.locate,
           onDeviceChange: (key, patch, previous) => {
-            const binding = bindings[key];
+            const binding = bindingsRef.current[key];
             if (!binding) {
-              sceneApi?.setDevice(key, previous);
+              sceneRef.current?.setDevice(key, previous);
               return;
             }
             sendDevicePatch(binding.device, binding.action, patch, binding.outlet).catch((error) => {
               console.warn("[yard] command failed", error);
-              sceneApi?.setDevice(key, previous); // revert the optimistic change
+              sceneRef.current?.setDevice(key, previous); // revert the optimistic change
             });
           },
         });
-        sceneApi = scene;
-        if (cancelled) { scene?.destroy(); return; }
-        destroy = () => scene?.destroy();
-        // A lamp becomes live only when it is bound *and* this visitor may
-        // control the device *and* the device actually offers that action.
-        // Everything else keeps its pure-animation behaviour.
-        const sync = () => {
-          if (cancelled) return;
-          fetchDevices(controller.signal).then((devices) => {
-            if (cancelled) return;
-            for (const key of Object.keys(bindings)) delete bindings[key];
-            const live: Record<string, DeviceState> = {};
-            for (const [lamp, binding] of Object.entries(DEVICE_MAP)) {
-              const device = devices[binding.device];
-              if (!device?.permissions.control) continue;
-              const action = binding.action ?? "set_switch";
-              if (!(action in device.actions)) continue;
-              bindings[lamp] = { device: binding.device, action, outlet: binding.outlet, type: binding.type };
-              live[lamp] = toDeviceState(device.state, binding.type ?? "light");
-            }
-            scene.applyDeviceStates(live);
-          });
-        };
-        sync();
-        // Logging in from the header must light up the scene without a reload.
-        window.addEventListener("auth-change", sync);
-        detachAuth = () => window.removeEventListener("auth-change", sync);
+        if (cancelled) {
+          scene.destroy();
+          return;
+        }
+        sceneRef.current = scene;
+        setSceneVersion((v) => v + 1);
       })
       .catch((err) => console.error("[yard] failed to start", err));
 
     return () => {
       cancelled = true;
-      controller.abort();
-      detachAuth();
-      destroy?.();
+      sceneRef.current?.destroy();
+      sceneRef.current = null;
     };
   }, []);
+
+  // Push the table into the scene whenever it changes: initial load, a change
+  // pushed by the stream, or a fresh sign-in.
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+
+    const bindings: typeof bindingsRef.current = {};
+    const live: Record<string, unknown> = {};
+    for (const [lamp, binding] of Object.entries(DEVICE_MAP)) {
+      const device = devices[binding.device];
+      if (!device?.permissions?.control) continue;
+      const action = binding.action ?? "set_switch";
+      if (!(action in (device.actions ?? {}))) continue;
+      bindings[lamp] = {
+        device: binding.device,
+        action,
+        outlet: binding.outlet,
+        type: binding.type,
+      };
+      live[lamp] = toDeviceState(device.state, binding.type ?? "light", binding.outlet ?? 0);
+    }
+    bindingsRef.current = bindings;
+    scene.applyDeviceStates(live);
+  }, [devices, sceneVersion]);
 
   return (
     <div ref={rootRef} className={styles.root} onContextMenu={(event) => {
