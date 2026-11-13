@@ -50,7 +50,7 @@ export default function YardViewer() {
     let sceneApi: { setLamp(key: string, on: boolean): void } | undefined;
     // Filled once the device list arrives; the scene callback is created
     // earlier, so it reads through this ref instead of closing over it.
-    const bindings: Record<string, { device: string; action: string }> = {};
+    const bindings: Record<string, { device: string; action: string; outlet?: number }> = {};
     let detachAuth: () => void = () => {};
 
     import("./yard-scene")
@@ -66,7 +66,7 @@ export default function YardViewer() {
               sceneApi?.setLamp(key, !on);
               return;
             }
-            sendCommand(binding.device, binding.action, on).catch((error) => {
+            sendCommand(binding.device, binding.action, on, binding.outlet).catch((error) => {
               console.warn("[yard] command failed", error);
               sceneApi?.setLamp(key, !on); // revert the optimistic toggle
             });
@@ -89,7 +89,7 @@ export default function YardViewer() {
               if (!device?.permissions.control) continue;
               const action = binding.action ?? "set_switch";
               if (!(action in device.actions)) continue;
-              bindings[lamp] = { device: binding.device, action };
+              bindings[lamp] = { device: binding.device, action, outlet: binding.outlet };
               live[lamp] = isOn(device.state);
             }
             scene.applyLampStates(live);

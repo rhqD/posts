@@ -39,13 +39,21 @@ export async function fetchDevices(signal?: AbortSignal): Promise<Record<string,
 }
 
 /** Throws when the device refused; the caller reverts the optimistic state. */
-export async function sendCommand(device: string, action: string, value: unknown): Promise<void> {
+export async function sendCommand(
+  device: string,
+  action: string,
+  value: unknown,
+  outlet?: number,
+): Promise<void> {
   if (!BASE) return;
+  const params: Record<string, unknown> = { value };
+  // Multi-gang modules need to know which channel; single-channel ignores it.
+  if (typeof outlet === "number") params.outlet = outlet;
   const res = await fetch(BASE + "/devices/" + encodeURIComponent(device) + "/commands", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, params: { value } }),
+    body: JSON.stringify({ action, params }),
   });
   if (!res.ok) throw new Error(device + " " + action + " -> " + res.status);
 }

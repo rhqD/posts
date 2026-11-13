@@ -231,3 +231,53 @@ func TestDiagnosticParamsAreNotActions(t *testing.T) {
 		}
 	}
 }
+
+func TestMultiGangUsesSwitchesArray(t *testing.T) {
+	var got atomic.Value
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v2/device/thing" {
+			io.WriteString(w, `{"error":0,"data":{"thingList":[
+				{"itemType":1,"itemData":{"deviceid":"1001e500e6","name":"Floodlight","online":true,
+				 "params":{"switches":[{"outlet":0,"switch":"off"},{"outlet":1,"switch":"off"},
+				                       {"outlet":2,"switch":"off"},{"outlet":3,"switch":"off"}]}}}
+			]}}`)
+			return
+		}
+		var body map[string]any
+		json.NewDecoder(r.Body).Decode(&body)
+		got.Store(body)
+		io.WriteString(w, `{"error":0,"data":{}}`)
+	}))
+	defer srv.Close()
+
+	p := sonoff.New("cn", sonoff.NewStaticToken("t"), sonoff.WithBaseURL(srv.URL), sonoff.WithMinGap(0))
+	list, err := p.Discover(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	spec, ok := list[0].Actions["set_switch"]
+	if !ok {
+		t.Fatal("multi-gang device must expose set_switch")
+	}
+	if spec.Outlets != 4 {
+		t.Fatalf("outlets = %d, want 4", spec.Outlets)
+	}
+
+	if err := p.Apply(context.Background(), "1001e500e6", device.Command{
+		Action: "set_switch",
+		Params: map[string]any{"value": true, "outlet": float64(2)},
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	body, _ := got.Load().(map[string]any)
+	params, _ := body["params"].(map[string]any)
+	arr, _ := params["switches"].([]any)
+	if len(arr) != 1 {
+		t.Fatalf("expected one switches entry, got %v", params)
+	}
+	entry, _ := arr[0].(map[string]any)
+	if entry["outlet"] != float64(2) || entry["switch"] != "on" {
+		t.Fatalf("wrong payload: %v", entry)
+	}
+}

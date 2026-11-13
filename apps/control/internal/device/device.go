@@ -39,6 +39,9 @@ type ParamSpec struct {
 	Min  *int     `json:"min,omitempty"`
 	Max  *int     `json:"max,omitempty"`
 	Enum []string `json:"enum,omitempty"`
+	// Outlets > 0 means the action addresses one gang of a multi-channel
+	// device; the caller must pass "outlet" alongside the value.
+	Outlets int `json:"outlets,omitempty"`
 }
 
 type Provider interface {

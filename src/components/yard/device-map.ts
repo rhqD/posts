@@ -7,6 +7,7 @@
 // 在表内但当前访客没有 control 权限的，同样退回动画。
 //
 // 这是页面侧的配置：服务端只知道设备，不知道「庭院灯」这种展示概念。
-export type Binding = { device: string; action?: string };
+// outlet 只对多路模块有用（比如 4 路开关模块），单路设备留空即可。
+export type Binding = { device: string; action?: string; outlet?: number };
 
 export const DEVICE_MAP: Record<string, Binding> = {};

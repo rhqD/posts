@@ -45,6 +45,7 @@ var baseURLs = map[string]string{
 // offer the user buttons that poke firmware state. Only these are user actions.
 var controllableParams = map[string]bool{
 	"switch":           true,
+	"switches":         true, // multi-gang modules (uiid 138 and friends)
 	"brightness":       true,
 	"colorTemperature": true,
 	"mode":             true,
@@ -82,6 +83,9 @@ func (s *StaticToken) Invalidate() {}
 type meta struct {
 	desc     device.Descriptor
 	itemType int
+	// outlets > 0: a multi-gang module driven by a "switches" array rather
+	// than a single "switch" field.
+	outlets int
 }
 
 type cached struct {
@@ -297,7 +301,7 @@ func (p *Provider) Discover(ctx context.Context) ([]device.Descriptor, error) {
 			continue // groups and homes carry no deviceid
 		}
 		d := buildDescriptor(t.ItemData.DeviceID, t.ItemData.Name, t.ItemData.Room, t.ItemData.Online, t.ItemData.Params)
-		p.devices[d.Key] = meta{desc: d, itemType: t.ItemType}
+		p.devices[d.Key] = meta{desc: d, itemType: t.ItemType, outlets: gangCount(t.ItemData.Params)}
 		p.cache[d.Key] = cached{readings: copyReadings(t.ItemData.Params), expire: time.Now().Add(p.ttl)}
 		out = append(out, d)
 	}
@@ -336,6 +340,14 @@ func buildDescriptor(key, name, room string, online bool, params map[string]any)
 			d.Actions["set_switch"] = device.ParamSpec{Type: "bool"}
 			continue
 		}
+		if k == "switches" {
+			// Multi-gang modules report a "switches" array; one set_switch
+			// action addresses them all via an outlet index.
+			if n := gangCount(params); n > 0 {
+				d.Actions["set_switch"] = device.ParamSpec{Type: "bool", Outlets: n}
+			}
+			continue
+		}
 		spec := device.ParamSpec{Type: "number"}
 		if k == "brightness" || k == "colorTemperature" {
 			lo, hi := 1, 100
@@ -344,6 +356,19 @@ func buildDescriptor(key, name, room string, online bool, params map[string]any)
 		d.Actions["set_"+k] = spec
 	}
 	return d
+}
+
+// gangCount returns how many channels a "switches" array describes.
+func gangCount(params map[string]any) int {
+	raw, ok := params["switches"]
+	if !ok {
+		return 0
+	}
+	list, ok := raw.([]any)
+	if !ok {
+		return 0
+	}
+	return len(list)
 }
 
 func copyReadings(params map[string]any) device.Readings {
@@ -424,18 +449,40 @@ func (p *Provider) Apply(ctx context.Context, key string, cmd device.Command) er
 		}
 	}
 
-	paramKey := actionParam(cmd.Action)
-	if paramKey == "" {
-		return device.ErrUnsupported
-	}
 	value, ok := cmd.Params["value"]
 	if !ok {
 		return fmt.Errorf("sonoff: %s needs params.value", cmd.Action)
 	}
+
+	var payload map[string]any
+	if m.outlets > 0 && cmd.Action == "set_switch" {
+		// Multi-gang module: address one outlet through the switches array.
+		outlet := 0
+		if v, ok := cmd.Params["outlet"].(float64); ok {
+			outlet = int(v)
+		}
+		if outlet < 0 || outlet >= m.outlets {
+			return fmt.Errorf("sonoff: outlet %d out of range (device has %d)", outlet, m.outlets)
+		}
+		state := "off"
+		if b, ok := value.(bool); ok && b {
+			state = "on"
+		}
+		payload = map[string]any{
+			"switches": []any{map[string]any{"outlet": outlet, "switch": state}},
+		}
+	} else {
+		paramKey := actionParam(cmd.Action)
+		if paramKey == "" {
+			return device.ErrUnsupported
+		}
+		payload = map[string]any{paramKey: convert(paramKey, value)}
+	}
+
 	body := map[string]any{
 		"type":   m.itemType,
 		"id":     key,
-		"params": map[string]any{paramKey: convert(paramKey, value)},
+		"params": payload,
 	}
 	if body["type"] == 0 {
 		body["type"] = 1
