@@ -30,7 +30,6 @@ let preparingLights = false;
 let activeView = 'landscape', transition = null, loadId = 0, dirty = true, wireframe = false;
 let sun, hemisphere;
 let followingRealtime = true, sunTimer;
-const wideScreen = matchMedia('(min-width: 700px)');
 const sunEvents = new AbortController();
 let displayedInstant = new Date();
 let floodlight = null, floodlightOn = false, floodlightLens = null, pointerDown = null, floodlightProfile = null;
@@ -273,14 +272,12 @@ function bindSunTime() {
   const followNow = () => { followingRealtime = true; applySun(new Date()); };
   for (const selector of ['#sun-datetime', '#sun-time', '#sun-live']) $(selector).disabled = false;
   $('#sun-datetime').addEventListener('change', event => {
-    if (!wideScreen.matches) return;
     const input = event.target;
     const instant = input.validity.valid && parseBeijingTime(input.value);
     if (!instant) { input.value = beijingClock(displayedInstant).dateTime; return; }
     followingRealtime = false; applySun(instant);
   }, { signal });
   $('#sun-time').addEventListener('input', event => {
-    if (!wideScreen.matches) return;
     const minutes = Number(event.target.value);
     const hour = String(Math.floor(minutes / 60)).padStart(2, '0');
     const minute = String(minutes % 60).padStart(2, '0');
@@ -288,8 +285,6 @@ function bindSunTime() {
     if (instant) { followingRealtime = false; applySun(instant); }
   }, { signal });
   $('#sun-live').addEventListener('click', followNow, { signal });
-  // Narrow layouts hide manual controls and always restore realtime.
-  wideScreen.addEventListener('change', () => { if (!wideScreen.matches) followNow(); }, { signal });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden && followingRealtime) applySun(new Date());
   }, { signal });
