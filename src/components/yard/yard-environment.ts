@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { createYardWildlife } from './yard-wildlife';
 
 /** A quiet mountain garden. All scenery is local, seeded, and shared on the GPU. */
 export function createYardEnvironment() {
@@ -49,7 +50,7 @@ export function createYardEnvironment() {
   terrain.rotateX(-Math.PI / 2);
   const positions = terrain.attributes.position;
   const colors: number[] = [];
-  const meadow = new THREE.Color(0x849172), moss = new THREE.Color(0x5f785e), stone = new THREE.Color(0x79877e);
+  const meadow = new THREE.Color(0x6f9e46), moss = new THREE.Color(0x377c49), stone = new THREE.Color(0x688678);
   for (let i = 0; i < positions.count; i++) {
     const x = positions.getX(i), z = positions.getZ(i), y = height(x, z);
     positions.setY(i, y);
@@ -81,13 +82,13 @@ export function createYardEnvironment() {
     return geometry;
   };
   const waterY = floor - .38;
-  mesh(ribbon([-1.4, 1.4], () => waterY), new THREE.MeshLambertMaterial({ color: 0x527e77 }));
+  mesh(ribbon([-1.4, 1.4], () => waterY), new THREE.MeshLambertMaterial({ color: 0x299cab }));
   const bank = new THREE.MeshStandardMaterial({color: 0x90957c, roughness: 1, side: THREE.DoubleSide});
   for (const side of [-1, 1]) mesh(ribbon([1.18, 1.35, 1.55, 1.75, 1.94], (x, z) => height(x, z) + .025, side, true), bank);
 
   // Tall, irregular conifers replace the repeated spherical canopies.
   const crownVertices: number[] = [], crownColors: number[] = [];
-  const pineDark = new THREE.Color(0x294d43), pineLight = new THREE.Color(0x57745b);
+  const pineDark = new THREE.Color(0x194f34), pineLight = new THREE.Color(0x4d913e);
   for (let tier = 0; tier < 5; tier++) {
     const base = .22 + tier * .135, radius = .245 * (1 - tier * .15), tip = base + .35;
     for (let j = 0; j < 13; j++) {
@@ -154,7 +155,7 @@ export function createYardEnvironment() {
     dummy.position.set(x, height(x, z), z); dummy.rotation.set(0, random() * 6, 0);
     const size = .2 + random() * .45;
     dummy.scale.set(size, size, size); dummy.updateMatrix(); grasses.setMatrixAt(i, dummy.matrix);
-    grasses.setColorAt(i, new THREE.Color().setHSL(.16 + random() * .08, .13 + random() * .15, .33 + random() * .16));
+    grasses.setColorAt(i, new THREE.Color().setHSL(.19 + random() * .1, .35 + random() * .25, .32 + random() * .16));
   }
   group.add(grasses);
 
@@ -183,8 +184,12 @@ export function createYardEnvironment() {
     tread.rotation.y = Math.atan2(tangent.x, tangent.z);
   }
 
+  const wildlife = createYardWildlife({height, riverX, waterY});
+  group.add(wildlife.group);
+
   return {
     group,
+    updateWildlife: wildlife.update,
     dispose() {
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
       group.traverse(object => {

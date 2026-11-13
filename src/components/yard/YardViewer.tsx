@@ -6,6 +6,7 @@ import styles from "./yard.module.css";
 const VIEWS = [
   { key: "landscape", label: "园景" },
   { key: "waterside", label: "山水" },
+  { key: "wildlife", label: "小动物" },
   { key: "yard", label: "前院" },
   { key: "pond", label: "池塘" },
   { key: "garden", label: "花园" },
@@ -40,6 +41,7 @@ export default function YardViewer() {
     <div ref={rootRef} className={styles.root}>
       <div id="stage" className={styles.stage} />
 
+      <aside className={styles.settings} aria-label="时间与灯光设置">
       <section className={styles.sunPanel} aria-label="日照时间设置">
         <div className={styles.sunHeading}>
           <span>日照时间</span>
@@ -56,12 +58,6 @@ export default function YardViewer() {
         <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
         <p className={styles.sunHint}>房屋坐标 108.09°E · 34.18°N<br />晴空光照示意</p>
       </section>
-
-      <aside className={styles.tools} aria-label="预览设置">
-        <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
-        <button id="wireframe" className={styles.pill} aria-pressed="false">线框</button>
-      </aside>
-
       <details className={styles.lighting}>
         <summary className={styles.pill}>灯光设置</summary>
         <div className={styles.dock} aria-label="灯光控制">
@@ -77,6 +73,14 @@ export default function YardViewer() {
         <div id="lamp-list" className={styles.lampPills} />
         </div>
       </details>
+      </aside>
+
+      <aside className={styles.tools} aria-label="预览设置">
+        <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
+        <button id="wireframe" className={styles.pill} aria-pressed="false">线框</button>
+      </aside>
+
+
 
       <nav className={styles.viewbar} aria-label="预设视角">
         {VIEWS.map((view, i) => (

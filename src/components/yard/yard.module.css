@@ -42,7 +42,8 @@
   z-index: 2;
 }
 
-.lighting { position: absolute; top: 108px; right: 20px; z-index: 3; }
+.settings { position: absolute; top: 108px; right: 20px; z-index: 3; }
+.lighting { position: relative; }
 .lighting summary { cursor: pointer; list-style: none; text-align: center; }
 .lighting summary::-webkit-details-marker { display: none; }
 .lighting[open] summary { background: #455e50; color: white; }
@@ -130,13 +131,22 @@
 
 .sunPanel { display: none; }
 @media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
-  .sunPanel {
-    display: block; position: absolute; top: 20px; left: 20px; z-index: 2;
-    width: 246px; padding: 18px; color: #354c40;
+  .settings {
+    top: 20px; left: 20px; right: auto; width: 246px; padding: 18px; color: #354c40;
+    max-height: calc(100% - 40px); overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, .75); border-radius: 18px;
-    background: rgba(244, 247, 240, .88); backdrop-filter: blur(18px);
+    background: rgba(244, 247, 240, .9); backdrop-filter: blur(18px);
     box-shadow: 0 8px 28px rgba(35, 53, 44, .08);
   }
+  .sunPanel { display: block; }
+  .lighting { margin-top: 14px; padding-top: 14px; border-top: 1px solid #d3dccf; }
+  .lighting summary, .lighting[open] summary {
+    padding: 0; border: 0; border-radius: 0; background: transparent; color: #354c40;
+    box-shadow: none; text-align: left; font-size: 12px; line-height: 1.6;
+  }
+  .lighting summary::after { content: '+'; float: right; }
+  .lighting[open] summary::after { content: '−'; }
+  .dock { position: static; margin-top: 12px; width: auto; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
 }
 .sunHeading { display: flex; align-items: center; justify-content: space-between; font-size: 13px; margin-bottom: 16px; }
 .sunMode { font-size: 10px; color: #617968; }

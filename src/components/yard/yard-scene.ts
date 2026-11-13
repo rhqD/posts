@@ -43,6 +43,7 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 Object.values(extraLights).forEach(group => Object.assign(group, { on: false, lights: [], emitters: [] }));
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
+  wildlife: { position: new THREE.Vector3(-11, 8, 17), target: new THREE.Vector3(-25, -.5, 5), fov: 48 },
   waterside: { position: b(18,-48,31), target: b(-17,16,2) },
   landscape: { position: b(32,-48,23), target: b(-7,16,7.5), fov: 42 },
   yard: { position: b(14,-8,14), target: b(4.5,4.8,1.3) },
@@ -237,15 +238,15 @@ function applySun(instant = new Date()) {
   const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .4);
   const warmth = THREE.MathUtils.smoothstep(direction.y, 0, .65);
   sun.position.copy(sun.target.position).addScaledVector(direction, 55);
-  sun.intensity = 2.4 * daylight;
+  sun.intensity = 2.6 * daylight;
   sun.color.set(0xffa563).lerp(new THREE.Color(0xfff1d9), warmth);
   hemisphere.intensity = .2 + daylight * .9;
-  hemisphere.color.set(0x60758e).lerp(new THREE.Color(0xe4ebef), daylight);
-  hemisphere.groundColor.set(0x25313a).lerp(new THREE.Color(0xafa48a), daylight);
+  hemisphere.color.set(0x60758e).lerp(new THREE.Color(0xd9efff), daylight);
+  hemisphere.groundColor.set(0x25313a).lerp(new THREE.Color(0xb2ad76), daylight);
   scene.environmentIntensity = .06 + daylight * .39;
   const twilight = THREE.MathUtils.smoothstep(elevation, -12, 0);
   scene.background.set(0x101c2b).lerp(new THREE.Color(0x8f9a9b), twilight)
-    .lerp(new THREE.Color(0xdce5e5), THREE.MathUtils.smoothstep(elevation, 0, 20));
+    .lerp(new THREE.Color(0x86c7ee), THREE.MathUtils.smoothstep(elevation, 0, 20));
   scene.fog?.color.copy(scene.background);
   const clock = beijingClock(instant);
   if (document.activeElement !== $('#sun-datetime')) $('#sun-datetime').value = clock.dateTime;
@@ -347,13 +348,16 @@ try {
   sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-19,right:19,top:19,bottom:-19,near:1,far:90});
   sun.shadow.bias = -.00015; sun.shadow.normalBias = .025; scene.add(sun,sun.target);
   scene.background = new THREE.Color();
-  scene.fog = new THREE.FogExp2(0xdce5e5, .0058);
+  scene.fog = new THREE.FogExp2(0x86c7ee, .0025);
   applySun(); bindSunTime();
   landscape = createYardEnvironment();
   scene.add(landscape.group);
   const draco = new DRACOLoader(); draco.setDecoderPath('/yard/draco/'); draco.setWorkerLimit(2);
   loader = new GLTFLoader(); loader.setDRACOLoader(draco);
-  let previous = performance.now();
+  let previous = performance.now(), wildlifeElapsed = 0;
+  const wildlifeFrustum = new THREE.Frustum();
+  const wildlifeProjection = new THREE.Matrix4();
+  const wildlifeBounds = new THREE.Sphere(new THREE.Vector3(-21, 0, 6), 15);
   renderer.setAnimationLoop(now => {
     const delta = Math.min((now-previous)/1000,.1); previous = now;
     if (transition) {
@@ -362,6 +366,17 @@ try {
       dirty = true; if (t === 1) transition = null;
     }
     const changed = controls.update(delta);
+    if (!reducedMotion && !document.hidden) {
+      wildlifeElapsed += delta;
+      if (wildlifeElapsed >= .05) {
+        wildlifeProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+        wildlifeFrustum.setFromProjectionMatrix(wildlifeProjection);
+        if (camera.position.distanceTo(wildlifeBounds.center) < 100 && wildlifeFrustum.intersectsSphere(wildlifeBounds)) {
+          landscape.updateWildlife(wildlifeElapsed); dirty = true;
+        }
+        wildlifeElapsed = 0;
+      }
+    }
     if (dirty || changed || controls.autoRotate) { renderer.render(scene,camera); compass(); dirty = false; }
   });
   onResize = () => resize();
