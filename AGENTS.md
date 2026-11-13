@@ -11,7 +11,10 @@ docs/ 下有更细的专题文档。**如果文档和代码冲突，以代码为
 - 线上：https://www.renhanquan.com
 - 仓库：github.com/rhqD/posts
 
-**没有服务端、没有数据库、没有后台。** 这是最重要的一个事实。
+**博客本身没有服务端、没有数据库、没有后台。** 这是最重要的一个事实。
+
+唯一例外是 `apps/control`：一个独立的家庭设备网关（Go，自带鉴权/权限/审计），
+部署在自己的机器上，和静态站**没有任何运行时耦合**。见 [docs/auth.md](docs/auth.md)。
 
 ## 一分钟看懂架构
 
@@ -43,6 +46,7 @@ OSS bucket renhanquan-site (cn-hangzhou)
 | `src/content/bio.ts` | 个人资料、技能、经历，**手写的静态数据** |
 | `src/lib/notion.ts` | 读 `content/` 快照；没有快照时才回退到 Notion API |
 | `apps/api/cmd/sync` | Notion → content/ 的同步工具（Go，零外部依赖） |
+| `apps/control` | 家庭设备网关：短信登录、权限、设备抽象、审计（独立部署） |
 | `content/` | 构建期内容快照，**要提交进 git** |
 | `scripts/images.mjs` | 图片管线 |
 | `scripts/deploy.sh` | 构建产物上传 OSS |
@@ -55,6 +59,9 @@ OSS bucket renhanquan-site (cn-hangzhou)
 
 ```bash
 pnpm dev          # 本地开发，修改 src/content/bio.ts 或 content/ 会热更新
+make control-dev  # 控制面本地跑（fake 短信，验证码打印在 stdout）
+make control-test # 控制面测试
+make control-verify # 校验审计哈希链，断链返回非 0
 make sync         # Notion -> content/（需要 NOTION_API_KEY）
 make images       # 图片处理 + 上传 OSS
 make deploy       # 构建 + 上传 OSS
@@ -65,9 +72,10 @@ make publish      # sync + images + deploy
 
 ## 硬性约束（改代码前必须知道）
 
-1. **不能引入任何运行时服务端逻辑。** `next.config.ts` 是 `output: "export"`，
+1. **不能给 Next.js 引入任何运行时服务端逻辑。** `next.config.ts` 是 `output: "export"`，
    一旦出现 Route Handler、Server Action、需要请求头/cookie 的动态页面，构建会失败。
    历史上这里有过 `/api/bio/*`、`/api/posts`、`/api/upload`、`/api/auth`，全部删除。
+   这条只管 `src/` 和 `next.config.ts`；`apps/control` 是另一个进程，不受约束。
 2. **Notion 图片 URL 只有 1 小时有效期。** 任何出现在 HTML 里的图片地址必须是
    `/images/<hash>.webp`，由 `make images` 生成。绝不把 S3 签名 URL 写进内容。
 3. **HTML 不能缓存，资源必须长缓存。** `scripts/deploy.sh` 用不同的 Cache-Control 分两次上传，
@@ -151,13 +159,16 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 - 没有 CI：发布靠本地 `make publish`。计划加 GitHub Actions。
 - 根域 renhanquan.com 仍指向 Vercel 做 307 跳转，可改为直接指向 CDN。
-- ROS 模板未落地，基础设施目前是手工创建的。
+- ROS 模板未落地：分层方案见 [docs/infra.md](docs/infra.md)，模板还没写。
+- 控制面缺：CoolKit 之外的 provider、管理界面、告警、前端登录页。
 - `rose-eden` 一篇文章中有一张图指向已失效的旧域名，需在 Notion 侧替换。
 - 3D 场景未与真实尺寸对齐：房屋、河道、山体的比例来自程序生成的环境，和实测尺寸有偏差，导致阴影长短/朝向细节与实景对不上。计划按真实测量校准 `yard-environment.ts` 的尺度，并把 `YARD_SITE` 保留为唯一坐标来源。
 
 ## 文档索引
 
 - `README.md` — 项目简介与快速开始
+- [docs/auth.md](docs/auth.md) — 鉴权、权限模型、设备抽象、审计
+- [docs/infra.md](docs/infra.md) — 基础设施与 ROS 分层
 - `docs/architecture.md` — 渲染模式、数据流、缓存策略
 - `docs/deploy.md` — 部署与运维 runbook
 - `docs/content-pipeline.md` — 内容与图片管线
