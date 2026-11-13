@@ -132,8 +132,11 @@ POST /v2/device/thing/status   {type, id, params}
 KMS 凭据管家那条路（`SONOFF_SECRET_NAME`）代码保留但默认不用：它要求一个
 KMS 实例，最低 30 元/天 + QPS 费，为两个 token 不值。
 
-⚠️ 读回来的是**快照**：如果服务运行期间 token 被刷新过，KMS 里的 `rt` 会慢慢变旧。
-超过约 60 天没更新凭据，重启后就续不上了——记得定期把新值写回（或以后加写回逻辑）。
+**自动写回**：CoolKit 每次续期都会轮换 `rt`，旧值立刻失效。所以刷新成功后
+服务会把新的 `at`/`rt` 写回同一个加密参数（`oos:UpdateSecretParameter`），
+重启永远能拿到有效凭证。
+
+`at` 不需要特意回填：它过期了用 `rt` 换一个就行。**`rt` 才是不更新就会出事的那一个。**
 
 **token 续期**：CoolKit 有 `/v2/user/refresh`，只要 `at` 和 `rt` 就能续，
 不需要重新登录（登录要用 App 私有密钥做 HMAC 签名，那一步我们不做）。配上

@@ -21,11 +21,22 @@ type RefreshToken struct {
 	base string
 	hc   *http.Client
 
+	// onRefresh persists a rotated pair. Best effort: a failure here must not
+	// break the call that triggered the renewal.
+	onRefresh func(at, rt string)
+
 	mu      sync.Mutex
 	at      string
 	rt      string
 	stale   bool
 	lastErr error
+}
+
+// SetOnRefresh registers a persistence callback for rotated credentials.
+func (r *RefreshToken) SetOnRefresh(fn func(at, rt string)) {
+	r.mu.Lock()
+	r.onRefresh = fn
+	r.mu.Unlock()
 }
 
 func NewRefreshToken(base, at, rt string) *RefreshToken {
@@ -109,6 +120,12 @@ func (r *RefreshToken) refreshLocked(ctx context.Context) error {
 	}
 	r.stale = false
 	r.lastErr = nil
+
+	// Persist outside the lock so a slow write cannot stall other callers.
+	if r.onRefresh != nil {
+		at, rt, hook := r.at, r.rt, r.onRefresh
+		go hook(at, rt)
+	}
 	return nil
 }
 

@@ -159,12 +159,13 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		// file: read once at startup with the instance role, never written down.
 		// OOS encrypted parameters are free (legacy KMS, up to 200 per region);
 		// KMS Secrets Manager needs a paid instance, kept as a fallback.
-		if name := firstNonEmpty(os.Getenv("SONOFF_SECRET_PARAM"), os.Getenv("SONOFF_SECRET_NAME")); name != "" {
+		secretParam := os.Getenv("SONOFF_SECRET_PARAM")
+		regionName := env("ALIYUN_REGION", "cn-beijing")
+		if name := firstNonEmpty(secretParam, os.Getenv("SONOFF_SECRET_NAME")); name != "" {
 			creds, err := aliyunCredentials()
 			if err != nil {
 				return nil, err
 			}
-			regionName := env("ALIYUN_REGION", "cn-beijing")
 			var raw string
 			if os.Getenv("SONOFF_SECRET_PARAM") != "" {
 				raw, err = aliyun.GetSecretParameter(ctx, nil, regionName, creds, name)
@@ -182,7 +183,7 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 				return nil, fmt.Errorf("sonoff secret %q must be json with at/rt fields: %w", name, err)
 			}
 			at, rt = secret.At, secret.Rt
-			log.Printf("sonoff credentials loaded from KMS secret %q", name)
+			log.Printf("sonoff credentials loaded from parameter %q", name)
 		}
 		if at == "" {
 			return nil, errors.New("SONOFF_ACCESS_TOKEN or SONOFF_SECRET_NAME required for DEVICE_PROVIDER=sonoff")
@@ -200,7 +201,28 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		// itself; without one it dies after ~30 days.
 		var source sonoff.TokenSource
 		if rt != "" {
-			source = sonoff.NewRefreshToken(base, tok, rt)
+			refresher := sonoff.NewRefreshToken(base, tok, rt)
+			// CoolKit rotates the refresh token on every renewal. Write the new
+			// pair back, otherwise the stored one goes stale and the next
+			// restart cannot renew at all.
+			if secretParam != "" {
+				refresher.SetOnRefresh(func(newAt, newRt string) {
+					payload, _ := json.Marshal(map[string]string{"at": newAt, "rt": newRt})
+					creds, err := aliyunCredentials()
+					if err != nil {
+						log.Printf("sonoff: cannot persist rotated credentials: %v", err)
+						return
+					}
+					writeCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+					defer cancel()
+					if err := aliyun.UpdateSecretParameter(writeCtx, nil, regionName, creds, secretParam, string(payload)); err != nil {
+						log.Printf("sonoff: cannot persist rotated credentials to %q: %v", secretParam, err)
+						return
+					}
+					log.Printf("sonoff: rotated credentials persisted to %q", secretParam)
+				})
+			}
+			source = refresher
 		} else {
 			source = sonoff.NewStaticToken(tok)
 		}

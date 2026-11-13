@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"renhanquan/control/internal/device/sonoff"
 )
@@ -79,5 +80,30 @@ func TestRefreshFailureKeepsOldToken(t *testing.T) {
 	}
 	if tok.Err() == nil {
 		t.Fatal("the failure should be recorded for status")
+	}
+}
+
+func TestRefreshPersistsRotatedPair(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, `{"error":0,"data":{"at":"at-2","rt":"rt-2"}}`)
+	}))
+	defer srv.Close()
+
+	tok := sonoff.NewRefreshToken(srv.URL, "at-1", "rt-1")
+	done := make(chan [2]string, 1)
+	tok.SetOnRefresh(func(at, rt string) { done <- [2]string{at, rt} })
+
+	tok.Invalidate()
+	if _, err := tok.Token(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+
+	select {
+	case got := <-done:
+		if got[0] != "at-2" || got[1] != "rt-2" {
+			t.Fatalf("persisted %v, want at-2/rt-2", got)
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("refresh did not call the persistence hook")
 	}
 }
