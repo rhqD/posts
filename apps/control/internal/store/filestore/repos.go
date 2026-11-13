@@ -139,6 +139,13 @@ func (r *devices) Upsert(_ context.Context, d *store.Device) error {
 	return nil
 }
 
+func (r *devices) Delete(_ context.Context, key string) error {
+	r.f.mu.Lock()
+	defer r.f.mu.Unlock()
+	delete(r.f.devices, key)
+	return nil
+}
+
 type sessions struct{ f *File }
 
 func (r *sessions) Get(_ context.Context, id store.ID) (*store.Session, error) {

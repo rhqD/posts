@@ -128,6 +128,7 @@ type Devices interface {
 	Get(ctx context.Context, key string) (*Device, error)
 	List(ctx context.Context) ([]*Device, error)
 	Upsert(ctx context.Context, d *Device) error
+	Delete(ctx context.Context, key string) error
 }
 
 type Sessions interface {

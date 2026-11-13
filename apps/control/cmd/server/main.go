@@ -118,7 +118,7 @@ func main() {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	go housekeeping(ctx, st, sessions)
+	go housekeeping(ctx, st, sessions, prov)
 
 	go func() {
 		log.Printf("listening on %s (data=%s)", addr, dataDir)
@@ -315,6 +315,25 @@ func syncDevices(ctx context.Context, st store.Store, p device.Provider) error {
 		return err
 	}
 	return st.Tx(ctx, func(tx store.Store) error {
+		seen := make(map[string]bool, len(found))
+		for _, d := range found {
+			seen[d.Key] = true
+		}
+		// Drop devices the provider stopped reporting, otherwise a stale or
+		// mock device lingers in the list forever.
+		existing, err := tx.Devices().List(ctx)
+		if err != nil {
+			return err
+		}
+		for _, old := range existing {
+			if !seen[old.Key] {
+				if err := tx.Devices().Delete(ctx, old.Key); err != nil {
+					return err
+				}
+				log.Printf("device gone, removed: %s (%s)", old.Key, old.Name)
+			}
+		}
+
 		for _, d := range found {
 			prev, err := tx.Devices().Get(ctx, d.Key)
 			next := &store.Device{
@@ -418,7 +437,7 @@ func reloadACL(ctx context.Context, st store.Store, az *acl.Authorizer) error {
 	return nil
 }
 
-func housekeeping(ctx context.Context, st store.Store, sessions *auth.Sessions) {
+func housekeeping(ctx context.Context, st store.Store, sessions *auth.Sessions, prov device.Provider) {
 	t := time.NewTicker(10 * time.Minute)
 	defer t.Stop()
 	for {
@@ -426,6 +445,12 @@ func housekeeping(ctx context.Context, st store.Store, sessions *auth.Sessions) 
 		case <-t.C:
 			if n := sessions.PurgeExpired(ctx); n > 0 {
 				log.Printf("purged %d expired sessions", n)
+			}
+			// A device that was offline at boot reports fewer params, so its
+			// action list would stay empty until a restart. Re-sync so actions
+			// appear once the device comes back.
+			if err := syncDevices(ctx, st, prov); err != nil {
+				log.Printf("device resync failed: %v", err)
 			}
 		case <-ctx.Done():
 			return

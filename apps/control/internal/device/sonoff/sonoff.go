@@ -38,10 +38,24 @@ var baseURLs = map[string]string{
 	"eu": "https://eu-apia.coolkit.cc",
 }
 
-// readOnlyParams never become actions: they are observations, not controls.
-var readOnlyParams = map[string]bool{
-	"rssi": true, "battery": true, "humidity": true, "temperature": true,
-	"lastUpdate": true, "fwVersion": true, "online": true,
+// controllableParams is an allowlist, not a denylist.
+//
+// Real eWeLink payloads are full of internal registers — depc, epc1, excvaddr,
+// rstReason, longOffline — and treating "anything writable" as a control would
+// offer the user buttons that poke firmware state. Only these are user actions.
+var controllableParams = map[string]bool{
+	"switch":           true,
+	"brightness":       true,
+	"colorTemperature": true,
+	"mode":             true,
+	"channel":          true,
+}
+
+// noisyReadings are device fingerprints rather than state; they stay out of the
+// descriptor so the UI does not have to filter them.
+var noisyReadings = map[string]bool{
+	"bindInfos": true, "bssid": true, "ssid": true, "staMac": true,
+	"only_device": true,
 }
 
 // TokenSource supplies an access token. Implementations may refresh it.
@@ -309,30 +323,23 @@ func buildDescriptor(key, name, room string, params map[string]any) device.Descr
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		d.Readings = append(d.Readings, k)
-		if readOnlyParams[k] {
+		if !noisyReadings[k] {
+			d.Readings = append(d.Readings, k)
+		}
+		if !controllableParams[k] {
 			continue
 		}
 		// eWeLink reports switches as the string "on"/"off", not as a bool.
-		// Treat the key as boolean regardless of how it happens to be encoded.
 		if k == "switch" {
 			d.Actions["set_switch"] = device.ParamSpec{Type: "bool"}
 			continue
 		}
-		switch params[k].(type) {
-		case bool:
-			d.Actions["set_"+k] = device.ParamSpec{Type: "bool"}
-		case float64, int:
-			spec := device.ParamSpec{Type: "number"}
-			if k == "brightness" || k == "colorTemperature" {
-				lo, hi := 1, 100
-				spec.Min, spec.Max = &lo, &hi
-			}
-			d.Actions["set_"+k] = spec
-		case []any:
-			// multi-gang switch arrays are read-only here; the UI cannot yet
-			// address a single gang.
+		spec := device.ParamSpec{Type: "number"}
+		if k == "brightness" || k == "colorTemperature" {
+			lo, hi := 1, 100
+			spec.Min, spec.Max = &lo, &hi
 		}
+		d.Actions["set_"+k] = spec
 	}
 	return d
 }

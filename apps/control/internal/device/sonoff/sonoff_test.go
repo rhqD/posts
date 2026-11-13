@@ -201,3 +201,33 @@ func TestUnknownDeviceRefreshesOnce(t *testing.T) {
 		t.Errorf("got %v", params)
 	}
 }
+
+func TestDiagnosticParamsAreNotActions(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, `{"error":0,"data":{"thingList":[
+			{"itemType":1,"itemData":{"deviceid":"1001abc","name":"Bedroom",
+			 "params":{"switch":"off","rssi":-50,"excvaddr":0,"rstReason":3,
+			           "depc":0,"longOffline":0,"epc1":0,"version":8}}}
+		]}}`)
+	}))
+	defer srv.Close()
+
+	p := sonoff.New("cn", sonoff.NewStaticToken("t"),
+		sonoff.WithBaseURL(srv.URL), sonoff.WithMinGap(0))
+	list, err := p.Discover(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(list) != 1 {
+		t.Fatalf("got %d devices", len(list))
+	}
+	acts := list[0].Actions
+	if _, ok := acts["set_switch"]; !ok {
+		t.Error("switch must remain controllable")
+	}
+	for _, bad := range []string{"set_excvaddr", "set_rstReason", "set_depc", "set_longOffline", "set_epc1", "set_version"} {
+		if _, ok := acts[bad]; ok {
+			t.Errorf("%s must not be an action: it is device state, not a control", bad)
+		}
+	}
+}
