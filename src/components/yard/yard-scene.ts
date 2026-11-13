@@ -413,7 +413,11 @@ try {
   root.querySelectorAll('[data-lamp-view]').forEach(button => button.addEventListener('click', () => {
     selectView(button.dataset.lampView === 'floodlight' ? 'lamp' : button.dataset.lampView, true);
   }));
-  $('#floodlight').addEventListener('click', () => updateFloodlight(!floodlightOn));
+  $('#floodlight').addEventListener('click', () => {
+    const next = !floodlightOn;
+    updateFloodlight(next);
+    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', next);
+  });
   root.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
     const key = button.dataset.lightGroup;
     const next = !extraLights[key].on;
@@ -432,6 +436,13 @@ try {
     applyLampStates(states: Record<string, boolean>) {
       liveLamps.clear();
       for (const [key, on] of Object.entries(states)) {
+        // The floodlight is a standalone control, not one of the light groups,
+        // so it needs its own path here.
+        if (key === 'floodlight') {
+          liveLamps.add(key);
+          updateFloodlight(on);
+          continue;
+        }
         if (!extraLights[key]) {
           // A binding that does not match a lamp in lights.json would otherwise
           // fail silently, which reads as "the lamp does nothing".
@@ -443,6 +454,7 @@ try {
       }
     },
     setLamp(key: string, on: boolean) {
+      if (key === 'floodlight') { updateFloodlight(on); return; }
       if (extraLights[key]) updateExtraLight(key, on);
     },
     destroy() {
