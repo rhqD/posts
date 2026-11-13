@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { House } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import BGMPlayer from "./BGMPlayer";
+import LoginControl from "./LoginControl";
 
 const navLinks = [
   { href: "/#about", label: "About" },
@@ -91,20 +92,23 @@ export default function Header() {
             Ren Hanquan
           </Link>
         </div>
-        <nav className="flex items-center gap-0.5 text-sm overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
-              style={{ color: textMuted }}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <BGMPlayer />
-          <ThemeToggle />
-        </nav>
+        <div className="flex items-center gap-1 min-w-0">
+          <nav className="flex items-center gap-0.5 text-sm overflow-x-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 whitespace-nowrap"
+                style={{ color: textMuted }}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <BGMPlayer />
+            <ThemeToggle />
+          </nav>
+          <LoginControl color={textMuted} muted={textMuted} />
+        </div>
       </div>
     </header>
   );
