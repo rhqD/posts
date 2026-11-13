@@ -275,6 +275,7 @@ type thing struct {
 		DeviceID string         `json:"deviceid"`
 		Name     string         `json:"name"`
 		Room     string         `json:"roomName"`
+		Online   bool           `json:"online"`
 		Params   map[string]any `json:"params"`
 	} `json:"itemData"`
 }
@@ -295,7 +296,7 @@ func (p *Provider) Discover(ctx context.Context) ([]device.Descriptor, error) {
 		if t.ItemData.DeviceID == "" {
 			continue // groups and homes carry no deviceid
 		}
-		d := buildDescriptor(t.ItemData.DeviceID, t.ItemData.Name, t.ItemData.Room, t.ItemData.Params)
+		d := buildDescriptor(t.ItemData.DeviceID, t.ItemData.Name, t.ItemData.Room, t.ItemData.Online, t.ItemData.Params)
 		p.devices[d.Key] = meta{desc: d, itemType: t.ItemType}
 		p.cache[d.Key] = cached{readings: copyReadings(t.ItemData.Params), expire: time.Now().Add(p.ttl)}
 		out = append(out, d)
@@ -306,13 +307,14 @@ func (p *Provider) Discover(ctx context.Context) ([]device.Descriptor, error) {
 // buildDescriptor derives capabilities from the params a device reports. This
 // is why a device type the code has never seen still works: whatever the cloud
 // says is writable becomes a set_* action.
-func buildDescriptor(key, name, room string, params map[string]any) device.Descriptor {
+func buildDescriptor(key, name, room string, online bool, params map[string]any) device.Descriptor {
 	d := device.Descriptor{
 		Key:      key,
 		Name:     name,
 		Room:     room,
 		Provider: "sonoff",
 		Kind:     "device",
+		Online:   online,
 		Actions:  map[string]device.ParamSpec{},
 	}
 

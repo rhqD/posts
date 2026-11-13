@@ -66,6 +66,7 @@ type Device struct {
 	Room     string         `json:"room,omitempty"`
 	Provider string         `json:"provider"`
 	Kind     string         `json:"kind,omitempty"`
+	Online   bool           `json:"online"`
 	Readings []string       `json:"readings,omitempty"`
 	Actions  map[string]any `json:"actions,omitempty"`
 	Hidden   bool           `json:"hidden,omitempty"`

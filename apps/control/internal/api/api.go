@@ -378,6 +378,7 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 			"name":     d.Name,
 			"room":     d.Room,
 			"kind":     d.Kind,
+			"online":   d.Online,
 			"readings": d.Readings,
 			"actions":  actions,
 			"state":    state,

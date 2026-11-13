@@ -342,6 +342,7 @@ func syncDevices(ctx context.Context, st store.Store, p device.Provider) error {
 				Room:     d.Room,
 				Provider: d.Provider,
 				Kind:     d.Kind,
+				Online:   d.Online,
 				Readings: d.Readings,
 				Actions:  actionsOf(d),
 			}

@@ -27,6 +27,7 @@ type Descriptor struct {
 	Room     string
 	Provider string
 	Kind     string
+	Online   bool
 	Readings []string
 	Actions  map[string]ParamSpec
 }
