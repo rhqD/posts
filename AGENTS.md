@@ -46,8 +46,9 @@ OSS bucket renhanquan-site (cn-hangzhou)
 | `content/` | 构建期内容快照，**要提交进 git** |
 | `scripts/images.mjs` | 图片管线 |
 | `scripts/deploy.sh` | 构建产物上传 OSS |
-| `src/app/home` | `/home` 3D 页面，全屏 iframe 指向 `public/yard/` |
-| `public/yard` | 院子 3D 查看器（原样内置的 three.js demo，依赖已 vendor） |
+| `src/app/(bare)/home` | `/home` 3D 页面（仅 Header，无 Footer） |
+| `src/components/yard` | 3D 场景组件与本仓库自有的查看器 UI |
+| `public/yard` | 运行时资产：`lights.json` + draco 解码器 |
 | `docs/` | 架构、部署、内容管线的细节 |
 
 ## 常用命令
@@ -122,10 +123,9 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
   3. 上传精简后的 `report.json`（只保留 glb 统计，避免泄露本机路径）
 - **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
 - 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
-- 查看器是 `public/yard/index.html`，一个自包含的 three.js 页面，**不参与 Next 构建**。
-- three.js 及 addons 已 vendor 到 `public/yard/vendor/`，不要改成 CDN 引用（国内访问不稳）。
-- **必须同时存在 `three.module.js` 和 `three.core.js`**：新版 three 把核心拆成两个文件，
-  只拷前者会在运行时报 404、页面卡在“读取模型”。
+- 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
+- `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。
+- 不要再引入 importmap 或 vendor 版 three：场景已走 npm 依赖，旧 `public/yard/index.html` 已删除。
 - 模型在 OSS：`oss://renhanquan-site/models/yard-web.glb`，页面用相对路径 `/models/yard-web.glb` 加载（同源，避免 CORS）。
 - 修改 Blender 模型后需要重新导出并上传该对象；文件名不变，CDN 对 `glb` 走 1 年 immutable 缓存，必要时刷新。
 
