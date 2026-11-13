@@ -9,7 +9,7 @@ import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onLampChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
 
 
 
@@ -41,7 +41,7 @@ models.light.report = MODEL.report;
 const extraLights = Object.fromEntries(LIGHTS.groups.map(({ key, label, ...g }) => [key, { ...g, offset: new THREE.Vector3(...(g.offset ?? [])) }]));
 // Lamps listed here are backed by a real device. Everything else stays a pure
 // scene animation and never touches the network.
-const liveLamps = new Set<string>();
+const liveDevices = new Set<string>();
 const lampList = document.getElementById('lamp-list');
 lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
   `<div class="${opts.lampClass || ''}" role="group" aria-label="${label}"><button class="${opts.pillClass || 'pill'} lamp" data-light-group="${key}" role="switch" aria-checked="false" aria-label="${label}开关" disabled>${label}</button><button class="${opts.locateClass || ''}" data-lamp-view="${key}" aria-label="查看灯具：${label}" title="定位到${label}" disabled><span aria-hidden="true">↗</span></button></div>`
@@ -50,7 +50,22 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 // (switch only, or also brightness / colour temperature / colour). Rendering
 // reads whatever is present and ignores the rest, so a new capability is an
 // additive change instead of another special case.
-Object.values(extraLights).forEach(group => Object.assign(group, { state: { on: false }, lights: [], emitters: [] }));
+// Every scene object that can be driven by a device carries a state object and
+// a semantic type; the renderer dispatches on the type and reads whatever
+// fields are present. "light" is the only renderer today.
+Object.values(extraLights).forEach(group => Object.assign(group, { state: { type: 'light', on: false }, lights: [], emitters: [] }));
+Object.entries(extraLights).forEach(([key, group]) => registerDevice(
+  key,
+  () => group.state,
+  (next) => { group.state = next; },
+  () => renderDevice(key),
+));
+registerDevice(
+  'floodlight',
+  () => floodlightState,
+  (next) => { floodlightState = next; },
+  () => renderFloodlight(),
+);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
   waterfall: { position: new THREE.Vector3(-32, 18, -66), target: new THREE.Vector3(-57, 6, -104), fov: 44 },
@@ -146,12 +161,7 @@ function renderFloodlight() {
   });
   dirty = true;
 }
-function setFloodlightState(patch) {
-  const previous = floodlightState;
-  floodlightState = { ...floodlightState, ...patch };
-  renderFloodlight();
-  return previous;
-}
+
 function rectangularLightProfile() {
   // Continuous rectangular falloff with a dim, broad spill component.
   // No flat bright plateau or sharp rectangle-to-black transition.
@@ -199,7 +209,7 @@ function bindFloodlight() {
   scene.add(floodlight, floodlight.target);
   renderFloodlight();
 }
-function renderExtraLight(key) {
+function renderLightDevice(key) {
   const group = extraLights[key];
   const state = group.state;
   const button = $(`[data-light-group="${key}"]`);
@@ -216,12 +226,30 @@ function renderExtraLight(key) {
   }));
   dirty = true;
 }
-function setLampState(key, patch) {
+// Renderers keyed by device type. Adding a device kind means adding one entry
+// here, not threading another branch through the click and sync paths.
+const RENDERERS = {
+  light: (key) => renderLightDevice(key),
+};
+function renderDevice(key) {
   const group = extraLights[key];
-  if (!group) return null;
-  const previous = group.state;
-  group.state = { ...group.state, ...patch };
-  renderExtraLight(key);
+  if (!group) return;
+  (RENDERERS[group.state.type] || RENDERERS.light)(key);
+}
+// Registry of scene objects a device can drive. Keyed by the same key the
+// binding table uses. The floodlight lives outside extraLights, and this is what
+// keeps that fact from leaking into every caller.
+const DEVICES = {};
+function registerDevice(key, get, set, render) {
+  DEVICES[key] = { get, set, render };
+  return key;
+}
+function setDeviceState(key, patch) {
+  const device = DEVICES[key];
+  if (!device) return null;
+  const previous = device.get();
+  device.set({ ...previous, ...patch });
+  device.render();
   return previous;
 }
 function bindExtraLights() {
@@ -261,7 +289,7 @@ function bindExtraLights() {
         scene.add(light); group.lights.push(light);
       }
     }
-    renderExtraLight(key);
+    renderDevice(key);
   }
 }
 function clickLamp(event) {
@@ -274,8 +302,8 @@ function clickLamp(event) {
   // Use nearest visible surface: walls and other objects can occlude the lamp.
   if (!hit) return;
   if (hit.object.name.startsWith('Yard_West_Floodlight')) {
-    const previous = setFloodlightState({ on: !floodlightState.on });
-    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', { on: floodlightState.on }, previous);
+    const previous = setDeviceState('floodlight', { on: !floodlightState.on });
+    if (liveDevices.has('floodlight')) opts.onDeviceChange?.('floodlight', { on: floodlightState.on }, previous);
     return;
   }
   for (const [key, group] of Object.entries(extraLights)) {
@@ -283,8 +311,8 @@ function clickLamp(event) {
     while (object && object !== model) {
       if (object.name === group.root || group.meshes.includes(object.name) || (group.prefix && object.name.startsWith(group.prefix))) {
         {
-          const previous = setLampState(key, { on: !group.state.on });
-          if (liveLamps.has(key)) opts.onLampChange?.(key, { on: group.state.on }, previous);
+          const previous = setDeviceState(key, { on: !group.state.on });
+          if (liveDevices.has(key)) opts.onDeviceChange?.(key, { on: group.state.on }, previous);
         }
         return;
       }
@@ -471,13 +499,13 @@ try {
   $('#floodlight').addEventListener('click', () => {
     // Optimistic: the 3D lamp reacts immediately, then the caller either
     // confirms with the device or hands back the previous state.
-    const previous = setFloodlightState({ on: !floodlightState.on });
-    if (liveLamps.has('floodlight')) opts.onLampChange?.('floodlight', { on: floodlightState.on }, previous);
+    const previous = setDeviceState('floodlight', { on: !floodlightState.on });
+    if (liveDevices.has('floodlight')) opts.onDeviceChange?.('floodlight', { on: floodlightState.on }, previous);
   });
   root.querySelectorAll('[data-light-group]').forEach(button => button.addEventListener('click', () => {
     const key = button.dataset.lightGroup;
-    const previous = setLampState(key, { on: !extraLights[key].state.on });
-    if (liveLamps.has(key)) opts.onLampChange?.(key, { on: extraLights[key].state.on }, previous);
+    const previous = setDeviceState(key, { on: !extraLights[key].state.on });
+    if (liveDevices.has(key)) opts.onDeviceChange?.(key, { on: extraLights[key].state.on }, previous);
   }));
     $('#retry').addEventListener('click',()=>loadModel('light'));
   selectView('all',true); loadModel('light');
@@ -487,30 +515,22 @@ try {
     // absent keys stay virtual, which is exactly the fallback we want when the
     // visitor is anonymous or the mapping does not cover a lamp.
     // Accepts either a bare boolean (switch-only) or a partial state object.
-    applyLampStates(states: Record<string, boolean | { on?: boolean; brightness?: number; colorTemperature?: number; color?: string }>) {
-      liveLamps.clear();
+    applyDeviceStates(states: Record<string, boolean | Record<string, unknown>>) {
+      liveDevices.clear();
       for (const [key, value] of Object.entries(states)) {
         const patch = typeof value === 'boolean' ? { on: value } : value;
-        // The floodlight is a standalone control, not one of the light groups.
-        if (key === 'floodlight') {
-          liveLamps.add(key);
-          setFloodlightState(patch);
+        if (!DEVICES[key]) {
+          // A binding that matches nothing in the scene would otherwise fail
+          // silently, which reads as "the button does nothing".
+          console.warn('[yard] device binding points at an unknown object:', key);
           continue;
         }
-        if (!extraLights[key]) {
-          // A binding that does not match a lamp in lights.json would otherwise
-          // fail silently, which reads as "the lamp does nothing".
-          console.warn('[yard] device binding points at an unknown lamp:', key);
-          continue;
-        }
-        liveLamps.add(key);
-        setLampState(key, patch);
+        liveDevices.add(key);
+        setDeviceState(key, patch);
       }
     },
-    setLamp(key: string, patch: boolean | Record<string, unknown>) {
-      const next = typeof patch === 'boolean' ? { on: patch } : patch;
-      if (key === 'floodlight') { setFloodlightState(next); return; }
-      if (extraLights[key]) setLampState(key, next);
+    setDevice(key: string, patch: boolean | Record<string, unknown>) {
+      setDeviceState(key, typeof patch === 'boolean' ? { on: patch } : patch);
     },
     destroy() {
       ++loadId;

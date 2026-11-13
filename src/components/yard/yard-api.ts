@@ -67,18 +67,24 @@ export function isOn(state: Record<string, unknown> | undefined): boolean {
   return state.power === true;
 }
 
-// What the viewer needs to render a lamp. Only the fields the fixture reports
-// are present; everything else is left undefined and the renderer ignores it.
-export type LampState = {
-  on: boolean;
+// What the viewer needs to render a device. `type` picks the renderer; the
+// remaining fields are free-form and only the ones the device reports are set,
+// so a new capability never needs a new type here.
+export type DeviceState = {
+  type: string;
+  on?: boolean;
   brightness?: number;
   colorTemperature?: number;
   color?: string;
+  [field: string]: unknown;
 };
 
-/** Translate a vendor state into the viewer's lamp state. */
-export function toLampState(state: Record<string, unknown> | undefined): LampState {
-  const out: LampState = { on: isOn(state) };
+/** Translate a vendor state into the viewer's device state. */
+export function toDeviceState(
+  state: Record<string, unknown> | undefined,
+  type = "light",
+): DeviceState {
+  const out: DeviceState = { type, on: isOn(state) };
   if (state) {
     if (typeof state.brightness === "number") out.brightness = state.brightness;
     if (typeof state.colorTemperature === "number") out.colorTemperature = state.colorTemperature;
@@ -96,7 +102,7 @@ const ACTION_FOR: Record<string, string> = {
   color: "set_color",
 };
 
-export async function sendLampPatch(
+export async function sendDevicePatch(
   device: string,
   baseAction: string,
   patch: Record<string, unknown>,
