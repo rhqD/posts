@@ -54,6 +54,7 @@ OSS bucket renhanquan-site (cn-hangzhou)
 | `src/components/yard` | 3D 场景组件与本仓库自有的查看器 UI |
 | `public/yard` | 运行时资产：`lights.json` + draco 解码器 |
 | `docs/` | 架构、部署、内容管线的细节 |
+| `infra/ros/control.yml` | 控制面 ECS 的 ROS 模板（导入接管，双 Retain） |
 
 ## 常用命令
 
@@ -164,9 +165,10 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 ## 待办 / 已知缺口
 
 - 没有 CI：发布靠本地 `make publish`。计划加 GitHub Actions。
-- 根域 renhanquan.com 仍指向 Vercel 做 307 跳转，可改为直接指向 CDN。
-- ROS 模板未落地：分层方案见 [docs/infra.md](docs/infra.md)，模板还没写。
-- 控制面缺：CoolKit 之外的 provider、管理界面、告警、前端登录页。
+- 控制面还没有自动备份：数据在 `/var/lib/renhanquan-control`，机器挂了就没了。
+- 控制面缺：CoolKit 之外的 provider、管理界面、告警、登录页之外的设备 UI。
+- `ram:PassRole` 的 Resource 目前是 `*`（能传任意角色），待收窄。
+- 静态站那条线（OSS/CDN/DNS）仍未纳入 ROS，只有控制面接管了。
 - `rose-eden` 一篇文章中有一张图指向已失效的旧域名，需在 Notion 侧替换。
 - 3D 场景未与真实尺寸对齐：房屋、河道、山体的比例来自程序生成的环境，和实测尺寸有偏差，导致阴影长短/朝向细节与实景对不上。计划按真实测量校准 `yard-environment.ts` 的尺度，并把 `YARD_SITE` 保留为唯一坐标来源。
 
@@ -174,7 +176,8 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 - `README.md` — 项目简介与快速开始
 - [docs/auth.md](docs/auth.md) — 鉴权、权限模型、设备抽象、审计
-- [docs/infra.md](docs/infra.md) — 基础设施与 ROS 分层
+- [docs/control-plane.md](docs/control-plane.md) — 那台 ECS 上装了什么、怎么发布、怎么排障
+- [docs/infra.md](docs/infra.md) — 基础设施与 ROS 接管流程
 - `docs/architecture.md` — 渲染模式、数据流、缓存策略
 - `docs/deploy.md` — 部署与运维 runbook
 - `docs/content-pipeline.md` — 内容与图片管线

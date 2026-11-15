@@ -120,6 +120,11 @@ make deploy
 
 旧 hash 资源从不删除，所以回滚后浏览器缓存也不会错乱。
 
+## 控制面（api.renhanquan.com）
+
+**不在这份文档里。** 那台 ECS 与静态站没有运行时耦合，它的部署、凭证、
+排障单独记在 [control-plane.md](control-plane.md)。
+
 ## 证书续期
 
 acme.sh 已装 cron（每天 4 次检查，到期前 30 天续），续期后执行
@@ -132,7 +137,9 @@ acme.sh 已装 cron（每天 4 次检查，到期前 30 天续），续期后执
 echo | openssl s_client -connect www.renhanquan.com:443 -servername www.renhanquan.com 2>/dev/null | openssl x509 -noout -dates
 ```
 
-> 以后 ECS 上的 api 子域也要装同一张证书，续期脚本里要加上分发那一半，否则 90 天后 api 先过期。
+同一份证书也会分发到控制面那台机器：hook 里 `scp` 过去并 `nginx -s reload`，
+**这一步失败会中止整个 hook**（静默过期的证书比报错危险）。细节见
+[control-plane.md](control-plane.md)。
 
 ## 排障
 

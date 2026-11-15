@@ -2,8 +2,19 @@
 
 ## 现状
 
-CDN、OSS、DNS 目前是控制台手工建的，代码里没有可复现的定义。
-目标是把能声明的东西收进 ROS，让「这个站的完整形态」有一份文件可查。
+| 资源 | 归属 |
+| --- | --- |
+| ECS `i-2zei3tvz1fhlkbfab0i6` | **ROS 资源栈 `renhanquan-control`**（导入接管） |
+| OSS bucket / CDN 域名 / DNS 记录 | 仍是控制台手工建的，未纳管 |
+
+控制面那条栈已经落地，模板在 `infra/ros/control.yml`；状态在阿里云侧，
+`IMPORT_CREATE_COMPLETE`，漂移检测 `IN_SYNC`。
+
+**接管的是「已经买好的那台」，不是 ROS 创建的。** 原因见下面「活动价实例」。
+运维细节见 [control-plane.md](control-plane.md)。
+
+静态站那条线（bucket / CDN / DNS）仍没有模板——它们变更频率极低，
+真要重建时再按下面「导入已有资源」补。
 
 ## 分层：哪些进 ROS，哪些不进
 
@@ -26,18 +37,44 @@ CDN、OSS、DNS 目前是控制台手工建的，代码里没有可复现的定�
 1. **手动买**，ROS 管它周边（安全组、EIP、快照策略、DNS），实例本身用「资源导入」接管
 2. **ROS 创建**，接受标准价，换来完整可复现
 
-家庭项目建议 1：先把便宜占到，等真需要重建时再补模板。
+本项目走的 **1**：控制台买机器，再导入 ROS 接管。
 
-## 导入已有资源的现实
+## 导入已有资源：实际用到的流程
 
-ROS 不是 Terraform，没有 `data` 源。把已有 bucket / CDN 域名纳管只能走「资源导入」，
-且不是所有资源类型都支持。
+ROS 不是 Terraform，没有 `data` 源。接管已有资源走**更改集导入**，
+不是 `CreateStack --CreateOption Import`（当前 API 的 `CreateOption` 枚举里没有 Import）。
 
-渐进路径：
+```bash
+# 1) 建 IMPORT 更改集：ResourcesToImport 把逻辑 ID 绑到物理 ID
+aliyun ros CreateChangeSet --RegionId cn-beijing \
+  --StackName renhanquan-control --ChangeSetType IMPORT --ChangeSetName import-takeover \
+  --TemplateBody "$(cat infra/ros/control.yml)" \
+  --Parameters.1.ParameterKey InstanceId --Parameters.1.ParameterValue i-2zei3tvz1fhlkbfab0i6 \
+  --ResourcesToImport.1.LogicalResourceId ControlInstance \
+  --ResourcesToImport.1.ResourceType ALIYUN::ECS::Instance \
+  --ResourcesToImport.1.ResourceIdentifier '{"InstanceId":"i-2zei3tvz1fhlkbfab0i6"}'
 
-1. 先写模板描述**目标状态**，用 `PreviewStack` 验证（不动线上）
-2. 新建资源（安全组、EIP、DNS 记录）直接走 ROS
-3. 存量（OSS bucket、CDN 域名）确认支持导入后再接管
+# 2) 先看：应该只有一条 Import，Replacement 为 None
+aliyun ros GetChangeSet --RegionId cn-beijing --ChangeSetId <id>
+
+# 3) 执行
+aliyun ros ExecuteChangeSet --RegionId cn-beijing --ChangeSetId <id>
+```
+
+**模板里的默认值必须等于实例的真实值。** ROS 把模板当期望状态，属性一旦不符，
+第一次 `UpdateStack` 就会去「纠正」——镜像是不可变属性，纠正就是替换实例。
+本项目是用 `DescribeInstances` 把真实值 dump 出来再生成模板的。
+
+导入后这样确认：
+
+```bash
+aliyun ros ListStackResources --RegionId cn-beijing --StackId <id>   # 实例已纳入
+aliyun ros DetectStackDrift  --RegionId cn-beijing --StackId <id>   # IN_SYNC
+```
+
+判断「模板与真实是否一致」有个便宜办法：用同一份模板建一个 UPDATE 更改集。
+如果 ROS 报 `Update the completely same stack ... is not supported`，
+说明零差异——这正是想要的结果。
 
 **别一次性全搬。** 半接管的状态最难排查。
 
@@ -57,9 +94,8 @@ OSS bucket 和 CDN 域名少了这两行，一次 `DeleteStack` 就能把站点�
 ```
 infra/
   ros/
-    site.yml          # 主栈：bucket + CDN + DNS
-    control.yml       # 控制面：安全组 + EIP + ECS
-    params-prod.json
+    control.yml       # 控制面：接管 ECS（已落地）
+    site.yml          # 静态站：bucket + CDN + DNS（尚未编写）
 ```
 
 ```bash
