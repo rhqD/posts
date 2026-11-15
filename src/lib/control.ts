@@ -5,7 +5,21 @@
 
 export const CONTROL_BASE = (process.env.NEXT_PUBLIC_YARD_API ?? "").replace(/\/$/, "");
 
-export type Session = { id: string; phone: string; name: string; role: string };
+export type Session = { id: string; phone: string; name: string; role: string; avatar?: string; activated_at?: string | null; capabilities?: Partial<Record<"users"|"devices"|"permissions"|"audit", boolean>> };
+
+export function userName(user?: { name?: string } | null): string {
+  return user?.name?.trim() || "未设置姓名";
+}
+
+/** Every control API write uses the same browser CSRF protection contract. */
+export function controlWrite(path: string, body?: unknown, method = "POST"): Promise<Response> {
+  return fetch(CONTROL_BASE + path, {
+    method,
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Protection": "1" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+}
 
 export async function fetchSession(signal?: AbortSignal): Promise<Session | null> {
   if (!CONTROL_BASE) return null;
@@ -29,12 +43,7 @@ export async function fetchSession(signal?: AbortSignal): Promise<Session | null
 export async function requestCode(phone: string): Promise<void> {
   if (!CONTROL_BASE) return;
   try {
-    await fetch(CONTROL_BASE + "/auth/sms/send", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone }),
-    });
+    await controlWrite("/auth/sms/send", { phone });
   } catch {
     // Offline is indistinguishable from "sent" on purpose.
   }
@@ -44,12 +53,7 @@ export async function requestCode(phone: string): Promise<void> {
 export async function verifyCode(phone: string, code: string): Promise<Session | null> {
   if (!CONTROL_BASE) return null;
   try {
-    const res = await fetch(CONTROL_BASE + "/auth/sms/verify", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, code }),
-    });
+    const res = await controlWrite("/auth/sms/verify", { phone, code });
     if (!res.ok) return null;
     return (await res.json()) as Session;
   } catch {
@@ -59,9 +63,6 @@ export async function verifyCode(phone: string, code: string): Promise<Session |
 
 export async function signOut(): Promise<void> {
   if (!CONTROL_BASE) return;
-  try {
-    await fetch(CONTROL_BASE + "/auth/logout", { method: "POST", credentials: "include" });
-  } catch {
-    // The cookie is HttpOnly; if the call fails the session simply expires.
-  }
+  const res = await controlWrite("/auth/logout");
+  if (!res.ok) throw new Error("logout_failed");
 }

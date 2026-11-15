@@ -31,7 +31,16 @@ func (s *Sessions) Issue(ctx context.Context, u *store.User, ip, ua string) (*st
 		IP:        ip,
 		UserAgent: ua,
 	}
-	if err := s.st.Sessions().Create(ctx, sess); err != nil {
+	if err := s.st.Tx(ctx, func(tx store.Store) error {
+		current, err := tx.Users().Get(ctx, u.ID)
+		if err != nil {
+			return err
+		}
+		if current.Disabled() {
+			return store.ErrNotFound
+		}
+		return tx.Sessions().Create(ctx, sess)
+	}); err != nil {
 		return nil, err
 	}
 	return sess, nil
@@ -43,7 +52,7 @@ func (s *Sessions) Resolve(ctx context.Context, id store.ID) (*store.User, *stor
 		return nil, nil, err
 	}
 	if sess.Expired(time.Now().UTC()) {
-		_ = s.st.Sessions().Delete(ctx, id)
+		_ = s.Revoke(ctx, id)
 		return nil, nil, store.ErrNotFound
 	}
 	u, err := s.st.Users().Get(ctx, sess.UserID)
@@ -57,7 +66,9 @@ func (s *Sessions) Resolve(ctx context.Context, id store.ID) (*store.User, *stor
 }
 
 func (s *Sessions) Revoke(ctx context.Context, id store.ID) error {
-	return s.st.Sessions().Delete(ctx, id)
+	return s.st.Tx(ctx, func(tx store.Store) error {
+		return tx.Sessions().Delete(ctx, id)
+	})
 }
 
 func (s *Sessions) PurgeExpired(ctx context.Context) int {
@@ -66,13 +77,34 @@ func (s *Sessions) PurgeExpired(ctx context.Context) int {
 	if err != nil {
 		return 0
 	}
-	n := 0
+	hasExpired := false
 	for _, sess := range list {
 		if sess.Expired(now) {
-			if err := s.st.Sessions().Delete(ctx, sess.ID); err == nil {
+			hasExpired = true
+			break
+		}
+	}
+	if !hasExpired {
+		return 0
+	}
+	n := 0
+	if err := s.st.Tx(ctx, func(tx store.Store) error {
+		// Re-read under the transaction so concurrent issuance is preserved.
+		current, err := tx.Sessions().List(ctx)
+		if err != nil {
+			return err
+		}
+		for _, sess := range current {
+			if sess.Expired(now) {
+				if err := tx.Sessions().Delete(ctx, sess.ID); err != nil {
+					return err
+				}
 				n++
 			}
 		}
+		return nil
+	}); err != nil {
+		return 0
 	}
 	return n
 }

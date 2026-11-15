@@ -31,7 +31,7 @@
 /usr/local/bin/control              二进制（本机交叉编译后 scp）
 /etc/systemd/system/renhanquan-control.service
 /etc/renhanquan-control.env         配置，0600 root，含家人手机号
-/var/lib/renhanquan-control/        数据目录（users/policies/devices/sessions/audit）
+/var/lib/renhanquan-control/        数据目录（state.json + audit.jsonl；旧 JSON 仅迁移用）
 /etc/nginx/sites-available/api.renhanquan.com
 /etc/ssl/renhanquan/fullchain.pem   Let's Encrypt 通配符证书
 /etc/ssl/renhanquan/key.pem         0600
@@ -79,18 +79,37 @@ ssh -i ~/.ssh/renhanquan-control root@39.97.233.107 '
 
 改配置同理：编辑 `/etc/renhanquan-control.env` → `systemctl restart`。
 
+本机缺少上述 SSH 私钥时，也可使用已有阿里云身份通过 ECS 云助手
+`RunCommand` 部署，不需要新增访问权限或改 SSH 信任配置。二进制临时传输到
+私有 OSS 对象，使用短时签名 URL 下载，先核对目标旧版本和新文件 SHA-256；
+保留 `/usr/local/bin/control.before-sse-*` 形式的独立备份后再替换、重启。
+健康检查失败时恢复旧二进制；如已经迁移到统一快照，须先按下文从当前快照转换旧格式，不能直接回读历史文件。成功后删除本次私有临时对象，保留回滚备份。
+不要把签名 URL、会话 Cookie 或云密钥写进仓库或日志。
+
+会话持久化修复不会主动清空历史会话。若需要清理旧版本可能残留的已注销会话，
+必须单独确认全量失效的影响（所有用户需要重新登录），并保留私有备份。
+不要把历史会话备份恢复到运行目录，以免重新启用已失效的登录。
+
+## 内置用户与存储迁移
+
+管理员从静态站 `/manage/users/` 新增账号，不开放注册。账号首次短信验证成功才激活；停用和定向撤销会话通过管理 API 完成，不需要修改环境变量或重启。
+
+2026-11 管理功能版把四份业务 JSON 迁移为统一 `state.json`（version=1，0600），每笔事务原子替换整份快照；`audit.jsonl` 仍独立追加。已有用户/策略/设备/会话保留，旧文件不会删除，但不再更新。上线前停服务并在 `/var/backups/renhanquan-control/` 创建私有数据备份，同时备份二进制。服务启动后检查快照和旧记录数量/ID，不能把内容打印进日志。
+
+迁移后不要直接回滚到只识别四份旧 JSON 的二进制：旧文件已经过时，可能重新启用被撤销的会话。应优先修复前进；若必须降级，先停服务，从**当前快照**转换四份业务文件并留存当前快照，再切旧二进制，不能恢复旧会话备份。
+
 ## 验证
 
 ```bash
 # 服务与代理
 systemctl is-active renhanquan-control nginx
-curl -sk -H 'Host: api.renhanquan.com' https://127.0.0.1/healthz        # {"ok":true}
+curl --resolve api.renhanquan.com:443:127.0.0.1 https://api.renhanquan.com/healthz        # {"ok":true}
 
 # 审计链完整（断链返回 1）
 DATA_DIR=/var/lib/renhanquan-control /usr/local/bin/control verify
 
 # 设备是否真的连上厂商云
-curl -sk -H 'Host: api.renhanquan.com' https://127.0.0.1/admin/status \
+curl --resolve api.renhanquan.com:443:127.0.0.1 https://api.renhanquan.com/admin/status \
   -b <admin cookie>
 ```
 
@@ -139,7 +158,11 @@ location = /events {
 数据就在 `/var/lib/renhanquan-control`，一个目录。手工备份：
 
 ```bash
-tar czf - /var/lib/renhanquan-control | ossutil cp - oss://renhanquan-site/backup/$(date +%F).tgz
+umask 077
+mkdir -p /var/backups/renhanquan-control
+chmod 700 /var/backups/renhanquan-control
+# 停止写入后创建私有本机备份，禁止上传到 public-read 的站点对象
+tar czf /var/backups/renhanquan-control/data-$(date +%F-%H%M%S).tgz -C /var/lib renhanquan-control
 ```
 
 自动备份需要在机器上放一个只具备 `oss:PutObject` 的凭证，这一步还没做。

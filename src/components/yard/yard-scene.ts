@@ -5,11 +5,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { beijingClock, parseBeijingTime, solarPosition, YARD_SITE } from './yard-solar';
+import { beijingClock, solarPosition, YARD_SITE } from './yard-solar';
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; badgeClass?: string; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
 
 
 
@@ -29,9 +29,8 @@ let onResize: (() => void) | undefined;
 let preparingLights = false;
 let activeView = 'all', transition = null, loadId = 0, dirty = true;
 let sun, hemisphere;
-let followingRealtime = true, sunTimer;
+let sunTimer;
 const sunEvents = new AbortController();
-let displayedInstant = new Date();
 let floodlight = null, floodlightState = { on: false }, floodlightLens = null, pointerDown = null, floodlightProfile = null;
 const lampRaycaster = new THREE.Raycaster();
 const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
@@ -54,6 +53,34 @@ lampList.innerHTML = LIGHTS.groups.map(({ key, label }) =>
 // a semantic type; the renderer dispatches on the type and reads whatever
 // fields are present. "light" is the only renderer today.
 Object.values(extraLights).forEach(group => Object.assign(group, { state: { type: 'light', on: false }, lights: [], emitters: [] }));
+
+const boundDeviceKeys = new Set<string>();
+function updateDeviceIndicators() {
+  const buttons = [$('#floodlight'), ...root.querySelectorAll('[data-light-group]')];
+  for (const button of buttons) {
+    if (!button) continue;
+    const key = button.id === 'floodlight' ? 'floodlight' : button.dataset.lightGroup;
+    const bound = boundDeviceKeys.has(key);
+    const live = liveDevices.has(key);
+    const group = button.parentElement;
+    group.dataset.device = live ? 'live' : bound ? 'bound' : 'virtual';
+    button.dataset.label ||= button.getAttribute('aria-label') || button.textContent.trim();
+    let badge = button.querySelector('[data-device-badge]');
+    if (bound && !badge) {
+      badge = document.createElement('span');
+      badge.dataset.deviceBadge = '';
+      badge.className = opts.badgeClass || '';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><path d="m10 13 4-4m-5 6-1 1a4 4 0 0 1-5.7-5.6l3-3a4 4 0 0 1 5.7 0m2 2 1-1a4 4 0 0 1 5.7 5.6l-3 3a4 4 0 0 1-5.7 0"/></svg>';
+      button.appendChild(badge);
+    }
+    if (!bound && badge) badge.remove();
+    const description = live ? '控制真实设备' : bound ? '已绑定真实设备，当前仅预览' : '场景预览';
+    button.setAttribute('aria-label', `${button.dataset.label} · ${description}`);
+    if (!button.disabled) button.title = description;
+  }
+}
+updateDeviceIndicators();
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
@@ -325,7 +352,6 @@ function clickLamp(event) {
   }
 }
 function applySun(instant = new Date()) {
-  displayedInstant = instant;
   const { elevation, azimuth, direction: coordinates } = solarPosition(instant);
   const direction = new THREE.Vector3(...coordinates);
   const daylight = THREE.MathUtils.smoothstep(direction.y, 0, .4);
@@ -345,42 +371,22 @@ function applySun(instant = new Date()) {
   document.documentElement.style.setProperty('--yard-sky', `#${scene.background.getHexString()}`);
   window.dispatchEvent(new Event('yard-sky-change'));
   const clock = beijingClock(instant);
-  if (document.activeElement !== $('#sun-datetime')) $('#sun-datetime').value = clock.dateTime;
-  $('#sun-time').value = String(clock.minutes);
-  $('#sun-time').setAttribute('aria-valuetext', clock.time);
-  $('#sun-clock').value = clock.time;
-  $('#sun-mode').textContent = followingRealtime ? '实时跟随' : '手动预览';
-  $('#sun-live').setAttribute('aria-pressed', String(followingRealtime));
+  $('#sun-clock').textContent = `${clock.date} ${clock.time}`;
+  $('#sun-clock').dateTime = instant.toISOString();
   $('#sun-position').textContent = elevation > 0
     ? `方位 ${azimuth.toFixed(1)}° · 高度 ${elevation.toFixed(1)}°`
     : elevation > -12 ? '晨昏 · 太阳在地平线下' : '夜间 · 太阳在地平线下';
-  window.yardSunState = { mode: followingRealtime ? 'live' : 'manual', timestamp: instant.toISOString(), site: YARD_SITE, elevation, azimuth, direction: coordinates, intensity: sun.intensity };
+  window.yardSunState = { mode: 'live', timestamp: instant.toISOString(), site: YARD_SITE, elevation, azimuth, direction: coordinates, intensity: sun.intensity };
   dirty = true;
 }
 function bindSunTime() {
   const signal = sunEvents.signal;
-  const followNow = () => { followingRealtime = true; applySun(new Date()); };
-  for (const selector of ['#sun-datetime', '#sun-time', '#sun-live']) $(selector).disabled = false;
-  $('#sun-datetime').addEventListener('change', event => {
-    const input = event.target;
-    const instant = input.validity.valid && parseBeijingTime(input.value);
-    if (!instant) { input.value = beijingClock(displayedInstant).dateTime; return; }
-    followingRealtime = false; applySun(instant);
-  }, { signal });
-  $('#sun-time').addEventListener('input', event => {
-    const minutes = Number(event.target.value);
-    const hour = String(Math.floor(minutes / 60)).padStart(2, '0');
-    const minute = String(minutes % 60).padStart(2, '0');
-    const instant = parseBeijingTime(`${beijingClock(displayedInstant).date}T${hour}:${minute}`);
-    if (instant) { followingRealtime = false; applySun(instant); }
-  }, { signal });
-  $('#sun-live').addEventListener('click', followNow, { signal });
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && followingRealtime) applySun(new Date());
+    if (!document.hidden) applySun(new Date());
   }, { signal });
   // Recompute from the wall clock, never accumulate frame deltas or drift.
   sunTimer = window.setInterval(() => {
-    if (followingRealtime && !document.hidden) applySun(new Date());
+    if (!document.hidden) applySun(new Date());
   }, 10_000);
 }
 async function loadModel(key) {
@@ -406,6 +412,7 @@ async function loadModel(key) {
     scene.add(model);
     bindFloodlight();
     bindExtraLights();
+    updateDeviceIndicators();
     // Keep every fixture in the light layout at zero intensity when off. One
     // async compile covers every switch combination instead of compiling on tap.
     $('#load-message').textContent = '正在准备灯光与静态阴影…';
@@ -444,7 +451,7 @@ try {
   renderer.domElement.addEventListener('pointercancel', () => { pointerDown = null; });
   scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(40, root.clientWidth / root.clientHeight, .05, 250);
   controls = new OrbitControls(camera,renderer.domElement); controls.enableDamping = true; controls.dampingFactor = .075;
-  controls.minDistance = 1; controls.maxDistance = 100; controls.maxPolarAngle = Math.PI*.495; controls.autoRotateSpeed = .45;
+  controls.minDistance = 1; controls.maxDistance = 100; controls.maxPolarAngle = Math.PI*.495;
   controls.addEventListener('change', () => { dirty = true; });
   controls.addEventListener('start', () => { transition = null; });
   hemisphere = new THREE.HemisphereLight(0xe4ebef,0xafa48a,1.15); scene.add(hemisphere);
@@ -485,7 +492,7 @@ try {
         waterElapsed = 0;
       }
     }
-    if (!preparingLights && (dirty || changed || controls.autoRotate)) {
+    if (!preparingLights && (dirty || changed)) {
       renderer.render(scene,camera);
       const programs = String(renderer.info.programs.length);
       if (renderer.domElement.dataset.shaderPrograms !== programs) renderer.domElement.dataset.shaderPrograms = programs;
@@ -496,7 +503,6 @@ try {
   window.addEventListener('resize', onResize);
   root.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click',()=>selectView(button.dataset.view)));
   $('#reset').addEventListener('click',()=>selectView(activeView));
-  $('#rotate').addEventListener('click',()=> { controls.autoRotate = !controls.autoRotate; $('#rotate').setAttribute('aria-pressed',String(controls.autoRotate)); dirty = true; });
   root.querySelectorAll('[data-lamp-view]').forEach(button => button.addEventListener('click', () => {
     selectView(button.dataset.lampView === 'floodlight' ? 'lamp' : button.dataset.lampView, true);
   }));
@@ -515,11 +521,15 @@ try {
   selectView('all',true); loadModel('light');
 } catch (error) { fail(error); }
   return {
-    // States reported by the control service. Listed keys become live lamps;
-    // absent keys stay virtual, which is exactly the fallback we want when the
-    // visitor is anonymous or the mapping does not cover a lamp.
+    // Control and read access are separate: either permission reveals the link
+    // icon, while only controllable keys send commands. Authentication itself
+    // is irrelevant; the service may grant device access to anonymous visitors.
     // Accepts either a bare boolean (switch-only) or a partial state object.
-    applyDeviceStates(states: Record<string, boolean | Record<string, unknown>>) {
+    applyDeviceStates(states: Record<string, boolean | Record<string, unknown>>, linkedDeviceKeys: string[] = Object.keys(states)) {
+      boundDeviceKeys.clear();
+      for (const key of linkedDeviceKeys) {
+        if (DEVICES[key]) boundDeviceKeys.add(key);
+      }
       liveDevices.clear();
       for (const [key, value] of Object.entries(states)) {
         const patch = typeof value === 'boolean' ? { on: value } : value;
@@ -532,6 +542,7 @@ try {
         liveDevices.add(key);
         setDeviceState(key, patch);
       }
+      updateDeviceIndicators();
     },
     setDevice(key: string, patch: boolean | Record<string, unknown>) {
       setDeviceState(key, typeof patch === 'boolean' ? { on: patch } : patch);

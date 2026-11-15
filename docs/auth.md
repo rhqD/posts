@@ -15,19 +15,27 @@
 
 ## 身份
 
-没有注册流程。**家庭成员就是配置里的一组手机号。**
+没有公开注册流程，只有数据库里的**内置用户**。管理员在 `/manage/users/` 新增用户，填写姓名、手机号和可选头像；创建时未激活且没有设备/管理权限，不需要改配置或重启。首次短信验证成功后记录 `activated_at`。激活状态和启用/停用独立，停用会在同一事务内撤销该用户所有会话，重新启用不会恢复旧会话。
 
 | 配置 | 作用 |
 | --- | --- |
-| `ALLOWED_PHONES` | 允许登录的手机号，逗号分隔 |
+| `ALLOWED_PHONES` | 启动时补建缺失的内置用户；不覆盖已有账号、不重新启用停用账号；登录以数据库为准 |
 | `ADMIN_PHONE` | 首次启动自动建管理员，并授予根策略 `*`/`*` |
 
 登录：
 
-1. `POST /auth/sms/send`：号码命中白名单才真发短信；**不在白名单也返回同样的 200**，
-   否则这个接口就成了「你家手机号探测机」
-2. `POST /auth/sms/verify`：校验通过后**首次登录自动建号**（role=member）
-3. 服务端签发 256 bit 随机会话 ID，写 `HttpOnly; Secure; SameSite=Lax` cookie
+1. `POST /auth/sms/send`：只有已建且启用的账号才发短信；其他号码返回同样的 200，避免枚举。
+2. `POST /auth/sms/verify`：验证已建账号，首次成功时激活；陌生号码不会自动创建。
+3. 服务端签发 256 bit 随机会话 ID，写 `HttpOnly; Secure; SameSite=Lax` cookie。
+
+旧账号迁移：历史成功登录审计/会话用于推断激活时间；旧版只在登录后创建的 member 以创建时间兜底。新建账号不会在重启时被自动激活。迁移不清空任何会话。
+
+头像由用户在账号菜单修改，也可由用户管理员编辑。姓名统一用于账号菜单、用户列表、授权对象和确认提示；未设置时提示补全，不以手机号代替称呼。本人可在账号菜单编辑姓名，手机号只用于登录和账号资料识别。浏览器将 JPG/PNG/WebP 居中裁成 256px JPEG；服务端限制大小/尺寸并重新编码，拒绝 SVG 和外链。图片随账号存储，不上传公开 CDN，不向匿名 `/auth/me` 暴露。
+
+会话签发、注销和过期清理必须经 `Store.Tx` 持久化，不能只改内存。
+签发落盘失败不发 Cookie；注销落盘失败返回 `logout_failed`，保留 Cookie，
+前端显示错误供重试，不能把失败当成已退出。回归测试需重新打开存储，确认
+已注销会话不会恢复，并覆盖磁盘写失败。
 
 短信走阿里云**号码认证服务的「短信认证」**（dypnsapi）：个人实名可用、免签名免模板。
 传统 SMS 的验证码模板要求企业资质，个人申请不下来。
@@ -169,7 +177,7 @@ export const DEVICE_MAP = {
 2. `/devices` 返回的这台设备 `permissions.control == true`
 3. 设备 `actions` 里确实有这个动作
 
-任一不满足 → 保持纯前端动画。所以**陌生人、未登录、映射缺失，三种情况表现完全一致**。
+任一不满足 → 保持纯前端动画。所以**无设备权限、映射缺失时都只显示前端预览；匿名访客若有设备授权，也可操作**。
 
 读状态和下发都走通用设备接口，没有灯专用端点：
 
@@ -180,6 +188,40 @@ POST /devices/{key}/commands   {action, params}
 
 前端始终拿不到"设备清单之外"的东西：`/devices` 已经按 ACL 过滤过，
 不在响应里的设备连 key 都不存在。
+
+## Origin 与 CSRF 防护
+
+所有修改状态的请求（包括发验证码、登录、注销、设备命令、授权和撤权）必须同时满足：
+
+- `Origin` 精确匹配 `ALLOWED_ORIGINS` 中的完整来源（协议、主机、端口）；
+  缺失、`null`、通配符和其他子域均不自动放行。
+- `X-CSRF-Protection: 1`。这是 JSON API 的自定义请求头防护，利用浏览器的
+  CORS 预检限制伪造请求，不是登录凭证，也不替代设备 ACL。
+- `Content-Type: application/json`，可带 charset；表单和 `text/plain` 均拒绝。
+
+CORS 只允许精确白名单来源，以及 GET/POST/PUT/PATCH/DELETE 和必要请求头。
+非法来源连实际请求也会被拒绝，而不只是缺少 CORS 响应头。
+GET/HEAD 不要求 CSRF 请求头；不携带 Origin 的服务端健康检查仍可用。
+脚本或 curl 调用写接口时同样需要上述三个头和原有身份凭证。
+
+网页的写请求统一经过 `src/lib/control.ts` 的 `controlWrite`。
+发布需要先让后端允许新请求头、再更新网页、最后启用强制检查；旧网页需要刷新。
+不得通过扩大 Origin 白名单来代替登录或权限校验。
+
+## 实时推送的权限边界
+
+`GET /events` 当前仍要求有效登录会话，不因匿名 ACL 授权而自动开放。
+服务端对每条广播重新解析会话，并按当前 `device:<key>` / `read` 权限重建
+`states` 响应；`control` 蕴含 `read`，显式拒绝优先，隐藏或已删除的设备不推送。
+没有可见设备的广播直接丢弃，未知字段和格式错误的事件不会原样转发。
+
+权限撤销对后续事件生效；注销、会话吊销或账号禁用后，下次事件或心跳检查
+关闭连接（空闲时最多 15 秒），会话到期由独立定时器关闭，即使没有广播也不续留。
+客户端不能用一次建立的 SSE 连接绕过后续鉴权。未来开放匿名 SSE 时也必须沿用
+逐事件的设备权限过滤，不能直接移除登录检查后转发原始广播。
+
+回归测试：`apps/control/internal/api/events_test.go`，覆盖多用户隔离、显式拒绝、
+控制蕴含读取、隐藏/删除、权限撤销、会话吊销/过期与账号禁用。
 
 ## 存储契约
 
@@ -195,15 +237,15 @@ type Store interface {
 }
 ```
 
-P1 实现是**一个目录的 JSON 文件**：
+当前实现是一个目录：
 
 ```
 data/
-  users.json  policies.json  devices.json  sessions.json
-  audit.jsonl
+  state.json    # version=1，users/policies/devices/sessions 的统一快照，0600
+  audit.jsonl   # 独立追加审计链
 ```
 
-写操作 = 临时文件 + `fsync` + `rename`，崩溃最多丢最后一次写，不会写坏文件。
+`Tx` 复制内存状态，统一写临时快照、fsync、rename，成功后再替换内存；多用户/授权/会话改动不会部分提交。首次启动只在不存在 `state.json` 时读取旧 `users.json` 等四个文件；旧文件保留但不再更新。存在但损坏的快照直接报错，不能回退旧文件而恢复已撤销会话。备份需包含整个数据目录；不要单独恢复旧 sessions 文件。
 
 ### 换成 SQL 时不能改的三件事
 
@@ -216,30 +258,13 @@ data/
 
 ## 审计
 
-### 两条通道
+### 写入时机与失败处理
 
-| 类型 | 例子 | 写入 | 失败处理 |
-| --- | --- | --- | --- |
-| 安全事件 | 授权变更、登录成功、吊销 | 同步 + fsync | **操作失败** |
-| 访问事件 | 403、限流、匿名操作 | 异步 + 有界队列 | 丢弃并计数 |
+管理变更（用户、授权、设备资料）在提交统一快照前同步写入带 operation ID 的 `pending` 意图记录，写审计失败就不提交数据。提交后再异步写 `ok`/`failed` 结果。意图和业务快照是两个文件，不宣称跨文件原子：崩溃留下 pending 时要对照当前状态调查。设备发现同步也先记意图。
 
-授权变更 fail-closed：日志都写不进去的时候，让权限改动生效才是危险的。
-登录失败反过来不能 fail-closed，否则磁盘一满全家登不进来。
+登录、访问拒绝、限流、注销等事件通过后台有界队列写入；队列满会丢弃并计数。它们用于追踪行为，不代表登录或注销的事务提交点。会话是否有效以 `state.json` 为准。
 
-### 不影响接口性能
-
-请求路径上只做两件事：构造 `Entry`、非阻塞投递。
-
-```go
-select {
-case l.ch <- it:   // 命中
-default:           // 队列满：直接丢弃，计数
-    l.drops.Add(1)
-}
-```
-
-JSON 编码、fsync、哈希计算全在后台单个 goroutine 里做。
-日志不在关键路径上，接口耗时不受它影响。
+审计是请求发生时记录日志；`control verify` 是另一个离线检查命令，不会定时自动执行，也不会自动报警。
 
 ### 防篡改
 
@@ -268,7 +293,7 @@ DATA_DIR=./data ./control verify     # 断链返回 1
 
 - `NEXT_PUBLIC_YARD_API` 为空时整个组件不渲染，静态部署不会出现一个点不动的按钮
 - 未登录显示「登录」，点开是手机号 → 验证码两步
-- 已登录显示脱敏手机号，点开可退出
+- 已登录显示头像和称呼/脱敏手机号，点开可改头像或退出；具有管理能力时显示管理入口
 - 发码后一律提示「验证码已发送」，和服务的响应口径一致
 
 登录/登出后派发 `window` 事件 `auth-change`，`/home` 收到后重新拉 `/devices` 并刷新灯具，
@@ -293,10 +318,19 @@ GET /latest/meta-data/ram/security-credentials/home-server
 POST   /auth/sms/send
 POST   /auth/sms/verify          -> Set-Cookie
 POST   /auth/logout
-GET    /auth/me
+GET    /auth/me                  // 本人资料和能力
+PATCH  /auth/profile             // 本人称呼、头像
 
 GET    /devices                  // 按 ACL 过滤，没权限的设备根本不出现
 POST   /devices/{key}/commands   {action, params}
+GET/POST  /admin/users
+PATCH     /admin/users/{id}
+POST      /admin/users/{id}/revoke-sessions
+GET       /admin/subjects
+GET/PATCH /admin/devices[/{key}]
+POST      /admin/devices/sync
+GET/PUT   /admin/access
+PUT       /admin/capabilities
 GET    /admin/policies
 POST   /admin/policies
 DELETE /admin/policies/{id}
@@ -353,10 +387,18 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 
 备份就是打包目录。
 
+## 管理页面
+
+- `/manage/users/`：新增内置用户、激活/启用状态、资料头像、定向撤销会话。
+- `/manage/permissions/`：按用户或匿名访客配置每台设备的不可访问/只读/可控制，展示策略来源；管理能力单独授权。
+- `/manage/devices/`：设备状态、名称/区域/隐藏编辑、同步厂商清单、只读 3D 映射。
+
+页面仍然静态导出，数据只从控制面 API 读取，所有管理接口服务端检查会话和 ACL：`user:* / manage`、`device:* / manage`、`policy:* / grant`、`audit:* / read`。角色名称不决定权限。不能把自己没有的能力转授他人，也不能移除最后一位启用且已激活的权限管理员。匿名访客仅支持设备授权，不能授予管理能力。
+
+设备同步保留本地名称、区域、隐藏设置；厂商列表暂时缺失的设备保留为 missing/offline，不暴露到普通设备列表或 SSE。隐藏不代表撤销授权；需要撤权时在权限页调整。
+
 ## 未完成
 
-- Sonoff token 自动续期（需要厂商开发者凭据，不是逆向私钥）
 - 米家 / 涂鸦 provider
-- 管理界面（目前只有 API）
 - 告警：连续登录失败、新 IP 登录、授权变更主动通知
-- 前端登录页与 `/home` 集成
+- 自动备份

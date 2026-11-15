@@ -29,7 +29,7 @@ export default function YardViewer() {
   const devices = useDevices();
   const sceneRef = useRef<{
     setDevice(key: string, patch: boolean | Record<string, unknown>): void;
-    applyDeviceStates(states: Record<string, unknown>): void;
+    applyDeviceStates(states: Record<string, unknown>, linkedDeviceKeys: string[]): void;
     destroy(): void;
   } | null>(null);
   const [sceneVersion, setSceneVersion] = useState(0);
@@ -65,6 +65,7 @@ export default function YardViewer() {
           pillClass: styles.pill,
           lampClass: styles.lampControl,
           locateClass: styles.locate,
+          badgeClass: styles.deviceBadge,
           onDeviceChange: (key, patch, previous) => {
             const binding = bindingsRef.current[key];
             if (!binding) {
@@ -101,9 +102,13 @@ export default function YardViewer() {
 
     const bindings: typeof bindingsRef.current = {};
     const live: Record<string, unknown> = {};
+    const linkedDeviceKeys: string[] = [];
     for (const [lamp, binding] of Object.entries(DEVICE_MAP)) {
       const device = devices[binding.device];
-      if (!device?.permissions?.control) continue;
+      // Access comes from device permissions, including anonymous grants.
+      if (!device?.permissions?.read && !device?.permissions?.control) continue;
+      linkedDeviceKeys.push(lamp);
+      if (!device.permissions.control) continue;
       const action = binding.action ?? "set_switch";
       if (!(action in (device.actions ?? {}))) continue;
       bindings[lamp] = {
@@ -115,7 +120,7 @@ export default function YardViewer() {
       live[lamp] = toDeviceState(device.state, binding.type ?? "light", binding.outlet ?? 0);
     }
     bindingsRef.current = bindings;
-    scene.applyDeviceStates(live);
+    scene.applyDeviceStates(live, linkedDeviceKeys);
   }, [devices, sceneVersion]);
 
   return (
@@ -124,32 +129,22 @@ export default function YardViewer() {
     }}>
       <div id="stage" className={styles.stage} />
 
-      <aside ref={panelRef} className={styles.settings} data-open={panelOpen} data-ready={panelReady} aria-label="时间与灯光设置">
+      <aside ref={panelRef} className={styles.settings} data-open={panelOpen} data-ready={panelReady} aria-label="日照与灯光">
       <button type="button" className={styles.panelToggle} aria-expanded={panelOpen} aria-controls="settings-body" onClick={() => setPanelOpen(value => !value)}>
-        <span>{panelOpen ? "收起面板" : "时间与灯光"}</span>
+        <span>{panelOpen ? "收起面板" : "日照与灯光"}</span>
         <span aria-hidden="true">{panelOpen ? "‹" : "›"}</span>
       </button>
       <div id="settings-body" className={styles.settingsBody}>
       <div className={styles.settingsBodyInner}>
-      <section className={styles.sunPanel} aria-label="日照时间设置">
+      <section className={styles.sunPanel} aria-label="实时日照">
         <div className={styles.sunHeading}>
           <span>日照时间</span>
           <span id="sun-mode" className={styles.sunMode}>实时跟随</span>
         </div>
-        <label className={styles.sunLabel} htmlFor="sun-datetime">北京时间 · UTC+8</label>
-        <input id="sun-datetime" className={styles.sunDateTime} type="datetime-local" step="60" min="1900-01-01T00:00" max="2100-12-31T23:59" disabled />
-        <label className={styles.sunRangeLabel} htmlFor="sun-time">
-          <span>时刻</span><output id="sun-clock" htmlFor="sun-time">--:--</output>
-        </label>
-        <input id="sun-time" className={styles.sunRange} type="range" min="0" max="1439" step="1" defaultValue="720" aria-valuetext="12:00" disabled />
-        <div className={styles.sunTicks} aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+        <p className={styles.sunLabel}>北京时间 · UTC+8</p>
+        <time id="sun-clock" className={styles.sunClock}>--:--</time>
         <p id="sun-position" className={styles.sunPosition}>正在计算太阳位置…</p>
-        <button id="sun-live" className={styles.pill} aria-pressed="true" disabled>跟随实时</button>
         <p className={styles.sunHint}>{YARD_SITE.longitude}°E · {YARD_SITE.latitude}°N</p>
-      </section>
-      <section className={styles.viewing} aria-label="视图设置">
-        <h2 className={styles.lightingTitle}>视图</h2>
-        <button id="rotate" className={styles.pill} aria-pressed="false">自动旋转</button>
       </section>
       <section className={styles.lighting} aria-label="灯光设置">
         <h2 className={styles.lightingTitle}>灯光设置</h2>

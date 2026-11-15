@@ -34,6 +34,12 @@ func (r *users) GetByPhone(_ context.Context, phone string) (*store.User, error)
 func (r *users) Create(_ context.Context, u *store.User) error {
 	r.f.mu.Lock()
 	defer r.f.mu.Unlock()
+	if _, ok := r.f.users[u.ID]; ok {
+		return store.ErrConflict
+	}
+	if _, ok := r.f.phones[u.Phone]; ok {
+		return store.ErrConflict
+	}
 	c := *u
 	r.f.users[u.ID] = &c
 	r.f.phones[u.Phone] = u.ID
@@ -46,6 +52,10 @@ func (r *users) Update(_ context.Context, u *store.User) error {
 	if _, ok := r.f.users[u.ID]; !ok {
 		return notFound("user", u.ID)
 	}
+	if id, ok := r.f.phones[u.Phone]; ok && id != u.ID {
+		return store.ErrConflict
+	}
+	delete(r.f.phones, r.f.users[u.ID].Phone)
 	c := *u
 	r.f.users[u.ID] = &c
 	r.f.phones[u.Phone] = u.ID

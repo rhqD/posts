@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..700;1,14..32,300..400&family=Lora:ital,wght@0,400..600;1,400..500&display=swap');
 @import "tailwindcss";
+@source "../";
 @plugin "@tailwindcss/typography";
 @variant dark (&:where(.dark, .dark *));
 

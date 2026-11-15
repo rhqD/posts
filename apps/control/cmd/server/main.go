@@ -93,6 +93,10 @@ func main() {
 		log.Fatalf("bootstrap: %v", err)
 	}
 
+	if err := auth.SeedBuiltin(ctx, st, allowed); err != nil {
+		log.Fatalf("seed builtin users: %v", err)
+	}
+
 	sp, err := newSMSProvider()
 	if err != nil {
 		log.Fatalf("sms: %v", err)
@@ -314,68 +318,7 @@ func newSMSProvider() (sms.Provider, error) {
 // syncDevices refreshes descriptors from the provider while keeping local
 // presentation overrides (name, room, hidden).
 func syncDevices(ctx context.Context, st store.Store, p device.Provider) error {
-	found, err := p.Discover(ctx)
-	if err != nil {
-		return err
-	}
-	return st.Tx(ctx, func(tx store.Store) error {
-		seen := make(map[string]bool, len(found))
-		for _, d := range found {
-			seen[d.Key] = true
-		}
-		// Drop devices the provider stopped reporting, otherwise a stale or
-		// mock device lingers in the list forever.
-		existing, err := tx.Devices().List(ctx)
-		if err != nil {
-			return err
-		}
-		for _, old := range existing {
-			if !seen[old.Key] {
-				if err := tx.Devices().Delete(ctx, old.Key); err != nil {
-					return err
-				}
-				log.Printf("device gone, removed: %s (%s)", old.Key, old.Name)
-			}
-		}
-
-		for _, d := range found {
-			prev, err := tx.Devices().Get(ctx, d.Key)
-			next := &store.Device{
-				Key:      d.Key,
-				Name:     d.Name,
-				Room:     d.Room,
-				Provider: d.Provider,
-				Kind:     d.Kind,
-				Online:   d.Online,
-				Readings: d.Readings,
-				Actions:  actionsOf(d),
-			}
-			if err == nil {
-				if prev.Name != "" {
-					next.Name = prev.Name
-				}
-				if prev.Room != "" {
-					next.Room = prev.Room
-				}
-				next.Hidden = prev.Hidden
-			}
-			if err := tx.Devices().Upsert(ctx, next); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-}
-
-func actionsOf(d device.Descriptor) map[string]any {
-	if len(d.Actions) == 0 {
-		return nil
-	}
-	out := make(map[string]any, len(d.Actions))
-	for k, v := range d.Actions {
-		out[k] = v
-	}
-	return out
+	return device.Sync(ctx, st, p)
 }
 
 func bootstrap(ctx context.Context, st store.Store, az *acl.Authorizer, adminPhone string, ttl time.Duration) error {
@@ -383,54 +326,27 @@ func bootstrap(ctx context.Context, st store.Store, az *acl.Authorizer, adminPho
 		log.Print("ADMIN_PHONE not set: no root policy will be created")
 		return nil
 	}
-	var admin *store.User
-	if err := st.Tx(ctx, func(tx store.Store) error {
-		u, err := tx.Users().GetByPhone(ctx, adminPhone)
-		if err == nil {
-			admin = u
+	// ADMIN_PHONE bootstraps a new account only. Never recreate permissions
+	// removed through management when an existing account restarts.
+	err := st.Tx(ctx, func(tx store.Store) error {
+		if _, err := tx.Users().GetByPhone(ctx, adminPhone); err == nil {
 			return nil
-		}
-		if !errors.Is(err, store.ErrNotFound) {
+		} else if !errors.Is(err, store.ErrNotFound) {
 			return err
 		}
-		nu := &store.User{ID: store.NewID(), Phone: adminPhone, Role: "admin", CreatedAt: time.Now().UTC()}
-		if err := tx.Users().Create(ctx, nu); err != nil {
+		u := &store.User{ID: store.NewID(), Phone: adminPhone, Role: "admin", CreatedAt: time.Now().UTC()}
+		if err := tx.Users().Create(ctx, u); err != nil {
 			return err
 		}
-		admin = nu
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	existing, err := st.Policies().ListBySubject(ctx, store.KindUser, admin.ID)
+		return tx.Policies().Insert(ctx, &store.Policy{
+			ID: store.NewID(), SubjectKind: store.KindUser, SubjectID: u.ID,
+			Resource: "*", Action: "*", Effect: "allow", GrantedAt: time.Now().UTC(),
+		})
+	})
 	if err != nil {
 		return err
 	}
-	for _, p := range existing {
-		if p.Resource == "*" && p.Action == "*" && p.Effect == "allow" {
-			return nil
-		}
-	}
-	root := store.Policy{
-		ID:          store.NewID(),
-		SubjectKind: store.KindUser,
-		SubjectID:   admin.ID,
-		Resource:    "*",
-		Action:      "*",
-		Effect:      "allow",
-		GrantedAt:   time.Now().UTC(),
-	}
-	if err := st.Tx(ctx, func(tx store.Store) error {
-		return tx.Policies().Insert(ctx, &root)
-	}); err != nil {
-		return err
-	}
-	if err := reloadACL(ctx, st, az); err != nil {
-		return err
-	}
-	log.Printf("bootstrapped admin %s with root policy", store.MaskPhone(adminPhone))
-	return nil
+	return reloadACL(ctx, st, az)
 }
 
 func reloadACL(ctx context.Context, st store.Store, az *acl.Authorizer) error {

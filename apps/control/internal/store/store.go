@@ -15,6 +15,7 @@ import (
 )
 
 var ErrNotFound = errors.New("not found")
+var ErrConflict = errors.New("conflict")
 
 type ID string
 
@@ -39,12 +40,15 @@ func UserSubject(u *User) Subject {
 }
 
 type User struct {
-	ID         ID         `json:"id"`
-	Phone      string     `json:"phone"`
-	Name       string     `json:"name"`
-	Role       string     `json:"role"`
-	CreatedAt  time.Time  `json:"created_at"`
-	DisabledAt *time.Time `json:"disabled_at,omitempty"`
+	ID          ID         `json:"id"`
+	Phone       string     `json:"phone"`
+	Name        string     `json:"name"`
+	Role        string     `json:"role"`
+	CreatedAt   time.Time  `json:"created_at"`
+	DisabledAt  *time.Time `json:"disabled_at,omitempty"`
+	Builtin     bool       `json:"builtin,omitempty"`
+	ActivatedAt *time.Time `json:"activated_at,omitempty"`
+	Avatar      string     `json:"avatar,omitempty"`
 }
 
 func (u *User) Disabled() bool { return u.DisabledAt != nil }
@@ -70,6 +74,7 @@ type Device struct {
 	Readings []string       `json:"readings,omitempty"`
 	Actions  map[string]any `json:"actions,omitempty"`
 	Hidden   bool           `json:"hidden,omitempty"`
+	Missing  bool           `json:"missing,omitempty"`
 }
 
 func (d *Device) Supports(action string) bool {

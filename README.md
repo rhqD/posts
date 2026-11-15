@@ -11,6 +11,7 @@
 - **HTML 不缓存**：每次请求回源 OSS（同地域 2～5ms），保证发布即生效。
 - **资源永久缓存**：带 hash 的 JS/CSS 与图片 `max-age=31536000, immutable`。
 - **图片构建期处理**：Notion 原图（几十 MB）压缩成 1600px WebP，体积降一个数量级。
+- **设备管理**：`/manage/users/`、`/manage/permissions/`、`/manage/devices/` 使用独立 Go 控制面；支持内置用户、激活状态、头像和按设备授权，没有公开注册。
 - **/home 是一个 3D 院子**：three.js 场景内置在应用里，灯具开关和视角都由数据驱动。
 
 ## 快速开始
@@ -44,6 +45,7 @@ docs/              架构与运维文档
 ## 文档
 
 - [AGENTS.md](AGENTS.md) —— 接手前必读，含硬性约束与已知坑
+- [docs/auth.md](docs/auth.md) —— 设备鉴权、管理页面与账号模型
 - [docs/architecture.md](docs/architecture.md) —— 渲染模式、数据流、缓存策略
 - [docs/deploy.md](docs/deploy.md) —— 部署与运维 runbook
 - [docs/content-pipeline.md](docs/content-pipeline.md) —— Notion 同步与图片管线

@@ -9,7 +9,7 @@
 // When NEXT_PUBLIC_YARD_API is unset every call is a no-op, so a plain static
 // deployment keeps its original behaviour with no control plane behind it.
 
-import { CONTROL_BASE as BASE } from "../../lib/control";
+import { CONTROL_BASE as BASE, controlWrite } from "../../lib/control";
 
 export type DeviceView = {
   key: string;
@@ -70,12 +70,7 @@ export async function sendCommand(
   const params: Record<string, unknown> = { value };
   // Multi-gang modules need to know which channel; single-channel ignores it.
   if (typeof outlet === "number") params.outlet = outlet;
-  const res = await fetch(BASE + "/devices/" + encodeURIComponent(device) + "/commands", {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, params }),
-  });
+  const res = await controlWrite("/devices/" + encodeURIComponent(device) + "/commands", { action, params });
   if (!res.ok) throw new Error(device + " " + action + " -> " + res.status);
 }
 

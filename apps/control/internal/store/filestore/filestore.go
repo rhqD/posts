@@ -2,14 +2,10 @@
 //
 // Shape of ./data:
 //
-//	users.json      users
-//	policies.json   grants
-//	devices.json    cached device descriptors
-//	sessions.json   live sessions
-//	audit.jsonl     append-only audit trail
+// state.json    atomic users/policies/devices/sessions snapshot
+// audit.jsonl   append-only audit trail
 //
-// Every write is a temp-file + fsync + rename, so a crash can lose the last
-// write but never corrupt a file.
+// Legacy four-file state is imported only when state.json is absent.
 package filestore
 
 import (
@@ -34,6 +30,16 @@ type File struct {
 	auditLog *auditFile
 }
 
+// One atomic snapshot is the commit point for multi-resource changes. Legacy
+// files are read only on first migration, never merged back into current data.
+type snapshot struct {
+	Version  int              `json:"version"`
+	Users    []*store.User    `json:"users"`
+	Policies []store.Policy   `json:"policies"`
+	Devices  []*store.Device  `json:"devices"`
+	Sessions []*store.Session `json:"sessions"`
+}
+
 func Open(dir string) (*File, error) {
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return nil, err
@@ -48,6 +54,31 @@ func Open(dir string) (*File, error) {
 		auditLog: &auditFile{path: filepath.Join(dir, "audit.jsonl")},
 	}
 	var users []*store.User
+	var current snapshot
+	if _, err := os.Stat(filepath.Join(dir, "state.json")); err == nil {
+		if err := readJSON(filepath.Join(dir, "state.json"), &current); err != nil {
+			return nil, err
+		}
+		if current.Version != 1 {
+			return nil, fmt.Errorf("unsupported or corrupt state snapshot version %d", current.Version)
+		}
+		for _, u := range current.Users {
+			f.users[u.ID] = u
+			f.phones[u.Phone] = u.ID
+		}
+		for _, p := range current.Policies {
+			f.policies[p.ID] = p
+		}
+		for _, d := range current.Devices {
+			f.devices[d.Key] = d
+		}
+		for _, s := range current.Sessions {
+			f.sessions[s.ID] = s
+		}
+		return f, nil
+	} else if !os.IsNotExist(err) {
+		return nil, err
+	}
 	if err := readJSON(filepath.Join(dir, "users.json"), &users); err != nil {
 		return nil, err
 	}
@@ -151,16 +182,7 @@ func (f *File) persist() error {
 	for _, s := range f.sessions {
 		sessions = append(sessions, s)
 	}
-	if err := writeJSON(filepath.Join(f.dir, "users.json"), users); err != nil {
-		return err
-	}
-	if err := writeJSON(filepath.Join(f.dir, "policies.json"), policies); err != nil {
-		return err
-	}
-	if err := writeJSON(filepath.Join(f.dir, "devices.json"), devices); err != nil {
-		return err
-	}
-	return writeJSON(filepath.Join(f.dir, "sessions.json"), sessions)
+	return writeJSON(filepath.Join(f.dir, "state.json"), snapshot{Version: 1, Users: users, Policies: policies, Devices: devices, Sessions: sessions})
 }
 
 func readJSON(path string, v any) error {

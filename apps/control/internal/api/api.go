@@ -7,12 +7,14 @@ package api
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
+	"mime"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"renhanquan/control/internal/acl"
@@ -34,6 +36,7 @@ type Config struct {
 }
 
 type Server struct {
+	manageMu sync.Mutex
 	cfg      Config
 	st       store.Store
 	sessions *auth.Sessions
@@ -78,10 +81,11 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /admin/audit", s.listAudit)
 	mux.HandleFunc("GET /admin/status", s.adminStatus)
 	mux.HandleFunc("GET /events", s.streamEvents)
+	s.managementRoutes(mux)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 	})
-	return s.withCORS(mux)
+	return s.withCORS(s.withWriteProtection(mux))
 }
 
 // withCORS allows the static site to call the API from another origin (the
@@ -89,15 +93,35 @@ func (s *Server) Handler() http.Handler {
 func (s *Server) withCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin != "" && s.originAllowed(origin) {
+		w.Header().Add("Vary", "Origin")
+		if origin != "" && !s.originAllowed(origin) {
+			fail(w, http.StatusForbidden, "origin_forbidden")
+			return
+		}
+		if origin != "" {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Protection")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 			w.Header().Set("Access-Control-Max-Age", "600")
-			w.Header().Add("Vary", "Origin")
 		}
 		if r.Method == http.MethodOptions {
+			if origin == "" {
+				fail(w, http.StatusForbidden, "origin_forbidden")
+				return
+			}
+			method := r.Header.Get("Access-Control-Request-Method")
+			if method != "GET" && method != "POST" && method != "PUT" && method != "PATCH" && method != "DELETE" {
+				fail(w, http.StatusForbidden, "preflight_forbidden")
+				return
+			}
+			for _, header := range strings.Split(r.Header.Get("Access-Control-Request-Headers"), ",") {
+				header = strings.ToLower(strings.TrimSpace(header))
+				if header != "" && header != "content-type" && header != "x-csrf-protection" {
+					fail(w, http.StatusForbidden, "preflight_forbidden")
+					return
+				}
+			}
 			w.WriteHeader(http.StatusNoContent)
 			return
 		}
@@ -106,12 +130,45 @@ func (s *Server) withCORS(next http.Handler) http.Handler {
 }
 
 func (s *Server) originAllowed(origin string) bool {
+	// Credentials require exact origins. Never accept wildcards, opaque origins,
+	// path suffixes or URLs containing userinfo as a browser origin.
+	u, err := url.Parse(origin)
+	if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" || u.User != nil || origin != u.Scheme+"://"+u.Host {
+		return false
+	}
 	for _, o := range s.cfg.AllowedOrigins {
-		if o == "*" || o == origin {
+		if o == origin {
 			return true
 		}
 	}
 	return false
+}
+
+// All state changes are JSON API calls, never form submissions. The custom
+// header forces a browser CORS preflight; exact Origin checking also protects
+// same-site requests and fails closed when the source is missing or opaque.
+// This is CSRF protection, not authentication: every handler still checks ACL.
+func (s *Server) withWriteProtection(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet || r.Method == http.MethodHead || r.Method == http.MethodOptions {
+			next.ServeHTTP(w, r)
+			return
+		}
+		if !s.originAllowed(r.Header.Get("Origin")) {
+			fail(w, http.StatusForbidden, "origin_forbidden")
+			return
+		}
+		if r.Header.Get("X-CSRF-Protection") != "1" {
+			fail(w, http.StatusForbidden, "csrf_required")
+			return
+		}
+		mediaType, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+		if err != nil || mediaType != "application/json" {
+			fail(w, http.StatusUnsupportedMediaType, "json_required")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // ---- subject ----------------------------------------------------------
@@ -175,7 +232,7 @@ func (s *Server) sendSMS(w http.ResponseWriter, r *http.Request) {
 
 	// Unknown numbers get the same answer as known ones: this endpoint must
 	// never reveal whether a phone number belongs to this household.
-	if !s.cfg.AllowedPhones[phone] {
+	if u, err := s.st.Users().GetByPhone(r.Context(), phone); err != nil || u.Disabled() {
 		s.record(r, store.Anonymous(), audit.KindSMS, audit.ResultDenied, map[string]any{
 			"phone": store.MaskPhone(phone), "why": "not_allowed",
 		})
@@ -212,7 +269,7 @@ func (s *Server) verifySMS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	phone := strings.TrimSpace(body.Phone)
-	if !s.cfg.AllowedPhones[phone] {
+	if u, err := s.st.Users().GetByPhone(r.Context(), phone); err != nil || u.Disabled() {
 		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultDenied, map[string]any{
 			"phone": store.MaskPhone(phone), "why": "not_allowed",
 		})
@@ -269,29 +326,28 @@ func (s *Server) verifySMS(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, s.mePayload(u))
 }
 
-// userForPhone creates the account on first successful login. Membership is
-// bound to the configured phone list, so there is no sign-up flow.
+// Successful verification activates an existing built-in account; never register.
 func (s *Server) userForPhone(ctx context.Context, phone string) (*store.User, error) {
+	s.manageMu.Lock()
+	defer s.manageMu.Unlock()
 	var out *store.User
 	err := s.st.Tx(ctx, func(tx store.Store) error {
 		u, err := tx.Users().GetByPhone(ctx, phone)
-		if err == nil {
-			out = u
-			return nil
-		}
-		if !errors.Is(err, store.ErrNotFound) {
+		if err != nil {
 			return err
 		}
-		nu := &store.User{
-			ID:        store.NewID(),
-			Phone:     phone,
-			Role:      "member",
-			CreatedAt: time.Now().UTC(),
+		if u.Disabled() {
+			return store.ErrNotFound
 		}
-		if err := tx.Users().Create(ctx, nu); err != nil {
+		if u.ActivatedAt == nil {
+			now := time.Now().UTC()
+			u.ActivatedAt = &now
+		}
+		u.Builtin = true
+		if err := tx.Users().Update(ctx, u); err != nil {
 			return err
 		}
-		out = nu
+		out = u
 		return nil
 	})
 	return out, err
@@ -304,7 +360,11 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if c, err := r.Cookie(s.cfg.CookieName); err == nil {
-		_ = s.sessions.Revoke(r.Context(), store.ID(c.Value))
+		if err := s.sessions.Revoke(r.Context(), store.ID(c.Value)); err != nil {
+			s.record(r, subj, audit.KindLogout, audit.ResultFailed, nil)
+			fail(w, http.StatusInternalServerError, "logout_failed")
+			return
+		}
 	}
 	s.record(r, subj, audit.KindLogout, audit.ResultOK, nil)
 	http.SetCookie(w, &http.Cookie{
@@ -331,10 +391,13 @@ func (s *Server) me(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) mePayload(u *store.User) map[string]any {
 	return map[string]any{
-		"id":    u.ID,
-		"phone": store.MaskPhone(u.Phone),
-		"name":  u.Name,
-		"role":  u.Role,
+		"id":           u.ID,
+		"phone":        store.MaskPhone(u.Phone),
+		"name":         u.Name,
+		"role":         u.Role,
+		"avatar":       u.Avatar,
+		"activated_at": u.ActivatedAt,
+		"capabilities": s.capabilities(store.UserSubject(u)),
 	}
 }
 
@@ -354,7 +417,7 @@ func (s *Server) listDevices(w http.ResponseWriter, r *http.Request) {
 	visible := make([]*store.Device, 0, len(all))
 	keys := make([]string, 0, len(all))
 	for _, d := range all {
-		if d.Hidden || !s.acl.Can(subj, "device:"+d.Key, "read") {
+		if d.Hidden || d.Missing || !s.acl.Can(subj, "device:"+d.Key, "read") {
 			continue
 		}
 		visible = append(visible, d)
@@ -441,11 +504,18 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 
 // ---- live stream ------------------------------------------------------
 
-// streamEvents pushes device state changes to a signed-in browser. Anonymous
-// visitors get nothing: device state is household data.
+// streamEvents has the same device visibility boundary as listDevices. A
+// subscription is not an authorization snapshot: recheck before every event.
+// Anonymous subscriptions remain disabled until explicitly supported.
 func (s *Server) streamEvents(w http.ResponseWriter, r *http.Request) {
-	_, u := s.subject(r)
-	if u == nil {
+	cookie, err := r.Cookie(s.cfg.CookieName)
+	if err != nil || cookie.Value == "" {
+		fail(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	sessionID := store.ID(cookie.Value)
+	_, session, err := s.sessions.Resolve(r.Context(), sessionID)
+	if err != nil {
 		fail(w, http.StatusUnauthorized, "unauthorized")
 		return
 	}
@@ -466,20 +536,35 @@ func (s *Server) streamEvents(w http.ResponseWriter, r *http.Request) {
 
 	ping := time.NewTicker(15 * time.Second)
 	defer ping.Stop()
+	expires := time.NewTimer(time.Until(session.ExpiresAt))
+	defer expires.Stop()
 
 	for {
 		select {
 		case <-r.Context().Done():
 			return
+		case <-expires.C:
+			return
 		case payload, ok := <-ch:
 			if !ok {
 				return
 			}
-			if _, err := fmt.Fprintf(w, "data: %s\n\n", payload); err != nil {
+			u, _, err := s.sessions.Resolve(r.Context(), sessionID)
+			if err != nil {
+				return
+			}
+			filtered, err := s.filterEventStates(r.Context(), store.UserSubject(u), payload)
+			if err != nil || len(filtered) == 0 {
+				continue // Fail closed; never forward an unrecognized payload.
+			}
+			if _, err := fmt.Fprintf(w, "data: %s\n\n", filtered); err != nil {
 				return
 			}
 			flusher.Flush()
 		case <-ping.C:
+			if _, _, err := s.sessions.Resolve(r.Context(), sessionID); err != nil {
+				return
+			}
 			if _, err := fmt.Fprint(w, ": ping\n\n"); err != nil {
 				return
 			}
@@ -488,16 +573,38 @@ func (s *Server) streamEvents(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Only emit explicitly permitted, still-existing, non-hidden device states.
+// Rebuild the envelope so other fields can never bypass device filtering.
+func (s *Server) filterEventStates(ctx context.Context, subj store.Subject, payload []byte) ([]byte, error) {
+	var frame struct {
+		States map[string]json.RawMessage `json:"states"`
+	}
+	if err := json.Unmarshal(payload, &frame); err != nil {
+		return nil, err
+	}
+	visible := make(map[string]json.RawMessage)
+	for key, state := range frame.States {
+		if !s.acl.Can(subj, "device:"+key, "read") {
+			continue
+		}
+		d, err := s.st.Devices().Get(ctx, key)
+		if err != nil || d.Hidden || d.Missing {
+			continue
+		}
+		visible[key] = state
+	}
+	if len(visible) == 0 {
+		return nil, nil
+	}
+	return json.Marshal(struct {
+		States map[string]json.RawMessage `json:"states"`
+	}{States: visible})
+}
+
 // ---- admin ------------------------------------------------------------
 
 func (s *Server) requireAdmin(w http.ResponseWriter, r *http.Request) (store.Subject, bool) {
-	subj, _ := s.subject(r)
-	if !s.acl.Can(subj, "policy:*", "grant") {
-		s.record(r, subj, audit.KindDeny, audit.ResultDenied, map[string]any{"path": r.URL.Path})
-		fail(w, http.StatusForbidden, "forbidden")
-		return subj, false
-	}
-	return subj, true
+	return s.requireCapability(w, r, "permissions")
 }
 
 func (s *Server) listPolicies(w http.ResponseWriter, r *http.Request) {
@@ -517,102 +624,69 @@ func (s *Server) grant(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	var body struct {
+	var b struct {
 		SubjectKind string `json:"subject_kind"`
 		SubjectID   string `json:"subject_id"`
 		Resource    string `json:"resource"`
 		Action      string `json:"action"`
 		Effect      string `json:"effect"`
 	}
-	if err := decode(r, &body); err != nil {
-		fail(w, http.StatusBadRequest, "bad_request")
+	if decode(r, &b) != nil {
+		fail(w, 400, "bad_request")
 		return
 	}
-	if body.Effect == "" {
-		body.Effect = "allow"
+	if b.Effect == "" {
+		b.Effect = "allow"
 	}
-	if body.SubjectKind == "" || body.Resource == "" || body.Action == "" {
-		fail(w, http.StatusBadRequest, "bad_request")
+	if (b.SubjectKind != "user" && b.SubjectKind != "anonymous") || (b.Effect != "allow" && b.Effect != "deny") {
+		fail(w, 400, "invalid_input")
 		return
 	}
-
-	// No escalation: a grantor may only hand out what they already hold.
-	if !s.acl.Can(subj, body.Resource, body.Action) {
-		s.record(r, subj, audit.KindDeny, audit.ResultDenied, map[string]any{
-			"why": "escalation", "resource": body.Resource, "action": body.Action,
-		})
-		fail(w, http.StatusForbidden, "forbidden")
-		return
-	}
-
-	p := store.Policy{
-		ID:          store.NewID(),
-		SubjectKind: store.SubjectKind(body.SubjectKind),
-		SubjectID:   store.ID(body.SubjectID),
-		Resource:    body.Resource,
-		Action:      body.Action,
-		Effect:      body.Effect,
-		GrantedBy:   subj.ID,
-		GrantedAt:   time.Now().UTC(),
-	}
-	if err := s.st.Tx(r.Context(), func(tx store.Store) error {
+	p := store.Policy{ID: store.NewID(), SubjectKind: store.SubjectKind(b.SubjectKind), SubjectID: store.ID(b.SubjectID), Resource: b.Resource, Action: b.Action, Effect: b.Effect, GrantedBy: subj.ID, GrantedAt: time.Now().UTC()}
+	err := s.managementChange(r, audit.KindPolicyGrant, map[string]any{"policy": p}, func(tx store.Store) error {
+		if err := validateSubject(r.Context(), tx, p.SubjectKind, p.SubjectID); err != nil {
+			return err
+		}
+		if !allowedPolicyTarget(r.Context(), tx, p) {
+			return errInvalid
+		}
+		if !s.acl.Can(subj, p.Resource, p.Action) {
+			return errForbidden
+		}
 		return tx.Policies().Insert(r.Context(), &p)
-	}); err != nil {
-		fail(w, http.StatusInternalServerError, "internal")
+	})
+	if err != nil {
+		managementFailure(w, err)
 		return
 	}
-	if err := s.reloadACL(r); err != nil {
-		fail(w, http.StatusInternalServerError, "internal")
-		return
-	}
-	// Security-critical: the operation only counts if the trail lands on disk.
-	if err := s.audit.RecordSync(r.Context(), store.Entry{
-		Kind:     audit.KindPolicyGrant,
-		Actor:    subj,
-		IP:       clientIP(r),
-		UA:       userAgent(r),
-		Resource: body.Resource,
-		Action:   body.Action,
-		Result:   audit.ResultOK,
-		Detail: map[string]any{
-			"policy": p.ID, "subject_kind": p.SubjectKind,
-			"subject_id": p.SubjectID, "effect": p.Effect,
-		},
-	}); err != nil {
-		fail(w, http.StatusInternalServerError, "audit_unavailable")
-		return
-	}
-	writeJSON(w, http.StatusOK, p)
+	writeJSON(w, 201, p)
 }
-
 func (s *Server) revoke(w http.ResponseWriter, r *http.Request) {
-	subj, ok := s.requireAdmin(w, r)
+	actor, ok := s.requireAdmin(w, r)
 	if !ok {
 		return
 	}
 	id := store.ID(r.PathValue("id"))
-	if err := s.st.Tx(r.Context(), func(tx store.Store) error {
-		return tx.Policies().Delete(r.Context(), id)
-	}); err != nil {
-		fail(w, http.StatusNotFound, "not_found")
+	err := s.managementChange(r, audit.KindPolicyRevoke, map[string]any{"policy": id}, func(tx store.Store) error {
+		rules, err := tx.Policies().ListAll(r.Context())
+		if err != nil {
+			return err
+		}
+		for _, p := range rules {
+			if p.ID == id {
+				if !s.acl.Can(actor, p.Resource, p.Action) {
+					return errForbidden
+				}
+				return tx.Policies().Delete(r.Context(), id)
+			}
+		}
+		return store.ErrNotFound
+	})
+	if err != nil {
+		managementFailure(w, err)
 		return
 	}
-	if err := s.reloadACL(r); err != nil {
-		fail(w, http.StatusInternalServerError, "internal")
-		return
-	}
-	if err := s.audit.RecordSync(r.Context(), store.Entry{
-		Kind:   audit.KindPolicyRevoke,
-		Actor:  subj,
-		IP:     clientIP(r),
-		UA:     userAgent(r),
-		Result: audit.ResultOK,
-		Detail: map[string]any{"policy": id},
-	}); err != nil {
-		fail(w, http.StatusInternalServerError, "audit_unavailable")
-		return
-	}
-	writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+	writeJSON(w, 200, map[string]any{"ok": true})
 }
 
 func (s *Server) reloadACL(r *http.Request) error {
