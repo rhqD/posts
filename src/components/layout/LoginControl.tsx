@@ -39,7 +39,11 @@ export default function LoginControl({ color, muted }: { color: string; muted: s
     const dismiss = (event: PointerEvent) => {
       if (!boxRef.current?.contains(event.target as Node)) setOpen(false);
     };
-    const escape = (event: KeyboardEvent) => { if (event.key === "Escape") setOpen(false); };
+    const escape = (event: KeyboardEvent) => {
+      // A nested native dialog owns Escape until it closes. Its cancel event
+      // can restore focus before this document listener receives the key.
+      if (event.key === "Escape" && !event.defaultPrevented && !boxRef.current?.querySelector('dialog[open]')) setOpen(false);
+    };
     document.addEventListener("pointerdown", dismiss, true);
     document.addEventListener("keydown", escape);
     return () => {

@@ -22,4 +22,22 @@
 .nameActions { display: flex; justify-content: flex-end; gap: 12px; }
 .hint { margin-top: 8px; }
 .error { font-size: 12px; line-height: 1.6; color: #bc4747; }
+.cropDialog { width: min(420px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 24px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 20px; background: var(--color-surface); color: var(--color-text); box-shadow: 0 24px 80px #0003; text-align: left; }
+.cropDialog::backdrop { background: #10181180; backdrop-filter: blur(4px); }
+.cropHeading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.cropHeading h2 { margin: 0; font-size: 19px; font-weight: 500; }
+.cropHint { margin: 8px 0 18px; color: var(--color-muted); font-size: 12px; line-height: 1.7; }
+.cropViewport { position: relative; width: min(100%, 320px, 48dvh); aspect-ratio: 1; margin: auto; overflow: hidden; border-radius: 12px; background: #eef1e9; }
+.cropViewport canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.cropViewport canvas:active { cursor: grabbing; }
+.cropViewport:focus-within { outline: 2px solid var(--color-text); outline-offset: 4px; }
+.cropMask { position: absolute; inset: 0; border: 1px solid #fff9; border-radius: 50%; box-shadow: 0 0 0 100px #10181170; pointer-events: none; }
+.cropZoom { display: flex; align-items: center; gap: 14px; margin-top: 20px; font-size: 12px; }
+.cropZoom input { flex: 1; min-width: 0; height: 28px; accent-color: var(--color-text); cursor: pointer; }
+.cropZoom output { width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
+.cropFooter { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+.cropFooter button { min-height: 40px; padding: 9px 16px; font-size: 13px; }
+.cropSave { border-radius: 8px; background: var(--color-text); color: var(--color-surface); cursor: pointer; }
+.cropSave:disabled { opacity: .5; cursor: default; }
+@media (max-width: 639px) { .cropDialog { padding: 20px; } }
 @media (max-width: 639px) { .trigger { padding: 5px 6px; gap: 6px; } .triggerName { max-width: 64px; font-size: 12px; } .nameForm input { font-size: 16px; } }
