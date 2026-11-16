@@ -110,7 +110,14 @@ func (s *Server) setAccess(w http.ResponseWriter, r *http.Request) {
 		if _, err := tx.Devices().Get(r.Context(), b.DeviceKey); err != nil {
 			return err
 		}
-		if b.Access != "none" && !s.acl.Can(actor, resource, b.Access) {
+		// Freeze authorization before any edits, including edits to ourselves.
+		before, _, err := candidateACL(r.Context(), tx)
+		if err != nil {
+			return err
+		}
+		canRead := before.Can(actor, resource, "read")
+		canControl := before.Can(actor, resource, "control")
+		if !canRead || (!canControl && (b.Access == "control" || before.Can(subject, resource, "control"))) {
 			return errForbidden
 		}
 		current, err := tx.Policies().ListBySubject(r.Context(), b.SubjectKind, b.SubjectID)
@@ -119,6 +126,13 @@ func (s *Server) setAccess(w http.ResponseWriter, r *http.Request) {
 		}
 		for _, p := range current {
 			if p.Resource == resource && (p.Action == "read" || p.Action == "control" || p.Action == "*") {
+				// A read-only manager must leave control policies untouched.
+				if p.Action == "control" && !canControl {
+					continue
+				}
+				if !before.Can(actor, p.Resource, p.Action) {
+					return errForbidden
+				}
 				if err := tx.Policies().Delete(r.Context(), p.ID); err != nil {
 					return err
 				}
@@ -126,10 +140,13 @@ func (s *Server) setAccess(w http.ResponseWriter, r *http.Request) {
 		}
 		rules := []store.Policy{}
 		if b.Access == "none" {
-			rules = append(rules, policyFor(subject, actor, resource, "read", "deny"), policyFor(subject, actor, resource, "control", "deny"))
+			rules = append(rules, policyFor(subject, actor, resource, "read", "deny"))
 		}
 		if b.Access == "read" {
-			rules = append(rules, policyFor(subject, actor, resource, "read", "allow"), policyFor(subject, actor, resource, "control", "deny"))
+			rules = append(rules, policyFor(subject, actor, resource, "read", "allow"))
+		}
+		if b.Access != "control" && canControl {
+			rules = append(rules, policyFor(subject, actor, resource, "control", "deny"))
 		}
 		if b.Access == "control" {
 			rules = append(rules, policyFor(subject, actor, resource, "control", "allow"))
@@ -188,10 +205,14 @@ func (s *Server) setCapabilities(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return err
 		}
+		before, _, err := candidateACL(r.Context(), tx)
+		if err != nil {
+			return err
+		}
 		rules := []store.Policy{}
 		for key, enabled := range b.Capabilities {
 			c := managementCapabilities[key]
-			if enabled && !s.acl.Can(actor, c.resource, c.action) {
+			if !before.Can(actor, c.resource, c.action) {
 				return errForbidden
 			}
 			for _, p := range old {

@@ -63,11 +63,19 @@ func main() {
 	}
 
 	posts := make([]content.Post, 0, len(rawPages))
+	seenSlugs := make(map[string]bool)
 	for _, raw := range rawPages {
 		p, err := notion.MapPage(raw)
 		if err != nil {
 			log.Fatalf("map page: %v", err)
 		}
+		// Reject collisions before starting any writes, including on macOS's
+		// default case-insensitive filesystem.
+		slugKey := strings.ToLower(p.Slug)
+		if seenSlugs[slugKey] {
+			log.Fatalf("duplicate post slug %q", p.Slug)
+		}
+		seenSlugs[slugKey] = true
 		posts = append(posts, p)
 	}
 	sort.SliceStable(posts, func(i, j int) bool { return postTime(posts[i]).After(postTime(posts[j])) })
@@ -92,7 +100,10 @@ func main() {
 	sem := make(chan struct{}, *concurrency)
 
 	for _, p := range posts {
-		path := filepath.Join(postsDir, p.Slug+".json")
+		path, err := content.PostPath(postsDir, p.Slug)
+		if err != nil {
+			log.Fatal(err)
+		}
 		prev, seen := manifest.Posts[p.ID]
 		if !*force && seen && prev.LastEdited == p.UpdatedAt && fileExists(path) {
 			mu.Lock()

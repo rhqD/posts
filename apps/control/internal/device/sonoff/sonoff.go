@@ -52,11 +52,16 @@ var controllableParams = map[string]bool{
 	"channel":          true,
 }
 
-// noisyReadings are device fingerprints rather than state; they stay out of the
-// descriptor so the UI does not have to filter them.
-var noisyReadings = map[string]bool{
-	"bindInfos": true, "bssid": true, "ssid": true, "staMac": true,
-	"only_device": true,
+// Only documented household state leaves this provider. New vendor fields
+// default to private; network fingerprints, bindings and diagnostics never
+// enter either the public descriptor or the readings cache.
+var publicReadings = map[string]bool{
+	"switch": true, "switches": true, "power": true,
+	"brightness": true, "colorTemperature": true, "mode": true, "channel": true,
+	"temperature": true, "humidity": true, "currentTemperature": true, "currentHumidity": true,
+	"battery": true, "rssi": true, "voltage": true, "current": true,
+	"electricCurrent": true, "activePower": true, "apparentPower": true,
+	"reactivePower": true, "powerFactor": true, "frequency": true,
 }
 
 // TokenSource supplies an access token. Implementations may refresh it.
@@ -300,9 +305,10 @@ func (p *Provider) Discover(ctx context.Context) ([]device.Descriptor, error) {
 		if t.ItemData.DeviceID == "" {
 			continue // groups and homes carry no deviceid
 		}
-		d := buildDescriptor(t.ItemData.DeviceID, t.ItemData.Name, t.ItemData.Room, t.ItemData.Online, t.ItemData.Params)
+		readings := copyReadings(t.ItemData.Params)
+		d := buildDescriptor(t.ItemData.DeviceID, t.ItemData.Name, t.ItemData.Room, t.ItemData.Online, readings)
 		p.devices[d.Key] = meta{desc: d, itemType: t.ItemType, outlets: gangCount(t.ItemData.Params)}
-		p.cache[d.Key] = cached{readings: copyReadings(t.ItemData.Params), expire: time.Now().Add(p.ttl)}
+		p.cache[d.Key] = cached{readings: readings, expire: time.Now().Add(p.ttl)}
 		out = append(out, d)
 	}
 	return out, nil
@@ -329,7 +335,7 @@ func buildDescriptor(key, name, room string, online bool, params map[string]any)
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		if !noisyReadings[k] {
+		if publicReadings[k] {
 			d.Readings = append(d.Readings, k)
 		}
 		if !controllableParams[k] {
@@ -374,7 +380,34 @@ func gangCount(params map[string]any) int {
 func copyReadings(params map[string]any) device.Readings {
 	out := make(device.Readings, len(params))
 	for k, v := range params {
-		out[k] = v
+		if !publicReadings[k] {
+			continue
+		}
+		if k == "switches" {
+			// Multi-gang entries may also contain vendor metadata. Project the
+			// nested objects instead of copying them wholesale.
+			list, _ := v.([]any)
+			clean := make([]any, 0, len(list))
+			for _, item := range list {
+				gang, ok := item.(map[string]any)
+				if !ok {
+					continue
+				}
+				outlet, ok := gang["outlet"].(float64)
+				state, valid := gang["switch"].(string)
+				if !ok || outlet < 0 || outlet != float64(int(outlet)) || !valid || (state != "on" && state != "off") {
+					continue
+				}
+				clean = append(clean, map[string]any{"outlet": outlet, "switch": state})
+			}
+			out[k] = clean
+			continue
+		}
+		// Scalar state only; an unexpected object must not smuggle metadata.
+		switch v.(type) {
+		case string, bool, float64:
+			out[k] = v
+		}
 	}
 	return out
 }

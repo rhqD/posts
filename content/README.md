@@ -17,10 +17,12 @@ content/
 - `posts.index.json` is the single source of truth for the post list.
   It must be sorted by `published_at` descending.
 - Each post file name is the slug; `post.slug` must match the file name.
+- A slug is 1–200 ASCII letters, digits, hyphens or underscores, starting with
+  a letter or digit. Invalid or case-insensitively duplicated slugs abort sync.
 - `blocks` is the raw Notion block tree (with `children` attached) so the
   renderer can stay Notion-shaped. Internal links are already rewritten to
   `/posts/{slug}` by the sync step.
-- Images are left as Notion S3 URLs at first; the sync step rewrites them to
-  OSS/CDN URLs once that pipeline is wired up.
+- Images are initially Notion URLs; `make images` uploads processed assets to
+  OSS and rewrites them to `/images/...` before publication.
 - The whole directory is safe to commit: it is small and makes builds
   reproducible and offline-capable.

@@ -170,6 +170,9 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - 没有 CI：发布靠本地 `make publish`。计划加 GitHub Actions。
 - 会话签发、注销、过期清理必须使用持久化事务；注销写失败不能清 Cookie 或在前端假装成功。重启与写失败回归见 `apps/control/internal/auth/session_test.go`、`apps/control/internal/api/logout_test.go`。
 - 控制面写请求必须有精确白名单 `Origin`、`X-CSRF-Protection: 1` 和 JSON Content-Type；前端统一用 `controlWrite`，CSRF 头不能替代 ACL。发布请求头变更时先兼容后端、再前端、最后开启强制校验。
+- 短信校验还必须携带发码时的 HttpOnly 登录 Cookie（`<COOKIE_NAME>_login`，5 分钟/5 次，内存保存）；未知账号、失效凭据和次数耗尽统一失败。校验限流按可信来源 IP，不按受害者手机号扣全局额度。本机 nginx 必须覆盖或追加真实客户端 X-Forwarded-For，后端只信任回环代理最后一跳。见 `sms_security_test.go`。
+- 权限的授予、拒绝、撤销和降级均受操作者自身权限限制，使用变更前 ACL 快照；只读管理员不能删除控制策略或下发控制拒绝。Sonoff 状态在进入缓存前按 `publicReadings` 白名单过滤，不直接对外透传厂商 params。
+- 文章 Mermaid 源码必须用 `textContent` 交给渲染器，不拼接 HTML；`pnpm test:security` 覆盖浏览器注入与原型污染。文章 slug 必须通过 Go/前端一致的字符校验，禁止参与路径穿越。
 - 控制面 `/events` 必须在服务端逐事件重新校验会话并按设备 `read` ACL 过滤（包含隐藏/删除检查），不能直接广播给已登录用户；会话到期主动断开，撤销/禁用在事件或心跳时断开。匿名 SSE 暂不开放。安全回归见 `apps/control/internal/api/events_test.go`。
 - 控制面还没有自动备份：数据在 `/var/lib/renhanquan-control`，机器挂了就没了。
 - 控制面缺：CoolKit 之外的 provider、告警；管理页见 `/manage/users/`、`/manage/permissions/`、`/manage/devices/`。

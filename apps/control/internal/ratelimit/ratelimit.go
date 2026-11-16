@@ -8,10 +8,11 @@ import (
 // Limiter is a tiny fixed-window limiter. It exists to stop SMS abuse and
 // anonymous write floods, not to be a general-purpose rate limiter.
 type Limiter struct {
-	mu      sync.Mutex
-	window  time.Duration
-	limit   int
-	buckets map[string]*bucket
+	mu        sync.Mutex
+	window    time.Duration
+	limit     int
+	buckets   map[string]*bucket
+	nextSweep time.Time
 }
 
 type bucket struct {
@@ -29,8 +30,17 @@ func (l *Limiter) Allow(key string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := time.Now()
+	if !now.Before(l.nextSweep) {
+		l.sweep(now)
+		l.nextSweep = now.Add(time.Minute)
+	}
 	b, ok := l.buckets[key]
 	if !ok || now.After(b.reset) {
+		// Requests with arbitrary source addresses cannot grow memory without
+		// bound. Fail closed until an existing bucket expires.
+		if !ok && len(l.buckets) >= 10000 {
+			return false
+		}
 		l.buckets[key] = &bucket{count: 1, reset: now.Add(l.window)}
 		return true
 	}
@@ -44,7 +54,10 @@ func (l *Limiter) Allow(key string) bool {
 func (l *Limiter) Sweep() {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	now := time.Now()
+	l.sweep(time.Now())
+}
+
+func (l *Limiter) sweep(now time.Time) {
 	for k, b := range l.buckets {
 		if now.After(b.reset) {
 			delete(l.buckets, k)

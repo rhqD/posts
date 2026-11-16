@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { Post, Category, Tag } from "@/lib/types";
+import { validatePostSlug } from "./post-slug";
 
 // Blog content is produced at build time by the sync tool (apps/api/cmd/sync) and
 // written to content/. If that snapshot exists we never touch the network; the
@@ -19,14 +20,18 @@ type LocalPostFile = { post: Post; blocks: NotionBlock[] };
 let indexCache: Post[] | null | undefined;
 
 function readLocalIndex(): Post[] | null {
+  let posts: Post[];
   try {
-    return JSON.parse(fs.readFileSync(INDEX_FILE, "utf8")) as Post[];
+    posts = JSON.parse(fs.readFileSync(INDEX_FILE, "utf8")) as Post[];
   } catch {
     return null;
   }
+  for (const post of posts) validatePostSlug(post.slug);
+  return posts;
 }
 
 function readLocalPost(slug: string): LocalPostFile | null {
+  validatePostSlug(slug);
   try {
     const raw = fs.readFileSync(path.join(CONTENT_DIR, "posts", `${slug}.json`), "utf8");
     return JSON.parse(raw) as LocalPostFile;
@@ -64,6 +69,7 @@ function mapToPost(page: any): Post {
       const auto = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
       return auto || page.id.replace(/-/g, "");
     })();
+  validatePostSlug(slug);
   const excerpt = props.summary?.rich_text?.[0]?.plain_text || "";
   const publishedDate = props.date?.date?.start || page.created_time;
   const status = props.status?.select?.name === "Published" ? "published" : "draft";

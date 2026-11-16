@@ -49,6 +49,7 @@ type Server struct {
 	phoneLimit  *ratelimit.Limiter
 	ipLimit     *ratelimit.Limiter
 	verifyLimit *ratelimit.Limiter
+	challenges  *smsChallenges
 }
 
 func New(cfg Config, st store.Store, sessions *auth.Sessions, az *acl.Authorizer, al *audit.Logger, sp sms.Provider, dp device.Provider, hub *events.Hub) *Server {
@@ -63,7 +64,8 @@ func New(cfg Config, st store.Store, sessions *auth.Sessions, az *acl.Authorizer
 		provider:    dp,
 		phoneLimit:  ratelimit.New(60*time.Second, 1),
 		ipLimit:     ratelimit.New(time.Hour, 20),
-		verifyLimit: ratelimit.New(10*time.Minute, 5),
+		verifyLimit: ratelimit.New(10*time.Minute, 30),
+		challenges:  newSMSChallenges(),
 	}
 }
 
@@ -186,13 +188,16 @@ func (s *Server) subject(r *http.Request) (store.Subject, *store.User) {
 }
 
 func clientIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		if i := strings.IndexByte(xff, ','); i > 0 {
-			return strings.TrimSpace(xff[:i])
-		}
-		return strings.TrimSpace(xff)
-	}
 	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		// Only the local nginx is trusted. It must overwrite X-Forwarded-For
+		// or append the actual peer; caller-controlled prefixes are ignored.
+		if peer := net.ParseIP(host); peer != nil && peer.IsLoopback() {
+			xff := r.Header.Get("X-Forwarded-For")
+			last := strings.TrimSpace(xff[strings.LastIndexByte(xff, ',')+1:])
+			if ip := net.ParseIP(last); ip != nil {
+				return ip.String()
+			}
+		}
 		return host
 	}
 	return r.RemoteAddr
@@ -229,6 +234,18 @@ func (s *Server) sendSMS(w http.ResponseWriter, r *http.Request) {
 	}
 	phone := strings.TrimSpace(body.Phone)
 	ip := clientIP(r)
+	token, err := newChallengeToken()
+	if err != nil {
+		fail(w, http.StatusServiceUnavailable, "unavailable")
+		return
+	}
+	// Identical cookie and response shape for known, unknown, disabled,
+	// throttled and upstream-failed numbers. Only a real send activates it.
+	http.SetCookie(w, s.challengeCookie(token))
+	if !s.ipLimit.Allow(ip) {
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
+		return
+	}
 
 	// Unknown numbers get the same answer as known ones: this endpoint must
 	// never reveal whether a phone number belongs to this household.
@@ -239,7 +256,7 @@ func (s *Server) sendSMS(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 		return
 	}
-	if !s.phoneLimit.Allow(phone) || !s.ipLimit.Allow(ip) {
+	if !s.phoneLimit.Allow(phone) {
 		s.record(r, store.Anonymous(), audit.KindSMS, audit.ResultThrottled, map[string]any{
 			"phone": store.MaskPhone(phone),
 		})
@@ -250,9 +267,10 @@ func (s *Server) sendSMS(w http.ResponseWriter, r *http.Request) {
 		s.record(r, store.Anonymous(), audit.KindSMS, audit.ResultFailed, map[string]any{
 			"phone": store.MaskPhone(phone), "err": err.Error(),
 		})
-		fail(w, http.StatusBadGateway, "send_failed")
+		writeJSON(w, http.StatusOK, map[string]any{"ok": true})
 		return
 	}
+	s.challenges.activate(phone, token)
 	s.record(r, store.Anonymous(), audit.KindSMS, audit.ResultOK, map[string]any{
 		"phone": store.MaskPhone(phone),
 	})
@@ -269,27 +287,34 @@ func (s *Server) verifySMS(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	phone := strings.TrimSpace(body.Phone)
+	// IP throttling runs before account lookup, with identical responses for
+	// every phone. Unrelated requests cannot burn a victim's code attempts.
+	if !s.verifyLimit.Allow(clientIP(r)) {
+		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultThrottled, map[string]any{"phone": store.MaskPhone(phone)})
+		fail(w, http.StatusTooManyRequests, "too_many_attempts")
+		return
+	}
+	cookie, cookieErr := r.Cookie(s.cfg.CookieName + "_login")
+	if cookieErr != nil || !s.challenges.begin(phone, cookie.Value) {
+		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultDenied, map[string]any{"phone": store.MaskPhone(phone), "why": "invalid_challenge"})
+		fail(w, http.StatusUnauthorized, "login_failed")
+		return
+	}
 	if u, err := s.st.Users().GetByPhone(r.Context(), phone); err != nil || u.Disabled() {
+		s.challenges.finish(phone, cookie.Value, false)
 		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultDenied, map[string]any{
 			"phone": store.MaskPhone(phone), "why": "not_allowed",
 		})
 		fail(w, http.StatusUnauthorized, "login_failed")
 		return
 	}
-	if !s.verifyLimit.Allow(phone) {
-		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultThrottled, map[string]any{
-			"phone": store.MaskPhone(phone),
-		})
-		fail(w, http.StatusTooManyRequests, "too_many_attempts")
-		return
-	}
-
 	pass, err := s.sms.Check(r.Context(), phone, strings.TrimSpace(body.Code))
+	pass = s.challenges.finish(phone, cookie.Value, pass && err == nil)
 	if err != nil {
 		s.record(r, store.Anonymous(), audit.KindLogin, audit.ResultFailed, map[string]any{
 			"phone": store.MaskPhone(phone), "err": err.Error(),
 		})
-		fail(w, http.StatusBadGateway, "verify_failed")
+		fail(w, http.StatusUnauthorized, "login_failed")
 		return
 	}
 	if !pass {

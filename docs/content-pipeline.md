@@ -8,6 +8,8 @@
 
 `slug` 建议手动填英文，留空会走自动 slugify；中文标题 slugify 后会为空，回退成 32 位 page id，URL 很难看。
 
+显式 slug 必须是 1–200 个 ASCII 字母、数字、`-` 或 `_`，且以字母或数字开头；路径分隔符、点、百分号编码等直接拒绝。同步开始写文件前检查全部 slug 及忽略大小写的重复值；前端读取快照和 Notion 回退也执行同样的字符校验。
+
 ## sync：Notion → content/
 
 `apps/api/cmd/sync`，Go 写的，只用标准库。
@@ -30,7 +32,13 @@ content/manifest.json         # page id -> { slug, last_edited }，用于增量�
 - 分页拉全量（Notion 单次最多 100 条）
 - 块树递归拉取，`p-limit` 等价物：并发 3，遇 429 按 Retry-After 退避
 - 站内链接改写：Notion 的 page id 链接 → `/posts/<slug>/`
-- 失败即退出，不会写半份快照
+- 单个文件通过临时文件原子替换；拉取失败退出，不更新索引和 manifest（已经成功写入的文章文件可能保留）
+
+## 文章代码块
+
+Mermaid 源码通过 `textContent` 写入节点，由严格模式渲染，解析失败显示转义后的源码；不允许在 Mermaid 运行之前把文章源码拼接成 HTML。升级 Mermaid 时一并更新锁文件与传递依赖。
+
+安全回归：`pnpm test:security`，首次可运行 `pnpm exec playwright install chromium`；也可通过 `CHROME_PATH` 指向已有 Chrome。测试覆盖真实渲染模块的 HTML 注入、原型污染、正常图表、错误回退和取消渲染，以及前端 slug 校验。Go 同步校验运行 `cd apps/api && go test ./...`。
 
 ## images：图片落地
 

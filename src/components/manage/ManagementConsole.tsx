@@ -54,9 +54,9 @@ function DeviceForm({device,onSave,onClose,busy,error}:{device:Device;onSave:(v:
 function AccessForm({row,subjectName,onPreview,onClose}:{row:AccessRow;subjectName:string;onPreview:(level:Level)=>void;onClose:()=>void}){
  const [level,setLevel]=useState<Level>(levelOf(row));
  return <Modal title="调整设备访问" onClose={onClose}><form onSubmit={e=>{e.preventDefault();onPreview(level);}}><p>{subjectName} <ChevronRight size={14} className={styles.inlineIcon}/> {row.device.name}</p>
-  <fieldset className={styles.radios}><legend>有效权限</legend>{(Object.keys(levels) as Level[]).map(value=><label key={value}><input type="radio" name="access" value={value} checked={level===value} onChange={()=>setLevel(value)} disabled={value!=='none'&&!row.grantable[value]}/><span>{levels[value]}</span></label>)}</fieldset>
-  <p className={styles.muted}>可控制包含读取。不能授予超出自己权限的访问；拒绝规则的来源可以在列表中展开查看。</p>
-  <div className={styles.modalActions}><button type="button" className={styles.secondary} onClick={onClose}>取消</button><button className={styles.primary} type="submit">预览变更<ChevronRight size={15}/></button></div>
+  <fieldset className={styles.radios}><legend>有效权限</legend>{(Object.keys(levels) as Level[]).map(value=><label key={value}><input type="radio" name="access" value={value} checked={level===value} onChange={()=>setLevel(value)} disabled={!row.grantable.read||((row.control||value==='control')&&!row.grantable.control)}/><span>{levels[value]}</span></label>)}</fieldset>
+  <p className={styles.muted}>授予、撤销和降级都受你的权限范围限制。只读管理员不能更改控制权限。</p>
+  <div className={styles.modalActions}><button type="button" className={styles.secondary} onClick={onClose}>取消</button><button className={styles.primary} type="submit" disabled={level===levelOf(row)||!row.grantable.read||((row.control||level==='control')&&!row.grantable.control)}>预览变更<ChevronRight size={15}/></button></div>
  </form></Modal>;
 }
 function CapabilitiesForm({value,grantable,onPreview,onClose}:{value:Record<Capability,boolean>;grantable:Record<Capability,boolean>;onPreview:(v:Record<Capability,boolean>)=>void;onClose:()=>void}){

@@ -66,7 +66,7 @@ export default function LoginControl({ color, muted }: { color: string; muted: s
       await requestCode(phone.trim());
       // Deliberately the same message whether or not the number is on the list.
       setPhase("code");
-      setNote("验证码已发送");
+      setNote("若该号码已开通登录，验证码将发送至手机。");
     } catch (error) {
       setNote(error instanceof Error ? error.message : "验证码请求失败，请稍后重试");
     } finally {

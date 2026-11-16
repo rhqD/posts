@@ -53,7 +53,7 @@ func managementFixture(t *testing.T) (*eventFixture, *store.Session, *testSMS) {
 	f.api.cfg.AllowedOrigins = []string{trustedOrigin}
 	return f, f.session(t, "root"), sms
 }
-func callManagement(f *eventFixture, sess *store.Session, method, path string, body any) *httptest.ResponseRecorder {
+func callManagement(f *eventFixture, sess *store.Session, method, path string, body any, cookies ...*http.Cookie) *httptest.ResponseRecorder {
 	var data []byte
 	if body != nil {
 		data, _ = json.Marshal(body)
@@ -62,6 +62,9 @@ func callManagement(f *eventFixture, sess *store.Session, method, path string, b
 	req.Header.Set("Origin", trustedOrigin)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("X-CSRF-Protection", "1")
+	for _, cookie := range cookies {
+		req.AddCookie(cookie)
+	}
 	if sess != nil {
 		req.AddCookie(&http.Cookie{Name: "sid", Value: string(sess.ID)})
 	}
@@ -101,16 +104,18 @@ func TestBuiltinUsersNoRegistrationAndFirstActivation(t *testing.T) {
 		t.Fatalf("unexpected initial state %v", created)
 	}
 	requireStatus(t, callManagement(f, root, "POST", "/admin/users", map[string]any{"name": "Duplicate", "phone": phone}), 409)
-	requireStatus(t, callManagement(f, nil, "POST", "/auth/sms/send", map[string]any{"phone": phone}), 200)
+	sent := callManagement(f, nil, "POST", "/auth/sms/send", map[string]any{"phone": phone})
+	requireStatus(t, sent, 200)
+	challenge := sent.Result().Cookies()[0]
 	if sms.sent != 1 {
 		t.Fatal("new builtin not admitted without restart")
 	}
-	requireStatus(t, callManagement(f, nil, "POST", "/auth/sms/verify", map[string]any{"phone": phone, "code": "wrong"}), 401)
+	requireStatus(t, callManagement(f, nil, "POST", "/auth/sms/verify", map[string]any{"phone": phone, "code": "wrong"}, challenge), 401)
 	u, _ := f.st.Users().GetByPhone(context.Background(), phone)
 	if u.ActivatedAt != nil {
 		t.Fatal("failed verification activated user")
 	}
-	w = callManagement(f, nil, "POST", "/auth/sms/verify", map[string]any{"phone": phone, "code": "123456"})
+	w = callManagement(f, nil, "POST", "/auth/sms/verify", map[string]any{"phone": phone, "code": "123456"}, challenge)
 	requireStatus(t, w, 200)
 	u, _ = f.st.Users().GetByPhone(context.Background(), phone)
 	if u.ActivatedAt == nil {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { renderMermaid } from "@/lib/mermaid-renderer";
 import "katex/dist/katex.min.css";
 import "prismjs/themes/prism-tomorrow.css";
 
@@ -242,24 +243,28 @@ function CodeBlock({ code, language }: { code: string; language: string }) {
   const prismLang = languageMap[language] || language || "plain";
 
   useEffect(() => {
-    if (!ref.current) return;
+    const container = ref.current;
+    if (!container) return;
+    let cancelled = false;
     if (language === "mermaid") {
-      import("mermaid").then(({ default: mermaid }) => {
-        mermaid.initialize({ startOnLoad: false, theme: "default" });
-        const id = `mermaid-${Math.random().toString(36).slice(2)}`;
-        ref.current!.innerHTML = `<div class="mermaid" id="${id}">${code}</div>`;
-        mermaid.run({ nodes: [document.getElementById(id)!] as unknown as HTMLElement[] });
-      });
-      return;
+      void renderMermaid(container, code, () => !cancelled);
+      return () => { cancelled = true; };
     }
     // Syntax highlight with Prism
     import("prismjs").then(async ({ default: Prism }) => {
       try {
         await import(`prismjs/components/prism-${prismLang}.js`);
       } catch {}
+      if (cancelled) return;
       const html = Prism.highlight(code, Prism.languages[prismLang] || Prism.languages.plain, prismLang);
-      ref.current!.innerHTML = `<pre class="language-${prismLang}"><code class="language-${prismLang}">${html}</code></pre>`;
-    });
+      const pre = document.createElement("pre");
+      const element = document.createElement("code");
+      pre.className = element.className = `language-${prismLang}`;
+      element.innerHTML = html; // Prism escapes source before adding highlighting markup.
+      pre.append(element);
+      container.replaceChildren(pre);
+    }).catch(() => { /* Keep the escaped React fallback on highlighting failure. */ });
+    return () => { cancelled = true; };
   }, [code, language, prismLang]);
 
   if (language === "mermaid") {

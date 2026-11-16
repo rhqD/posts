@@ -41,6 +41,9 @@ func MapPage(raw json.RawMessage) (content.Post, error) {
 	if slug == "" {
 		slug = strings.ReplaceAll(p.ID, "-", "")
 	}
+	if err := content.ValidateSlug(slug); err != nil {
+		return content.Post{}, err
+	}
 
 	excerpt := textProp(p.Properties, "summary")
 	published := dateProp(p.Properties, "date")
