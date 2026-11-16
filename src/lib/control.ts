@@ -37,16 +37,18 @@ export async function fetchSession(signal?: AbortSignal): Promise<Session | null
 }
 
 /**
- * Always resolves. The server answers identically for known and unknown
- * numbers, so the UI must not leak a different signal.
+ * Rejects transport and HTTP failures. Successful responses remain identical
+ * for known and unknown numbers, matching the server's privacy contract.
  */
 export async function requestCode(phone: string): Promise<void> {
-  if (!CONTROL_BASE) return;
+  if (!CONTROL_BASE) throw new Error("登录服务暂不可用，请稍后重试");
+  let res: Response;
   try {
-    await controlWrite("/auth/sms/send", { phone });
+    res = await controlWrite("/auth/sms/send", { phone });
   } catch {
-    // Offline is indistinguishable from "sent" on purpose.
+    throw new Error("无法连接登录服务，请检查网络后重试");
   }
+  if (!res.ok) throw new Error("验证码请求失败，请稍后重试");
 }
 
 /** Returns the session on success, null when the code was rejected. */
