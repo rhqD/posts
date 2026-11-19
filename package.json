@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test:security": "node --test tests/post-slug.test.mjs tests/mermaid.browser.test.mjs",
     "test:avatar": "node --test tests/avatar.browser.test.mjs",
-    "test:yard": "node --test tests/yard-climate.browser.test.mjs"
+    "test:yard": "node --test tests/yard-climate.browser.test.mjs tests/yard-model-cache.browser.test.mjs"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",

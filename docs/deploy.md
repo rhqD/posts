@@ -39,14 +39,21 @@ make deploy         # build + upload
 make sync-yard
 ```
 
-它会从 `../yabai_home` 解析灯具配置写到 `public/yard/lights.json`，按内容哈希把
-模型传成 `models/yard-web.<hash>.glb`（附精简 report），并把当前 hash 写回
-`lights.json` 的 `model` 字段。
+它从 `../yabai_home` 读取模型和灯具配置，生成两层内容寻址资源：
 
-`yard/lights.json` 是**唯一允许的“指针文件”**，部署时必须 `no-cache`；模型本身
-可以永久 immutable。换模型不需要刷 CDN。
+- `models/yard-web.<模型hash>.glb`（附精简 report）。
+- `yard/lights.<清单hash>.json`：包含模型 URL 和全部灯具配置，单改配置也会换 hash。
 
-旧 hash 的模型可以留在 OSS 上（页面永不引用），无需清理；缓存策略见上。
+`src/components/yard/yard-assets.ts` 由同步脚本生成，新页面从这里取得清单 URL。
+同步后必须重新构建、部署页面，才能切换清单版本；无需刷 CDN。清单与模型都可
+按 `immutable` 长缓存，发布先传资源再传 HTML，旧版本留在 OSS 以兼容未关闭的页面。
+
+固定的 `yard/lights.json` 保留为旧页面兼容入口，继续用 `no-cache`；新页面不再读取它。
+曾复现浏览器长期缓存旧固定清单导致空调胶囊禁用，仅修改源站响应头不能清掉已有缓存。
+发布脚本校验清单内容 hash，缺少清单或上传失败应中止发布。运行时诊断
+`window.yardPreviewState` 含 `manifestUrl`、模型 URL/hash 和 `climateAvailable`。
+
+旧 hash 的模型和清单应留在 OSS 上，已打开的旧页面仍可能引用；缓存策略见上。
 
 202 卧室空调还需要本仓库的 `yard-climate.ts` / `ClimatePanel.tsx`：GLB 提供独立部件，
 拟合导风板与实时数字在运行时生成，不能只替换 GLB 而漏发网页代码。发布前运行：

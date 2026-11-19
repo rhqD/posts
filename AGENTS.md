@@ -52,7 +52,7 @@ OSS bucket renhanquan-site (cn-hangzhou)
 | `scripts/deploy.sh` | 构建产物上传 OSS |
 | `src/app/(bare)/home` | `/home` 3D 页面（仅 Header，无 Footer） |
 | `src/components/yard` | 3D 场景组件与本仓库自有的查看器 UI |
-| `public/yard` | 运行时资产：`lights.json` + draco 解码器 |
+| `public/yard` | 运行时资产：带 hash 的灯具清单、兼容旧版的 `lights.json` + draco 解码器 |
 | `docs/` | 架构、部署、内容管线的细节 |
 | `infra/ros/control.yml` | 控制面 ECS 的 ROS 模板（导入接管，双 Retain） |
 
@@ -142,10 +142,10 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 **同步边界：只同步「模型 + 灯具配置」，页面本身归本仓库所有。**
 
 - `make sync-yard`（`scripts/sync-yard.mjs`）是唯一入口，它做四件事：
-  1. 从 `../yabai_home/web/preview.html` 解析 `extraLights` 与开关文案，生成 `public/yard/lights.json`
+  1. 从 `../yabai_home/web/preview.html` 解析 `extraLights` 与开关文案，生成 `public/yard/lights.json` 和同内容的 `lights.<清单hash>.json`，并生成 `src/components/yard/yard-assets.ts` 作为新页面的固定版本入口
   2. 对 glb 取 sha256 前 8 位，上传成 **`models/yard-web.<hash>.glb`**（配 `immutable` 一年缓存）
   3. 上传精简后的 `report.json`（只保留 glb 统计，避免泄露本机路径）
-  4. 把 `model.url` / `model.report` 写进 `lights.json`，并在 `public/models/` 建一个同名软链，本地 dev 也能用同一个 URL
+  4. 把 `model.url` / `model.report` 写进清单，并在 `public/models/` 建一个同名软链，本地 dev 也能用同一个 URL。清单 hash 覆盖模型指针与全部灯具配置，单改配置也会换 URL
 - **不要**从 yabai_home 复制 `preview.html`：面板布局、视角、日照逻辑都以本仓库为准。
 - 灯具增删只改 Blender 侧对象名并重新导出，再跑 `make sync-yard`；`lights.json` 变了，开关按钮会自动增删。
 - 房屋外的起伏草地、松林、石阶步道、自然溪流与连续山体由 `src/components/yard/yard-environment.ts` 本地生成，独立于 Blender 同步；默认「园景」视角展示完整房屋与环境，「山水」视角可查看河道与山峦；灯光按钮平铺展示，胶囊右侧 ↗ 按钮可直达灯具视角；**宽度 <700px 时灯光区改为换行排列**，不做横向滚动。
@@ -160,11 +160,11 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - ⚠️ **`yard-scene.ts` 第一行是 `@ts-nocheck`**（当初从 yabai_home 的 preview.html 搬进来时加的，因为 imperative 的 three.js 代码补类型收益低）。**类型检查对这个文件完全失效**，`tsc` 通过不代表它是对的：模块级初始化顺序错误（比如往一个后面才声明的 `const` 里写入）属于运行时 TDZ，TypeScript 看不见。
   改这个文件之后必须**用浏览器跑一遍**：起静态服务打开 `/home/`，确认加载遮罩消失、没有 JS 异常。不要再靠「构建通过」判断。
 - 想正经加类型，方向不是逐行补 `any`（实测 195 个错误里 159 个是隐式 any 噪音），而是把纯逻辑抽到单独的模块，渲染部分继续不检查。
-- `public/yard/` 只保留运行时资产：`lights.json`（灯具配置）和 `draco/`（解码器 wasm/js）。
+- `public/yard/` 只保留运行时资产：`lights.<hash>.json`（版本化配置）、旧页面兼容用 `lights.json` 和 `draco/`（解码器 wasm/js）。
 - 不要再引入 importmap 或 vendor 版 three：场景已走 npm 依赖，旧 `public/yard/index.html` 已删除。
-- 模型在 OSS：`oss://renhanquan-site/models/yard-web.<hash>.glb`。页面**不硬编码文件名**，从 `lights.json` 的 `model.url` 读（同源，避免 CORS）。
-- 换模型只需重新导出后跑 `make sync-yard`：文件名里的 hash 变了，URL 随之变化，CDN 和浏览器都能安全地按 immutable 缓存，**不需要刷 CDN**。
-- `yard/lights.json` 必须 `no-cache`（它指向当前 hash），`deploy.sh` 已单独用 `NO_CACHE` 上传并排除在 immutable 批次外。
+- 模型在 OSS：`oss://renhanquan-site/models/yard-web.<hash>.glb`。页面从生成的 `yard-assets.ts` 获取版本化清单 URL，再从清单的 `model.url` 读模型（同源，避免 CORS），不跟随运行时固定名称指针。
+- 换模型或配置：重新导出后跑 `make sync-yard`，再构建、部署网页，使新页面引用新的清单 URL。清单和模型均按内容 hash 长缓存，**不需要刷 CDN**；旧页面继续引用旧版本，不能删除 OSS 上的旧文件。
+- `lights.<hash>.json` 配 `immutable`，`deploy.sh` 校验其内容 hash 并在 HTML 之前上传，失败必须中止发布。固定的 `yard/lights.json` 仅兼容旧页面，仍用 `no-cache`。曾复现旧清单长期缓存导致“新胶囊配旧模型”；新页面完全绕开这个旧 URL。`pnpm test:yard` 保留真实 HTTP 缓存，验证旧指针不会被使用、同版清单可复用缓存；不能用 Playwright route 测这个场景（route 会关闭浏览器缓存）。
 
 ## 不要做的事
 

@@ -10,6 +10,7 @@ import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { bindClimateModel } from './yard-climate';
 import type { ClimateState } from './climate-state';
+import { YARD_LIGHTS_URL } from './yard-assets';
 
 export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; badgeClass?: string; onClimateOpen?: () => void; onClimateReady?: (ready: boolean) => void; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
 
@@ -37,7 +38,12 @@ let floodlight = null, floodlightState = { on: false }, floodlightLens = null, p
 let climateModel: ReturnType<typeof bindClimateModel> = null;
 let climateReadings: ClimateState = {};
 const lampRaycaster = new THREE.Raycaster();
-const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
+// Both this manifest and its model use content-addressed URLs. A new build
+// never follows a cached fixed-name pointer from an older deployment.
+const LIGHTS = await fetch(YARD_LIGHTS_URL).then(r => {
+  if (!r.ok) throw new Error('模型配置暂时无法获取，请稍后重试');
+  return r.json();
+});
 const MODEL = LIGHTS.model ?? { url: '/models/yard-web.glb', report: '/models/yard-web.report.json' };
 models.light.url = MODEL.url;
 models.light.report = MODEL.report;
@@ -454,7 +460,7 @@ async function loadModel(key) {
     let triangles = report?.glb?.triangles;
     if (!triangles) { triangles = 0; model.traverse(o => { if (o.isMesh) triangles += (o.geometry.index?.count || o.geometry.attributes.position.count)/3; }); }
     $('#loading').hidden = true;
-    window.yardPreviewState = { loaded: true, model: key, triangles, images: report?.glb?.images, error: null };
+    window.yardPreviewState = { loaded: true, model: key, manifestUrl: YARD_LIGHTS_URL, modelUrl: descriptor.url, modelHash: MODEL.hash, climateAvailable: Boolean(climateModel), triangles, images: report?.glb?.images, error: null };
   } catch (error) { if (id === loadId) { preparingLights = false; window.yardPreviewState = { loaded:false, error:String(error) }; fail(error); } }
 }
 let loader, landscape, draco, environmentTarget;

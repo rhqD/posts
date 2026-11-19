@@ -17,6 +17,9 @@ NO_CACHE="no-cache"
 [ -f "$DIST/index.html" ] || { echo "missing $DIST/index.html"; exit 1; }
 [ -f "$DIST/404.html" ] || { echo "missing $DIST/404.html"; exit 1; }
 command -v ossutil >/dev/null || { echo "ossutil not installed"; exit 1; }
+YARD_MANIFEST=$(node -e 'const fs=require("node:fs"),crypto=require("node:crypto");const bytes=fs.readFileSync(process.argv[1]);process.stdout.write("lights."+crypto.createHash("sha256").update(bytes).digest("hex").slice(0,8)+".json")' "$DIST/yard/lights.json")
+[ -f "$DIST/yard/$YARD_MANIFEST" ] || { echo "missing hashed yard manifest — run make sync-yard, then pnpm build"; exit 1; }
+cmp -s "$DIST/yard/lights.json" "$DIST/yard/$YARD_MANIFEST" || { echo "yard manifest content/hash mismatch"; exit 1; }
 
 echo "==> target: $BUCKET  source: $DIST ($(du -sh "$DIST" | cut -f1), $(find "$DIST" -type f | wc -l | tr -d ' ') files)"
 
@@ -33,10 +36,15 @@ find "$DIST" -maxdepth 1 -type f \
 
 echo "==> other static files"
 ossutil cp -r "$DIST/" "$BUCKET/" --exclude "*.html" --exclude "*.txt" --exclude "*.xml" \
-  --exclude "_next/*" --exclude "models/*" --exclude "yard/lights.json" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
+  --exclude "_next/*" --exclude "models/*" --exclude "yard/lights.json" --exclude "yard/lights.*.json" --cache-control "$IMMUTABLE" -u -f -q -j "$JOBS" || true
 
-# lights.json points at the hashed model, so it must never be cached either.
-ossutil cp "$DIST/yard/lights.json" "$BUCKET/yard/lights.json" --cache-control "$NO_CACHE" -f -q || true
+# Hashed manifests are mandatory resources of the new page. Publish them before
+# documents and stop on any failure; leave old versions for open browser tabs.
+for manifest in "$DIST"/yard/lights.*.json; do
+  ossutil cp "$manifest" "$BUCKET/yard/" --cache-control "$IMMUTABLE" -f -q
+done
+# Compatibility for older viewers; new builds do not request this fixed URL.
+ossutil cp "$DIST/yard/lights.json" "$BUCKET/yard/lights.json" --cache-control "$NO_CACHE" -f -q
 
 # 2. Documents last: never cached.
 echo "==> documents (no-cache)"
