@@ -45,8 +45,12 @@
 | 用途 | 来源 |
 | --- | --- |
 | 短信（dypns） | 实例角色 `home-server` 的临时凭证 |
-| eWeLink `at`/`rt` | OOS 加密参数 `renhanquan/ewelink`，启动时读一次 |
-| 续期后的新 token | 刷新成功即写回同一个参数（`oos:UpdateSecretParameter`） |
+| eWeLink `at`/`rt`/`app_secret`/`refreshed_at` | OOS 加密参数 `renhanquan/ewelink`，启动时读一次 |
+| 续期后的新 token | 同步写回同一个参数后使用（`oos:UpdateSecretParameter`），写回失败重试同一组凭据 |
+
+2026-11-19 修复了 Sonoff 漏处理业务码 402、过期 Bearer 无法刷新与异步写回问题。
+已用现有 `rt` 验证 Go 签名续期、OOS 写回读回、重启后读取及正式 API 同状态控制；
+厂商报告四台设备中一台在线、三台离线，未改变开关状态。小米 MQTT 与原有会话、ACL 均保留。
 
 角色需要的策略（缺失时会在启动或凭据续期时出现对应的拒绝）：
 

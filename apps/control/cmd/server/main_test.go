@@ -3,14 +3,59 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"renhanquan/control/internal/acl"
 	"renhanquan/control/internal/device"
+	"renhanquan/control/internal/device/sonoff"
 	"renhanquan/control/internal/events"
 	"renhanquan/control/internal/store"
 	"renhanquan/control/internal/store/filestore"
 	"testing"
 	"time"
 )
+
+func TestSonoffCredentialRotationRetainsPrivateConfiguration(t *testing.T) {
+	existing := map[string]json.RawMessage{"at": json.RawMessage(`"old"`), "rt": json.RawMessage(`"old-refresh"`), "future_field": json.RawMessage(`{"preserve":true}`)}
+	next := sonoff.Credentials{At: "new", Rt: "rotated", AppSecret: "private-key", RefreshedAt: time.Now().UTC()}
+	raw, err := sonoffCredentialPayload(existing, next)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var saved sonoff.Credentials
+	var fields map[string]json.RawMessage
+	if json.Unmarshal(raw, &saved) != nil || saved != next || json.Unmarshal(raw, &fields) != nil || string(fields["future_field"]) != `{"preserve":true}` || string(existing["at"]) != `"old"` {
+		t.Fatal("rotation lost metadata, mutated source configuration, or lost the signing key")
+	}
+}
+
+func TestSonoffStartupFailureCanRecoverWithoutDiscardingProvider(t *testing.T) {
+	hits := 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		hits++
+		if hits == 1 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.Write([]byte(`{"error":0,"data":{"thingList":[]}}`))
+	}))
+	defer server.Close()
+	t.Setenv("SONOFF_SECRET_PARAM", "")
+	t.Setenv("SONOFF_SECRET_NAME", "")
+	t.Setenv("SONOFF_ACCESS_TOKEN", "test-token")
+	t.Setenv("SONOFF_REFRESH_TOKEN", "")
+	t.Setenv("SONOFF_BASE_URL", server.URL)
+	p, err := newSingleDeviceProvider(context.Background(), "sonoff")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := p.Discover(context.Background()); err == nil {
+		t.Fatal("expected initial cloud outage")
+	}
+	if _, err := p.Discover(context.Background()); err != nil {
+		t.Fatal("provider could not recover from transient startup failure")
+	}
+}
 
 func TestBootstrapNeverRestoresRevokedRoot(t *testing.T) {
 	ctx := context.Background()

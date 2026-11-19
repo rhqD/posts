@@ -151,15 +151,21 @@ POST /v2/device/thing/status   {type, id, params}
 KMS 凭据管家那条路（`SONOFF_SECRET_NAME`）代码保留但默认不用：它要求一个
 KMS 实例，最低 30 元/天 + QPS 费，为两个 token 不值。
 
-**自动写回**：CoolKit 每次续期都会轮换 `rt`，旧值立刻失效。所以刷新成功后
-服务会把新的 `at`/`rt` 写回同一个加密参数（`oos:UpdateSecretParameter`），
-重启永远能拿到有效凭证。
+**自动写回**：CoolKit 续期会返回新的 `at`/`rt`。服务同步写回同一个加密参数
+（`oos:UpdateSecretParameter`）后再使用新凭据，同时保留 `app_secret` 与其他元数据。
+写回失败会在内存保留新凭据，并重试同一组写回，不再次轮换或异步乱序覆盖。
 
-`at` 不需要特意回填：它过期了用 `rt` 换一个就行。**`rt` 才是不更新就会出事的那一个。**
+**token 续期**：[CoolKit 官方刷新接口](https://github.com/CoolKit-Technologies/eWeLink-API/blob/main/en/APICenterV2.md#refresh-access-token)
+`/v2/user/refresh` 支持 Bearer 或 Sign。线上实测过期 `at`
+作为 Bearer 调用刷新接口也会被拒绝 402，不能据此认定 `rt` 已失效。
+生产的 OOS 凭据包含 `at`、`rt`、`app_secret`、`refreshed_at`；使用对应客户端的
+`app_secret` 对实际 JSON 请求体做 HMAC-SHA256 签名（`Authorization: Sign ...`）。
+签名密钥只放加密参数，不内置到代码或二进制。无需用户重新登录。
 
-**token 续期**：CoolKit 有 `/v2/user/refresh`，只要 `at` 和 `rt` 就能续，
-不需要重新登录（登录要用 App 私有密钥做 HMAC 签名，那一步我们不做）。配上
-`SONOFF_REFRESH_TOKEN` 后，401 时自动刷新一次并重试。
+有续期时间时，在文档默认 30 天有效期之前（第 20 天）按请求触发提前刷新；
+HTTP 401/403 或业务错误 401/402 仍触发一次有界续期重试。已被厂商拒绝的旧凭据
+不会在续期失败后继续冒充有效，失败会显示在健康状态并退避重试。
+Sonoff 初始化不因临时发现失败丢弃 provider，后续设备同步可恢复。
 
 没配 `rt` 就退化成 `StaticToken`：`at` 约 30 天过期，过期后 `/admin/status` 显示
 `last_error`，不会静默失效。
@@ -391,7 +397,8 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 | `XIAOMI_SECRET_PARAM` | — | 小米 OAuth 凭据的 OOS 加密参数名，生产为 `renhanquan/xiaomi` |
 | `XIAOMI_DEVICE_IDS` | — | 明确开放的米家设备 did，多个用逗号分隔，仅接入已验证型号 |
 | `SONOFF_ACCESS_TOKEN` | — | `DEVICE_PROVIDER=sonoff` 必填，eWeLink 的 `at` |
-| `SONOFF_REFRESH_TOKEN` | — | eWeLink 的 `rt`；配上后 token 会自动续期，不会 30 天到期 |
+| `SONOFF_REFRESH_TOKEN` | — | eWeLink 的 `rt`；被撤销或失效时仍需重新授权 |
+| `SONOFF_APP_SECRET` | — | 对应客户端的签名密钥；生产从 OOS `app_secret` 读取，支持过期后的签名续期 |
 | `SONOFF_SECRET_PARAM` | — | 从 OOS 参数仓库的加密参数读，值形如 `renhanquan/ewelink` |
 | `SONOFF_SECRET_NAME` | — | 同上，但走 KMS 凭据管家（**要付费实例，默认不用**） |
 | `ALIYUN_ROLE_NAME` | 回退 `SMS_ROLE_NAME` | 读参数用的实例角色 |

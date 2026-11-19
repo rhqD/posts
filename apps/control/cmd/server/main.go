@@ -196,6 +196,8 @@ func newSingleDeviceProvider(ctx context.Context, name string) (device.Provider,
 	case "sonoff":
 		at := os.Getenv("SONOFF_ACCESS_TOKEN")
 		rt := os.Getenv("SONOFF_REFRESH_TOKEN")
+		bundle := sonoff.Credentials{At: at, Rt: rt, AppSecret: os.Getenv("SONOFF_APP_SECRET")}
+		var secretFields map[string]json.RawMessage
 
 		// The credential can live in Aliyun's parameter store instead of the env
 		// file: read once at startup with the instance role, never written down.
@@ -217,20 +219,18 @@ func newSingleDeviceProvider(ctx context.Context, name string) (device.Provider,
 			if err != nil {
 				return nil, fmt.Errorf("sonoff secret %q: %w", name, err)
 			}
-			var secret struct {
-				At string `json:"at"`
-				Rt string `json:"rt"`
-			}
-			if err := json.Unmarshal([]byte(raw), &secret); err != nil {
+			if err := json.Unmarshal([]byte(raw), &bundle); err != nil {
 				return nil, fmt.Errorf("sonoff secret %q must be json with at/rt fields: %w", name, err)
 			}
-			at, rt = secret.At, secret.Rt
+			if err := json.Unmarshal([]byte(raw), &secretFields); err != nil {
+				return nil, errors.New("sonoff: invalid credential object")
+			}
+			at, rt = bundle.At, bundle.Rt
 			log.Printf("sonoff credentials loaded from parameter %q", name)
 		}
 		if at == "" {
 			return nil, errors.New("SONOFF_ACCESS_TOKEN or SONOFF_SECRET_NAME required for DEVICE_PROVIDER=sonoff")
 		}
-		tok := at
 		region := env("SONOFF_REGION", "cn")
 		base := env("SONOFF_BASE_URL", sonoff.BaseURL(region))
 
@@ -243,42 +243,62 @@ func newSingleDeviceProvider(ctx context.Context, name string) (device.Provider,
 		// itself; without one it dies after ~30 days.
 		var source sonoff.TokenSource
 		if rt != "" {
-			refresher := sonoff.NewRefreshToken(base, tok, rt)
+			refresher := sonoff.NewRefreshToken(base, bundle)
 			// CoolKit rotates the refresh token on every renewal. Write the new
 			// pair back, otherwise the stored one goes stale and the next
 			// restart cannot renew at all.
 			if secretParam != "" {
-				refresher.SetOnRefresh(func(newAt, newRt string) {
-					payload, _ := json.Marshal(map[string]string{"at": newAt, "rt": newRt})
+				refresher.SetOnRefresh(func(ctx context.Context, next sonoff.Credentials) error {
+					payload, err := sonoffCredentialPayload(secretFields, next)
+					if err != nil {
+						return err
+					}
 					creds, err := aliyunCredentials()
 					if err != nil {
-						log.Printf("sonoff: cannot persist rotated credentials: %v", err)
-						return
+						return err
 					}
-					writeCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+					writeCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
 					defer cancel()
 					if err := aliyun.UpdateSecretParameter(writeCtx, nil, regionName, creds, secretParam, string(payload)); err != nil {
-						log.Printf("sonoff: cannot persist rotated credentials to %q: %v", secretParam, err)
-						return
+						return err
 					}
 					log.Printf("sonoff: rotated credentials persisted to %q", secretParam)
+					return nil
 				})
 			}
 			source = refresher
 		} else {
-			source = sonoff.NewStaticToken(tok)
+			source = sonoff.NewStaticToken(at)
 		}
 
 		p := sonoff.New(region, source, opts...)
-		// Fail fast: a token that is already dead should stop the boot, not
-		// surface as an empty device list hours later.
-		if _, err := p.Discover(ctx); err != nil {
-			return nil, fmt.Errorf("sonoff discovery failed: %w", err)
-		}
+		// Discovery is performed by syncDevices, then retried periodically. Do
+		// not discard this provider after a transient refresh/network failure:
+		// it owns any rotated pair still waiting for durable persistence.
 		return p, nil
 	default:
 		return nil, fmt.Errorf("unknown DEVICE_PROVIDER %q", name)
 	}
+}
+
+// Retain signing configuration and future metadata on every credential rotation.
+func sonoffCredentialPayload(existing map[string]json.RawMessage, next sonoff.Credentials) ([]byte, error) {
+	raw, err := json.Marshal(next)
+	if err != nil {
+		return nil, err
+	}
+	merged := make(map[string]json.RawMessage, len(existing)+4)
+	for k, v := range existing {
+		merged[k] = v
+	}
+	var updated map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &updated); err != nil {
+		return nil, err
+	}
+	for k, v := range updated {
+		merged[k] = v
+	}
+	return json.Marshal(merged)
 }
 
 func newXiaomiProvider(ctx context.Context) (device.Provider, error) {

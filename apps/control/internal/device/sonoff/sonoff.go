@@ -164,6 +164,10 @@ type envelope struct {
 }
 
 func (p *Provider) call(ctx context.Context, method, path string, body any, out any) error {
+	return p.callAttempt(ctx, method, path, body, out, true)
+}
+
+func (p *Provider) callAttempt(ctx context.Context, method, path string, body any, out any, retryAuth bool) error {
 	// Serialise outbound calls and keep a minimum gap between them: the vendor
 	// does not publish rate limits, so we behave like a polite client.
 	p.callMu.Lock()
@@ -219,6 +223,9 @@ func (p *Provider) call(ctx context.Context, method, path string, body any, out 
 	}
 	if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusForbidden {
 		p.token.Invalidate()
+		if retryAuth {
+			return p.callAttempt(ctx, method, path, body, out, false)
+		}
 		err = fmt.Errorf("sonoff: unauthorized (token expired?)")
 		p.setErr(err)
 		return err
@@ -236,8 +243,11 @@ func (p *Provider) call(ctx context.Context, method, path string, body any, out 
 		return err
 	}
 	if env.Error != 0 {
-		if env.Error == 401 {
+		if env.Error == 401 || env.Error == 402 {
 			p.token.Invalidate()
+			if retryAuth {
+				return p.callAttempt(ctx, method, path, body, out, false)
+			}
 		}
 		err = fmt.Errorf("sonoff: api error %d: %s", env.Error, env.Msg)
 		p.setErr(err)
@@ -266,14 +276,18 @@ func (p *Provider) setErr(err error) {
 // Status is a cheap health snapshot for logs and admin endpoints.
 func (p *Provider) Status() map[string]any {
 	p.statusMu.RLock()
-	defer p.statusMu.RUnlock()
-	return map[string]any{
+	s := map[string]any{
 		"provider":   "sonoff",
 		"base":       p.base,
 		"calls":      p.calls,
 		"last_ok":    p.lastOK,
 		"last_error": p.lastErr,
 	}
+	p.statusMu.RUnlock()
+	if source, ok := p.token.(interface{ Status() map[string]any }); ok {
+		s["token"] = source.Status()
+	}
+	return s
 }
 
 // ---- discovery --------------------------------------------------------

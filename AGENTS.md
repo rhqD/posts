@@ -119,6 +119,10 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 
 ## 已知的坑
 
+- Sonoff 的访问令牌到期返回业务码 402。过期 Bearer 调用刷新接口同样可能被拒绝，
+  不能据此断言刷新令牌失效；用 OOS 中的 `app_secret` 签名刷新已验证可恢复。
+  新 `at`/`rt` 必须同步写回，且保留签名配置，见 `docs/auth.md`。
+
 - Tailwind 在 `src/app/globals.css` 用 `@source "../"` 显式扫描 `src/`。不要只依赖推断的 workspace root；新增 utility 后要确认构建 CSS 包含对应规则，账号菜单与头像组件使用独立 CSS Module，文件输入框还需原生 hidden。
 
 - **阿里云的「用户 / 角色 / 策略」是三层，授权不通用。** 挂到用户 `blogs_manager` 上的策略，对以**角色**身份运行的服务无效；反过来也一样。排查 403 时先确认报错里的 `AuthPrincipalDisplayName` 是哪个身份（形如 `home-server:vm-ram-v1-...` 就是角色）。这一点上我们为 PassRole、OOS、KMS 反复折腾过很多轮。
