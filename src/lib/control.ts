@@ -12,10 +12,11 @@ export function userName(user?: { name?: string } | null): string {
 }
 
 /** Every control API write uses the same browser CSRF protection contract. */
-export function controlWrite(path: string, body?: unknown, method = "POST"): Promise<Response> {
+export function controlWrite(path: string, body?: unknown, method = "POST", signal?: AbortSignal): Promise<Response> {
   return fetch(CONTROL_BASE + path, {
     method,
     credentials: "include",
+    signal,
     headers: { "Content-Type": "application/json", "X-CSRF-Protection": "1" },
     body: body === undefined ? undefined : JSON.stringify(body),
   });

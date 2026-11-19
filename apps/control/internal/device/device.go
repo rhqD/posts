@@ -50,3 +50,16 @@ type Provider interface {
 	Read(ctx context.Context, keys []string) (map[string]Readings, error)
 	Apply(ctx context.Context, key string, cmd Command) error
 }
+
+// PushSource delivers vendor updates to the same ACL-filtered SSE hub used by
+// polled providers. Implementations must emit only their public readings.
+type Update struct {
+	Key    string
+	State  Readings
+	Online bool
+	// Pushed distinguishes a real vendor notification from snapshot/readback.
+	Pushed bool
+}
+type PushSource interface {
+	Run(context.Context, func(Update))
+}

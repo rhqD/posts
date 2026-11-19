@@ -48,6 +48,14 @@ make sync-yard
 
 旧 hash 的模型可以留在 OSS 上（页面永不引用），无需清理；缓存策略见上。
 
+202 卧室空调还需要本仓库的 `yard-climate.ts` / `ClimatePanel.tsx`：GLB 提供独立部件，
+拟合导风板与实时数字在运行时生成，不能只替换 GLB 而漏发网页代码。发布前运行：
+
+```bash
+NEXT_PUBLIC_YARD_API=https://api.renhanquan.com pnpm build
+pnpm test:yard  # 必要时设置 CHROME_PATH；接口 mock，不下发真实设备命令
+```
+
 ## 依赖的本地凭证
 
 | 凭证 | 位置 | 检查命令 |

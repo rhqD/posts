@@ -13,6 +13,8 @@ import { CONTROL_BASE as BASE, controlWrite } from "../../lib/control";
 
 export type DeviceView = {
   key: string;
+  name?: string;
+  online?: boolean;
   actions: Record<string, unknown>;
   state: Record<string, unknown>;
   permissions: { read: boolean; control: boolean };
@@ -27,14 +29,14 @@ export async function fetchDevices(signal?: AbortSignal): Promise<Record<string,
       signal,
       headers: { Accept: "application/json" },
     });
-    if (!res.ok) return {};
+    if (res.status === 401 || res.status === 403) return {};
+    if (!res.ok) throw new Error("device_list_failed");
     const data = (await res.json()) as { devices?: DeviceView[] };
     const out: Record<string, DeviceView> = {};
     for (const device of data.devices ?? []) out[device.key] = device;
     return out;
   } catch {
-    // Offline, blocked, or no control plane: everything stays virtual.
-    return {};
+    throw new Error("device_list_unavailable");
   }
 }
 
@@ -45,9 +47,12 @@ export async function fetchDevices(signal?: AbortSignal): Promise<Record<string,
  */
 export function subscribeDeviceStates(
   onStates: (states: Record<string, Record<string, unknown>>) => void,
+  onConnection?: (connected: boolean) => void,
 ): () => void {
   if (!BASE || typeof EventSource === "undefined") return () => {};
   const source = new EventSource(BASE + "/events", { withCredentials: true });
+  source.onopen = () => onConnection?.(true);
+  source.onerror = () => onConnection?.(false);
   source.onmessage = (event) => {
     try {
       const frame = JSON.parse(event.data) as { states?: Record<string, Record<string, unknown>> };
@@ -65,12 +70,13 @@ export async function sendCommand(
   action: string,
   value: unknown,
   outlet?: number,
+  signal?: AbortSignal,
 ): Promise<void> {
-  if (!BASE) return;
+  if (!BASE) throw new Error("control_unavailable");
   const params: Record<string, unknown> = { value };
   // Multi-gang modules need to know which channel; single-channel ignores it.
   if (typeof outlet === "number") params.outlet = outlet;
-  const res = await controlWrite("/devices/" + encodeURIComponent(device) + "/commands", { action, params });
+  const res = await controlWrite("/devices/" + encodeURIComponent(device) + "/commands", { action, params }, "POST", signal);
   if (!res.ok) throw new Error(device + " " + action + " -> " + res.status);
 }
 

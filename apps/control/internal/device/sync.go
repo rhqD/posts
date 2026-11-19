@@ -11,6 +11,10 @@ func Sync(ctx context.Context, st store.Store, provider Provider) error {
 	if err != nil {
 		return err
 	}
+	failed := map[string]bool{}
+	if partial, ok := provider.(interface{ FailedProviders() map[string]bool }); ok {
+		failed = partial.FailedProviders()
+	}
 	return st.Tx(ctx, func(tx store.Store) error {
 		seen := map[string]bool{}
 		for _, d := range found {
@@ -21,6 +25,15 @@ func Sync(ctx context.Context, st store.Store, provider Provider) error {
 			return err
 		}
 		for _, d := range previous {
+			if failed[d.Provider] {
+				// A vendor outage is not a device deletion. Preserve local metadata,
+				// permissions, and missing status while reporting it offline.
+				d.Online = false
+				if err := tx.Devices().Upsert(ctx, d); err != nil {
+					return err
+				}
+				continue
+			}
 			if !seen[d.Key] {
 				d.Missing = true
 				d.Online = false

@@ -8,8 +8,10 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { beijingClock, solarPosition, YARD_SITE } from './yard-solar';
 import { createYardEnvironment } from './yard-environment';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import { bindClimateModel } from './yard-climate';
+import type { ClimateState } from './climate-state';
 
-export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; badgeClass?: string; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
+export async function createYardScene(root: HTMLElement, opts: { pillClass?: string; lampClass?: string; locateClass?: string; badgeClass?: string; onClimateOpen?: () => void; onClimateReady?: (ready: boolean) => void; onDeviceChange?: (key: string, patch: Record<string, unknown>, previous: boolean | Record<string, unknown>) => void } = {}) {
 
 
 
@@ -32,6 +34,8 @@ let sun, hemisphere;
 let sunTimer;
 const sunEvents = new AbortController();
 let floodlight = null, floodlightState = { on: false }, floodlightLens = null, pointerDown = null, floodlightProfile = null;
+let climateModel: ReturnType<typeof bindClimateModel> = null;
+let climateReadings: ClimateState = {};
 const lampRaycaster = new THREE.Raycaster();
 const LIGHTS = await fetch('/yard/lights.json').then(r => r.json());
 const MODEL = LIGHTS.model ?? { url: '/models/yard-web.glb', report: '/models/yard-web.report.json' };
@@ -84,6 +88,7 @@ updateDeviceIndicators();
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const presets = {
+  ac: { position: b(7.55,15.22,7.06), target: b(8.82,14.61,7.34), fov: 38, portraitFov: 72, interior: true },
   waterfall: { position: new THREE.Vector3(-32, 18, -66), target: new THREE.Vector3(-57, 6, -104), fov: 44 },
   waterside: { position: b(18,-48,31), target: b(-17,16,2) },
   landscape: { position: b(32,-48,23), target: b(-7,16,7.5), fov: 42 },
@@ -126,8 +131,9 @@ function selectView(name, immediate = false) {
   if (!preset) return;
   const target = preset.target.clone();
   const position = preset.position.clone().sub(target).multiplyScalar(!preset.interior && camera.aspect < .9 ? 1.35 : 1).add(target);
-  camera.fov = ['landscape', 'waterside'].includes(name) ? (camera.aspect < .9 ? 58 : 42) : (preset.fov || 40); camera.updateProjectionMatrix();
+  camera.fov = ['landscape', 'waterside'].includes(name) ? (camera.aspect < .9 ? 58 : 42) : ((camera.aspect < .9 ? preset.portraitFov : undefined) || preset.fov || 40); camera.updateProjectionMatrix();
   controls.minDistance = preset.interior ? .2 : 1;
+  controls.maxPolarAngle = Math.PI * (name === 'ac' ? .66 : .495);
   if (immediate || reducedMotion || preset.interior) { camera.position.copy(position); controls.target.copy(target); controls.update(); transition = null; }
   else transition = { from: camera.position.clone(), to: position, fromTarget: controls.target.clone(), toTarget: target, start: performance.now() };
   dirty = true;
@@ -332,6 +338,13 @@ function clickLamp(event) {
   const hit = lampRaycaster.intersectObject(model, true)[0];
   // Use nearest visible surface: walls and other objects can occlude the lamp.
   if (!hit) return;
+  if (climateModel) {
+    let object = hit.object;
+    while (object && object !== model) {
+      if (object === climateModel.unit) { opts.onClimateOpen?.(); return; }
+      object = object.parent;
+    }
+  }
   if (hit.object.name.startsWith('Yard_West_Floodlight')) {
     const previous = setDeviceState('floodlight', { on: !floodlightState.on });
     if (liveDevices.has('floodlight')) opts.onDeviceChange?.('floodlight', { on: floodlightState.on }, previous);
@@ -395,6 +408,7 @@ async function loadModel(key) {
   $('#load-title').textContent = '正在打开院子'; $('#load-message').textContent = '读取模型与几何数据…';
   $('#progress-fill').style.width = '0%';
   $('#floodlight').disabled = true;
+  opts.onClimateReady?.(false);
   const reportPromise = fetch(descriptor.report).then(r => r.ok ? r.json() : null).catch(() => null);
   try {
     const gltf = await new Promise((resolve, reject) => loader.load(descriptor.url, resolve, e => {
@@ -403,6 +417,8 @@ async function loadModel(key) {
     }, reject));
     if (id !== loadId) { dispose(gltf.scene); return; }
     preparingLights = true;
+    climateModel?.dispose();
+    climateModel = null;
     if (model) { scene.remove(model); dispose(model); }
     model = gltf.scene;
     model.traverse(o => {
@@ -410,6 +426,9 @@ async function loadModel(key) {
       materialsOf(o).forEach(m => { m.wireframe = false; });
     });
     scene.add(model);
+    climateModel = bindClimateModel(model);
+    climateModel?.update(climateReadings);
+    opts.onClimateReady?.(Boolean(climateModel));
     bindFloodlight();
     bindExtraLights();
     updateDeviceIndicators();
@@ -481,6 +500,12 @@ try {
       dirty = true; if (t === 1) transition = null;
     }
     const changed = controls.update(delta);
+    if (!preparingLights && climateModel) {
+      waterProjection.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+      waterFrustum.setFromProjectionMatrix(waterProjection);
+      const visible = !document.hidden && waterFrustum.intersectsObject(climateModel.unit);
+      if (climateModel.animate(now, delta, reducedMotion, visible)) dirty = true;
+    }
     if (!reducedMotion && !document.hidden) {
       waterElapsed += delta;
       if (waterElapsed >= .05) {
@@ -521,6 +546,12 @@ try {
   selectView('all',true); loadModel('light');
 } catch (error) { fail(error); }
   return {
+    setClimateState(state: ClimateState) {
+      climateReadings = { ...state };
+      climateModel?.update(climateReadings);
+      dirty = true;
+    },
+    focusClimate() { if (climateModel) selectView('ac', true); },
     // Control and read access are separate: either permission reveals the link
     // icon, while only controllable keys send commands. Authentication itself
     // is irrelevant; the service may grant device access to anonymous visitors.
@@ -554,6 +585,7 @@ try {
       renderer?.setAnimationLoop(null);
       window.removeEventListener('resize', onResize);
       controls?.dispose();
+      climateModel?.dispose();
       scene?.traverse(object => { if (object.isLight) object.dispose?.(); });
       if (model) dispose(model);
       landscape?.dispose();

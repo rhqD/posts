@@ -124,6 +124,8 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - **阿里云的「用户 / 角色 / 策略」是三层，授权不通用。** 挂到用户 `blogs_manager` 上的策略，对以**角色**身份运行的服务无效；反过来也一样。排查 403 时先确认报错里的 `AuthPrincipalDisplayName` 是哪个身份（形如 `home-server:vm-ram-v1-...` 就是角色）。这一点上我们为 PassRole、OOS、KMS 反复折腾过很多轮。
 - **RAM 策略里的资源 ARN 光看文档不够，要实测。** `ram:PassRole` 写成 `acs:ram::<uid>:role/<name>` 会被拒，改成 `*` 才通；KMS 的 `secret/...` ARN 在控制台里会被判成"无匹配操作"。遇到这种先简化再逐步收窄，别一开始追精确 ARN。
 
+- **OOS 凭据续期还需要 KMS 写权限。** `oos:UpdateSecretParameter` 不够，运行中的 ECS 角色还需底层 `secret/oos/renhanquan/xiaomi` 的 `kms:PutSecretValue`；OOS 文档称“UpdateSecretValue”，不能据此填写不存在的 `kms:UpdateSecretValue`。RAM 用户授权不传递给实例角色。
+
 - OSS 默认域名访问 HTML 会强制下载，所以不能直接用 OSS 域名预览站点。
 - bucket 必须是 public-read：CDN 的「私有 Bucket 回源」需要在控制台做一次一键授权，
   API 无法完成；`BlockPublicAccess` 会禁止设置公共 ACL。
@@ -148,6 +150,8 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - 溪流水面由 `yard-river.ts` 着色器按河道弧长生成流纹（`uv.y` 是**世界米数**，不是 0..1，频率按米给），白色浪花是沿流向拉长的丝状噪声而不是正弦横纹。山间源头由 `yard-waterfall.ts` 生成瀑布：水幕**逐顶点贴合崖面**（独立曲线会埋进岩体），落水点是卡通水花（圆球气泡 + 抛物线水珠 + 泡沫池 + 扩散环），可用「瀑布」视角查看；画面不可见、室内预设或减少动态效果开启时不更新。动物已移除。灯具关闭时仅将强度归零，保持灯光布局稳定；加载阶段异步预编译并预热静态阴影，太阳变化时只刷新太阳阴影。
 - 全站 `viewport-fit: cover`，Header 与 `/home` 按 safe-area inset 布局；Safari theme-color 随页面主题与天空更新。只在 3D 查看器禁用触控文字选取/长按菜单，日照日期时间只读。
 - 灯光胶囊的 link 图标按设备权限显示：`DEVICE_MAP` 有绑定且当前访客对设备有 `read` 或 `control` 权限时才显示；两种权限都没有时隐藏，首次权限未加载也不显示。不以登录状态判断，匿名授权同样有效。配色、边框、开关与悬停样式和普通灯具一致；仅有读取权限时仍为预览，有控制权限且设备支持绑定操作才发送真实命令。定位按钮沿用原行为。
+- 202 卧室空调由 `DEVICE_MAP.ac202` 绑定米家云设备；胶囊和机身点击均只打开同一个精细控制面板，↗ 定位到室内近景。模型驱动在 `yard-climate.ts`，独立拟合导风板实现关机闭合、开机展开与扫风，机身动态数字只读 `targetTemperature`，`temperature` 是室温。网页只在设备回报确认后改变开关/设定值；只读授权可同步查看，无权限清空真实状态，离线或 MQTT 不实时禁用控制。邻仓 `yabai_home` 保持只读，不复制其整页预览。
+- 空调回归：先 `NEXT_PUBLIC_YARD_API=https://api.renhanquan.com pnpm build`，再 `pnpm test:yard`（可用 `CHROME_PATH` 指定本机 Chrome）。测试在真实导出 GLB 上运行，接口全部 mock，不操作真实设备；覆盖胶囊/模型点击、SSE 与 HTTP 乱序、失败写入、六项控制、只读/撤权及手机面板。
 - 查看器是 React 组件 `src/components/yard/YardViewer.tsx` + `yard-scene.ts`，three.js 从 npm 引入，跟随应用一起打包（按需 dynamic import）。
 - ⚠️ **`yard-scene.ts` 第一行是 `@ts-nocheck`**（当初从 yabai_home 的 preview.html 搬进来时加的，因为 imperative 的 three.js 代码补类型收益低）。**类型检查对这个文件完全失效**，`tsc` 通过不代表它是对的：模块级初始化顺序错误（比如往一个后面才声明的 `const` 里写入）属于运行时 TDZ，TypeScript 看不见。
   改这个文件之后必须**用浏览器跑一遍**：起静态服务打开 `/home/`，确认加载遮罩消失、没有 JS 异常。不要再靠「构建通过」判断。
@@ -175,7 +179,7 @@ CDN 缓存规则（控制台优先级高于源站头，两处别配冲突）：
 - 文章 Mermaid 源码必须用 `textContent` 交给渲染器，不拼接 HTML；`pnpm test:security` 覆盖浏览器注入与原型污染。文章 slug 必须通过 Go/前端一致的字符校验，禁止参与路径穿越。
 - 控制面 `/events` 必须在服务端逐事件重新校验会话并按设备 `read` ACL 过滤（包含隐藏/删除检查），不能直接广播给已登录用户；会话到期主动断开，撤销/禁用在事件或心跳时断开。匿名 SSE 暂不开放。安全回归见 `apps/control/internal/api/events_test.go`。
 - 控制面还没有自动备份：数据在 `/var/lib/renhanquan-control`，机器挂了就没了。
-- 控制面缺：CoolKit 之外的 provider、告警；管理页见 `/manage/users/`、`/manage/permissions/`、`/manage/devices/`。
+- 控制面缺：更多米家型号、其他厂商 provider、告警（已支持 Sonoff + 小米云，见 docs/xiaomi.md）；管理页见 `/manage/users/`、`/manage/permissions/`、`/manage/devices/`。
 - 内置用户由管理员新增，无公开注册；数据库决定能否登录，`ALLOWED_PHONES` 只负责启动补建。`activated_at` 与停用独立；用户头像服务端校验并重新编码，不放公开 CDN。
 - 控制面当前数据源为统一 `state.json` + `audit.jsonl`；旧四份 JSON 仅用于首次迁移。存在快照时不得回读旧 sessions。管理变更需同步记录审计意图后原子提交，不得移除最后一个有效权限管理员。
 - `ram:PassRole` 的 Resource 目前是 `*`（能传任意角色），待收窄。

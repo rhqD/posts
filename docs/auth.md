@@ -119,6 +119,12 @@ type Provider interface {
 
 `Read` 是批量的，因为厂商云接口本来就是「一次返回全量状态」，省掉 N 次往返。
 
+### 已实现的 provider：小米云
+
+通过 `DEVICE_PROVIDER=sonoff,xiaomi` 与 Sonoff 同时启用。凭据使用独立 OOS 加密参数，
+支持自动续期写回；设备状态通过 MQTT 推送进入已有 ACL 过滤的 SSE。当前仅开放已验证的
+空调型号及设备白名单，详情见 [小米云接入](xiaomi.md)。
+
 ### 已实现的 provider：Sonoff / CoolKit
 
 走的是 eWeLink App 同一套云接口，**不刷机、不要本地 broker、不开入站端口**：
@@ -183,6 +189,13 @@ export const DEVICE_MAP = {
 3. 设备 `actions` 里确实有这个动作
 
 任一不满足 → 保持纯前端动画。所以**无设备权限、映射缺失时都只显示前端预览；匿名访客若有设备授权，也可操作**。
+
+空调绑定为 `DEVICE_MAP.ac202`，采用真实状态驱动：胶囊与模型点击打开同一面板，
+没有权限时不模拟操作、不显示固定温度；仅有 read 权限仍可同步查看。开关、导风板、
+机身数字跟随 `/devices` 快照及既有 `/events` 推送；设定温度字段是 `targetTemperature`，
+`temperature` 只作为室温展示。请求成功后仍等待实际状态确认，失败不会乐观修改模型。
+六项操作继续走同一命令 API 和 CSRF/ACL 校验；离线或 `stateFresh=false` 时禁用控制。
+接口刷新结果不得覆盖请求期间到达的较新 SSE 状态；登录身份变化先清空旧授权表再读取。
 
 读状态和下发都走通用设备接口，没有灯专用端点：
 
@@ -374,7 +387,9 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 | `SESSION_TTL` | `720h` | 会话有效期 |
 | `COOKIE_SECURE` | `true` | 本地 http 调试设 `false` |
 | `COOKIE_DOMAIN` | 空 | 跨子域时设 `.renhanquan.com` |
-| `DEVICE_PROVIDER` | `mock` | `mock` 假设备；`sonoff` 走 CoolKit |
+| `DEVICE_PROVIDER` | `mock` | `mock` 假设备；`sonoff` 走 CoolKit；`xiaomi` 走米家云；多个厂商用逗号分隔 |
+| `XIAOMI_SECRET_PARAM` | — | 小米 OAuth 凭据的 OOS 加密参数名，生产为 `renhanquan/xiaomi` |
+| `XIAOMI_DEVICE_IDS` | — | 明确开放的米家设备 did，多个用逗号分隔，仅接入已验证型号 |
 | `SONOFF_ACCESS_TOKEN` | — | `DEVICE_PROVIDER=sonoff` 必填，eWeLink 的 `at` |
 | `SONOFF_REFRESH_TOKEN` | — | eWeLink 的 `rt`；配上后 token 会自动续期，不会 30 天到期 |
 | `SONOFF_SECRET_PARAM` | — | 从 OOS 参数仓库的加密参数读，值形如 `renhanquan/ewelink` |
@@ -404,6 +419,6 @@ ADDR=:8080 DATA_DIR=./data SMS_MODE=fake \
 
 ## 未完成
 
-- 米家 / 涂鸦 provider
+- 更多米家型号 / 涂鸦 provider
 - 告警：连续登录失败、新 IP 登录、授权变更主动通知
 - 自动备份

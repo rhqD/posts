@@ -25,9 +25,11 @@ import (
 	"renhanquan/control/internal/audit"
 	"renhanquan/control/internal/auth"
 	"renhanquan/control/internal/device"
+	"renhanquan/control/internal/device/composite"
 	"renhanquan/control/internal/device/mock"
 	"renhanquan/control/internal/device/sonoff"
 	"renhanquan/control/internal/device/unavailable"
+	"renhanquan/control/internal/device/xiaomi"
 	"renhanquan/control/internal/events"
 	"renhanquan/control/internal/sms"
 	"renhanquan/control/internal/store"
@@ -57,7 +59,8 @@ func main() {
 		log.Fatal("ALLOWED_PHONES is empty: nobody would be able to log in")
 	}
 
-	ctx := context.Background()
+	ctx, cancelBackground := context.WithCancel(context.Background())
+	defer cancelBackground()
 
 	st, err := filestore.Open(dataDir)
 	if err != nil {
@@ -127,6 +130,11 @@ func main() {
 
 	go housekeeping(ctx, st, sessions, prov)
 	go watchDevices(ctx, st, prov, hub)
+	if source, ok := prov.(device.PushSource); ok {
+		go source.Run(ctx, func(update device.Update) {
+			publishDeviceUpdate(ctx, st, hub, update)
+		})
+	}
 
 	go func() {
 		log.Printf("listening on %s (data=%s)", addr, dataDir)
@@ -140,6 +148,7 @@ func main() {
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	_ = httpSrv.Shutdown(shutdownCtx)
+	cancelBackground()
 	log.Printf("stopped (audit entries dropped: %d)", al.Dropped())
 }
 
@@ -161,9 +170,29 @@ func verifyAudit() int {
 }
 
 func newDeviceProvider(ctx context.Context) (device.Provider, error) {
-	switch env("DEVICE_PROVIDER", "mock") {
+	names := splitList(env("DEVICE_PROVIDER", "mock"))
+	if len(names) == 1 {
+		return newSingleDeviceProvider(ctx, names[0])
+	}
+	children := make([]composite.Child, 0, len(names))
+	seen := map[string]bool{}
+	for _, name := range names {
+		if seen[name] {
+			return nil, fmt.Errorf("duplicate device provider %q", name)
+		}
+		seen[name] = true
+		p, err := newSingleDeviceProvider(ctx, name)
+		children = append(children, composite.Child{Name: name, Provider: p, Err: err})
+	}
+	return composite.New(children...), nil
+}
+
+func newSingleDeviceProvider(ctx context.Context, name string) (device.Provider, error) {
+	switch name {
 	case "mock":
 		return mock.New(), nil
+	case "xiaomi":
+		return newXiaomiProvider(ctx)
 	case "sonoff":
 		at := os.Getenv("SONOFF_ACCESS_TOKEN")
 		rt := os.Getenv("SONOFF_REFRESH_TOKEN")
@@ -248,7 +277,65 @@ func newDeviceProvider(ctx context.Context) (device.Provider, error) {
 		}
 		return p, nil
 	default:
-		return nil, fmt.Errorf("unknown DEVICE_PROVIDER %q", os.Getenv("DEVICE_PROVIDER"))
+		return nil, fmt.Errorf("unknown DEVICE_PROVIDER %q", name)
+	}
+}
+
+func newXiaomiProvider(ctx context.Context) (device.Provider, error) {
+	param := os.Getenv("XIAOMI_SECRET_PARAM")
+	ids := splitList(os.Getenv("XIAOMI_DEVICE_IDS"))
+	if param == "" || len(ids) == 0 {
+		return nil, errors.New("XIAOMI_SECRET_PARAM and XIAOMI_DEVICE_IDS required")
+	}
+	region := env("ALIYUN_REGION", "cn-beijing")
+	creds, err := aliyunCredentials()
+	if err != nil {
+		return nil, err
+	}
+	raw, err := aliyun.GetSecretParameter(ctx, nil, region, creds, param)
+	if err != nil {
+		return nil, errors.New("xiaomi: cannot load OOS credentials")
+	}
+	var bundle xiaomi.Credentials
+	if json.Unmarshal([]byte(raw), &bundle) != nil {
+		return nil, errors.New("xiaomi: invalid OOS credentials")
+	}
+	tokens, err := xiaomi.NewTokens(bundle, func(ctx context.Context, next xiaomi.Credentials) error {
+		payload, err := json.Marshal(next)
+		if err != nil {
+			return err
+		}
+		return aliyun.UpdateSecretParameter(ctx, nil, region, creds, param, string(payload))
+	})
+	if err != nil {
+		return nil, err
+	}
+	return xiaomi.New(tokens, bundle.Region, ids), nil
+}
+
+// Vendor pushes enter the existing hub; streamEvents still rechecks sessions,
+// hidden/missing devices, and per-device read ACL for every recipient/event.
+func publishDeviceUpdate(ctx context.Context, st store.Store, hub *events.Hub, update device.Update) {
+	d, err := st.Devices().Get(ctx, update.Key)
+	if err != nil {
+		return
+	}
+	if d.Online != update.Online {
+		if err := st.Tx(ctx, func(tx store.Store) error {
+			current, err := tx.Devices().Get(ctx, update.Key)
+			if err != nil {
+				return err
+			}
+			current.Online = update.Online
+			return tx.Devices().Upsert(ctx, current)
+		}); err != nil {
+			log.Printf("device online state persistence failed")
+			return
+		}
+	}
+	payload, err := json.Marshal(map[string]any{"states": map[string]device.Readings{update.Key: update.State}})
+	if err == nil {
+		hub.Publish(payload)
 	}
 }
 

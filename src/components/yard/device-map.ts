@@ -13,4 +13,5 @@ export type Binding = { device: string; action?: string; outlet?: number; type?:
 export const DEVICE_MAP: Record<string, Binding> = {
   // 西墙投光灯：CK-BL602-4SW-HS，4 路模块但只接了第 0 路
   floodlight: { device: "1001e500e6", outlet: 0 },
+  ac202: { device: "xiaomi-959023669", type: "climate" },
 };

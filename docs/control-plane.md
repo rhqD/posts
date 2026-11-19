@@ -48,15 +48,17 @@
 | eWeLink `at`/`rt` | OOS 加密参数 `renhanquan/ewelink`，启动时读一次 |
 | 续期后的新 token | 刷新成功即写回同一个参数（`oos:UpdateSecretParameter`） |
 
-角色需要的策略（三条，缺一条就会在启动日志里看到对应的 403）：
+角色需要的策略（缺失时会在启动或凭据续期时出现对应的拒绝）：
 
 ```json
 { "Effect": "Allow", "Action": ["dypns:SendSmsVerifyCode", "dypns:CheckSmsVerifyCode"], "Resource": "*" }
 { "Effect": "Allow", "Action": ["oos:GetSecretParameter", "oos:UpdateSecretParameter"], "Resource": "*" }
 { "Effect": "Allow", "Action": ["kms:GetSecretValue", "kms:Decrypt"], "Resource": "*" }
+{ "Effect": "Allow", "Action": ["kms:PutSecretValue"], "Resource": "acs:kms:cn-beijing:<账号ID>:secret/oos/renhanquan/xiaomi" }
 ```
 
-> 这些 `Resource` 都是 `*`：精确 ARN 在阿里云的策略校验里反复被拒（见 infra.md）。
+> 多数权限的 `Resource` 暂为 `*`：精确 ARN 在阿里云的策略校验里反复被拒（见 infra.md）；
+> 小米的 KMS 写权限使用上述指定凭据 ARN。
 > 想收窄请先改一处、观察一天，别一次改三个。
 
 ## 发布一个新版本
@@ -128,6 +130,11 @@ device provider: sonoff
 2. `scp` 到这台机器并 `nginx -s reload`
 
 **第二步失败会中止整个 hook**——静默过期的证书比响亮的报错危险得多。
+
+## 小米云
+
+Go 网关可同时运行 Sonoff 和小米 provider；小米云控制、MQTT 推送、OOS 加密凭据与
+故障隔离配置见 [小米云接入](xiaomi.md)。小米不安装 Home Assistant、不使用家庭局域网。
 
 ## SSE（/events）
 
